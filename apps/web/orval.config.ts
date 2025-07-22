@@ -6,10 +6,12 @@ export default defineConfig({
 	backend: {
 		output: {
 			mode: "split",
-			target: "./src/http/generated.ts",
-			schemas: "./src/http/model",
+			namingConvention: "kebab-case",
+			target: "./src/http/gen/endpoints",
+			schemas: "./src/http/gen/model",
 			client: "react-query",
 			httpClient: "fetch",
+			fileExtension: '.gen.ts',
 			baseUrl: "http://localhost:3333",
 			// mock: true,
 			override: {

@@ -8,7 +8,7 @@
 		"build": "vite build && tsc",
 		"serve": "vite preview",
 		"test": "vitest run",
-		"orval": "orval"
+		"api:generate": "orval"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.1.1",

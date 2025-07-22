@@ -30,7 +30,7 @@ import type {
   PostMeters201,
   PostMetersBody,
   PutMetersIdBody
-} from './model';
+} from '../model';
 
 
 

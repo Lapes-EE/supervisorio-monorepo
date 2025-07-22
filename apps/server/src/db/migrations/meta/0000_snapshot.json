@@ -41,9 +41,7 @@
         "meters_ip_unique": {
           "name": "meters_ip_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "ip"
-          ]
+          "columns": ["ip"]
         }
       },
       "policies": {},

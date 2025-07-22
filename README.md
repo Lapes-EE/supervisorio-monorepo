@@ -101,6 +101,7 @@ pnpm dev
 - `pnpm db:generate`: Gera os arquivos de migração do Drizzle ORM.
 - `pnpm db:migrate`: Aplica as migrações no banco de dados.
 - `pnpm db:studio`: Abre o Drizzle Studio para visualizar e gerenciar o banco de dados.
+- `pnpm api:generate`: Executa o gerador de funções da API
 
 ## Licença
 

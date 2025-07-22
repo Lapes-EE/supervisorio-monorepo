@@ -19,6 +19,9 @@
     },
     "db:studio": {
       "cache": false
+    },
+    "api:generate": {
+      "cache": false
     }
   }
 }

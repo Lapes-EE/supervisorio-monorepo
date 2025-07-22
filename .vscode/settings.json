@@ -12,12 +12,17 @@
     "source.organizeImports.biome": "explicit"
   },
   "files.watcherExclude": {
-    "**/routeTree.gen.ts": true
+    "**/routeTree.gen.ts": true,
+    "**/gen/**": true
   },
   "search.exclude": {
-    "**/routeTree.gen.ts": true
+    "**/routeTree.gen.ts": true,
+    "**/gen/**": true
   },
   "files.readonlyInclude": {
-    "**/routeTree.gen.ts": true
-  }
+    "**/routeTree.gen.ts": true,
+    "**/gen/**": true
+  },
+  "css.lint.unknownAtRules": "ignore",
+  "postman.settings.dotenv-detection-notification-visibility": false
 }
