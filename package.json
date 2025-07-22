@@ -1,0 +1,20 @@
+{
+  "name": "supervisorio-monorepo",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "db:generate": "turbo run db:generate",
+    "db:migrate": "turbo run db:migrate",
+    "db:studio": "turbo run db:studio"
+  },
+  "packageManager": "pnpm@9.4.0",
+  "devDependencies": {
+    "@biomejs/biome": "2.1.2",
+    "drizzle-kit": "^0.31.4",
+    "husky": "^9.1.7",
+    "turbo": "^2.5.5",
+    "ultracite": "5.0.47"
+  }
+}
