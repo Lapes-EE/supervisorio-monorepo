@@ -11,6 +11,7 @@ import {
 } from 'fastify-type-provider-zod'
 import { pino } from 'pino'
 import { createMeters } from './http/routes/create-meters'
+import { deleteMeter } from './http/routes/delete-meters'
 import { getMeters } from './http/routes/get-meters'
 import { getTelemetryByIp } from './http/routes/get-telemetry-by-ip'
 import { updateMeter } from './http/routes/update-meters'
@@ -27,6 +28,7 @@ const server = fastify({
 
 server.register(fastifyCors, {
   origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
 })
 
 server.setSerializerCompiler(serializerCompiler)
@@ -55,9 +57,10 @@ server.register(createMeters)
 server.register(getTelemetryByIp)
 server.register(updateMeter)
 server.register(getMeters)
+server.register(deleteMeter)
 
-server.get('/openapi.json', async (_, reply) => {
-  const spec = await server.swagger()
+server.get('/openapi.json', (_, reply) => {
+  const spec = server.swagger()
   reply.send(spec)
 })
 
