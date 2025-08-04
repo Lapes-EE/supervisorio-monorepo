@@ -1,5 +1,3 @@
-'use client'
-
 import {
   Close as SheetPrimitiveClose,
   Content as SheetPrimitiveContent,

@@ -1,5 +1,3 @@
-'use client'
-
 import { Root as SeparatorPrimitiveRoot } from '@radix-ui/react-separator'
 import type * as React from 'react'
 
