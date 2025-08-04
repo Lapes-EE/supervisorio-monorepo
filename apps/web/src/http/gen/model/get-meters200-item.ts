@@ -7,9 +7,9 @@
  */
 
 export type GetMeters200Item = {
-  id: number;
-  name: string;
-  ip: string;
+  id: number
+  name: string
+  ip: string
   /** @nullable */
-  description?: string | null;
-};
+  description?: string | null
+}

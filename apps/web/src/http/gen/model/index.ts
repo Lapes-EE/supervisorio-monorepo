@@ -6,8 +6,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export * from './get-meters-get-telemetry-ip200';
-export * from './get-meters200-item';
-export * from './post-meters-body';
-export * from './post-meters201';
-export * from './put-meters-id-body';
+export * from './get-meters-get-telemetry-ip200'
+export * from './get-meters200-item'
+export * from './post-meters-body'
+export * from './post-meters201'
+export * from './put-meters-id-body'

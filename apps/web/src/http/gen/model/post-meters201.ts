@@ -7,5 +7,5 @@
  */
 
 export type PostMeters201 = {
-  createdAt: string;
-};
+  createdAt: string
+}

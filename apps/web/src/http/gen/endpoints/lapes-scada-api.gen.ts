@@ -5,10 +5,7 @@
  * API for supervisory control and data acquisition
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -21,423 +18,565 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
+import * as axios from 'axios'
 
 import type {
   GetMeters200Item,
   GetMetersGetTelemetryIp200,
   PostMeters201,
   PostMetersBody,
-  PutMetersIdBody
-} from '../model';
-
-
-
-
+  PutMetersIdBody,
+} from '../model'
 
 /**
  * @summary Register a new meter
  */
-export type postMetersResponse201 = {
-  data: PostMeters201
-  status: 201
-}
-    
-export type postMetersResponseComposite = postMetersResponse201;
-    
-export type postMetersResponse = postMetersResponseComposite & {
-  headers: Headers;
-}
-
-export const getPostMetersUrl = () => {
-
-
-  
-
-  return `http://localhost:3333/meters`
+export const postMeters = (
+  postMetersBody: PostMetersBody,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<PostMeters201>> => {
+  return axios.default.post(
+    'http://localhost:3333/meters',
+    postMetersBody,
+    options
+  )
 }
 
-export const postMeters = async (postMetersBody: PostMetersBody, options?: RequestInit): Promise<postMetersResponse> => {
-  
-  const res = await fetch(getPostMetersUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      postMetersBody,)
+export const getPostMetersMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postMeters>>,
+    TError,
+    { data: PostMetersBody },
+    TContext
+  >
+  axios?: AxiosRequestConfig
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postMeters>>,
+  TError,
+  { data: PostMetersBody },
+  TContext
+> => {
+  const mutationKey = ['postMeters']
+  const { mutation: mutationOptions, axios: axiosOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, axios: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postMeters>>,
+    { data: PostMetersBody }
+  > = (props) => {
+    const { data } = props ?? {}
+
+    return postMeters(data, axiosOptions)
   }
-)
 
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
-  const data: postMetersResponse['data'] = body ? JSON.parse(body) : {}
-
-  return { data, status: res.status, headers: res.headers } as postMetersResponse
+  return { mutationFn, ...mutationOptions }
 }
 
+export type PostMetersMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postMeters>>
+>
+export type PostMetersMutationBody = PostMetersBody
+export type PostMetersMutationError = AxiosError<unknown>
 
-
-
-export const getPostMetersMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postMeters>>, TError,{data: PostMetersBody}, TContext>, fetch?: RequestInit}
-): UseMutationOptions<Awaited<ReturnType<typeof postMeters>>, TError,{data: PostMetersBody}, TContext> => {
-
-const mutationKey = ['postMeters'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postMeters>>, {data: PostMetersBody}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postMeters(data,fetchOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostMetersMutationResult = NonNullable<Awaited<ReturnType<typeof postMeters>>>
-    export type PostMetersMutationBody = PostMetersBody
-    export type PostMetersMutationError = unknown
-
-    /**
+/**
  * @summary Register a new meter
  */
-export const usePostMeters = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postMeters>>, TError,{data: PostMetersBody}, TContext>, fetch?: RequestInit}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postMeters>>,
-        TError,
-        {data: PostMetersBody},
-        TContext
-      > => {
+export const usePostMeters = <TError = AxiosError<unknown>, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postMeters>>,
+      TError,
+      { data: PostMetersBody },
+      TContext
+    >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof postMeters>>,
+  TError,
+  { data: PostMetersBody },
+  TContext
+> => {
+  const mutationOptions = getPostMetersMutationOptions(options)
 
-      const mutationOptions = getPostMetersMutationOptions(options);
+  return useMutation(mutationOptions, queryClient)
+}
 
-      return useMutation(mutationOptions , queryClient);
-    }
-    
 /**
  * @summary Get all meters
  */
-export type getMetersResponse200 = {
-  data: GetMeters200Item[]
-  status: 200
+export const getMeters = (
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<GetMeters200Item[]>> => {
+  return axios.default.get('http://localhost:3333/meters', options)
 }
-    
-export type getMetersResponseComposite = getMetersResponse200;
-    
-export type getMetersResponse = getMetersResponseComposite & {
-  headers: Headers;
-}
-
-export const getGetMetersUrl = () => {
-
-
-  
-
-  return `http://localhost:3333/meters`
-}
-
-export const getMeters = async ( options?: RequestInit): Promise<getMetersResponse> => {
-  
-  const res = await fetch(getGetMetersUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-)
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
-  const data: getMetersResponse['data'] = body ? JSON.parse(body) : {}
-
-  return { data, status: res.status, headers: res.headers } as getMetersResponse
-}
-
-
 
 export const getGetMetersQueryKey = () => {
-    return [`http://localhost:3333/meters`] as const;
-    }
-
-    
-export const getGetMetersQueryOptions = <TData = Awaited<ReturnType<typeof getMeters>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>>, fetch?: RequestInit}
-) => {
-
-const {query: queryOptions, fetch: fetchOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetMetersQueryKey();
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMeters>>> = ({ signal }) => getMeters({ signal, ...fetchOptions });
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+  return ['http://localhost:3333/meters'] as const
 }
 
-export type GetMetersQueryResult = NonNullable<Awaited<ReturnType<typeof getMeters>>>
-export type GetMetersQueryError = unknown
+export const getGetMetersQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeters>>,
+  TError = AxiosError<unknown>,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>
+  >
+  axios?: AxiosRequestConfig
+}) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {}
 
+  const queryKey = queryOptions?.queryKey ?? getGetMetersQueryKey()
 
-export function useGetMeters<TData = Awaited<ReturnType<typeof getMeters>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>> & Pick<
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMeters>>> = ({
+    signal,
+  }) => getMeters({ signal, ...axiosOptions })
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeters>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetMetersQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeters>>
+>
+export type GetMetersQueryError = AxiosError<unknown>
+
+export function useGetMeters<
+  TData = Awaited<ReturnType<typeof getMeters>>,
+  TError = AxiosError<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getMeters>>,
           TError,
           Awaited<ReturnType<typeof getMeters>>
-        > , 'initialData'
-      >, fetch?: RequestInit}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetMeters<TData = Awaited<ReturnType<typeof getMeters>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>> & Pick<
+        >,
+        'initialData'
+      >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetMeters<
+  TData = Awaited<ReturnType<typeof getMeters>>,
+  TError = AxiosError<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getMeters>>,
           TError,
           Awaited<ReturnType<typeof getMeters>>
-        > , 'initialData'
-      >, fetch?: RequestInit}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetMeters<TData = Awaited<ReturnType<typeof getMeters>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>>, fetch?: RequestInit}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        'initialData'
+      >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetMeters<
+  TData = Awaited<ReturnType<typeof getMeters>>,
+  TError = AxiosError<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>
+    >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
 /**
  * @summary Get all meters
  */
 
-export function useGetMeters<TData = Awaited<ReturnType<typeof getMeters>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>>, fetch?: RequestInit}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
+export function useGetMeters<
+  TData = Awaited<ReturnType<typeof getMeters>>,
+  TError = AxiosError<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>
+    >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
   const queryOptions = getGetMetersQueryOptions(options)
 
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey
 
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Get raw data from external API
  */
-export type getMetersGetTelemetryIpResponse200 = {
-  data: GetMetersGetTelemetryIp200
-  status: 200
-}
-    
-export type getMetersGetTelemetryIpResponseComposite = getMetersGetTelemetryIpResponse200;
-    
-export type getMetersGetTelemetryIpResponse = getMetersGetTelemetryIpResponseComposite & {
-  headers: Headers;
-}
-
-export const getGetMetersGetTelemetryIpUrl = (ip: string,) => {
-
-
-  
-
-  return `http://localhost:3333/meters/getTelemetry/${ip}`
+export const getMetersGetTelemetryIp = (
+  ip: string,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<GetMetersGetTelemetryIp200>> => {
+  return axios.default.get(
+    `http://localhost:3333/meters/getTelemetry/${ip}`,
+    options
+  )
 }
 
-export const getMetersGetTelemetryIp = async (ip: string, options?: RequestInit): Promise<getMetersGetTelemetryIpResponse> => {
-  
-  const res = await fetch(getGetMetersGetTelemetryIpUrl(ip),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
+export const getGetMetersGetTelemetryIpQueryKey = (ip: string) => {
+  return [`http://localhost:3333/meters/getTelemetry/${ip}`] as const
+}
+
+export const getGetMetersGetTelemetryIpQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
+  TError = AxiosError<unknown>,
+>(
+  ip: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
+        TError,
+        TData
+      >
+    >
+    axios?: AxiosRequestConfig
   }
-)
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
-  const data: getMetersGetTelemetryIpResponse['data'] = body ? JSON.parse(body) : {}
-
-  return { data, status: res.status, headers: res.headers } as getMetersGetTelemetryIpResponse
-}
-
-
-
-export const getGetMetersGetTelemetryIpQueryKey = (ip: string,) => {
-    return [`http://localhost:3333/meters/getTelemetry/${ip}`] as const;
-    }
-
-    
-export const getGetMetersGetTelemetryIpQueryOptions = <TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError = unknown>(ip: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError, TData>>, fetch?: RequestInit}
 ) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {}
 
-const {query: queryOptions, fetch: fetchOptions} = options ?? {};
+  const queryKey =
+    queryOptions?.queryKey ?? getGetMetersGetTelemetryIpQueryKey(ip)
 
-  const queryKey =  queryOptions?.queryKey ?? getGetMetersGetTelemetryIpQueryKey(ip);
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMetersGetTelemetryIp>>
+  > = ({ signal }) => getMetersGetTelemetryIp(ip, { signal, ...axiosOptions })
 
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>> = ({ signal }) => getMetersGetTelemetryIp(ip, { signal, ...fetchOptions });
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(ip), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!ip,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetMetersGetTelemetryIpQueryResult = NonNullable<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>>
-export type GetMetersGetTelemetryIpQueryError = unknown
+export type GetMetersGetTelemetryIpQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMetersGetTelemetryIp>>
+>
+export type GetMetersGetTelemetryIpQueryError = AxiosError<unknown>
 
-
-export function useGetMetersGetTelemetryIp<TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError = unknown>(
- ip: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError, TData>> & Pick<
+export function useGetMetersGetTelemetryIp<
+  TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
+  TError = AxiosError<unknown>,
+>(
+  ip: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
           TError,
           Awaited<ReturnType<typeof getMetersGetTelemetryIp>>
-        > , 'initialData'
-      >, fetch?: RequestInit}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetMetersGetTelemetryIp<TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError = unknown>(
- ip: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError, TData>> & Pick<
+        >,
+        'initialData'
+      >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetMetersGetTelemetryIp<
+  TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
+  TError = AxiosError<unknown>,
+>(
+  ip: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
           TError,
           Awaited<ReturnType<typeof getMetersGetTelemetryIp>>
-        > , 'initialData'
-      >, fetch?: RequestInit}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetMetersGetTelemetryIp<TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError = unknown>(
- ip: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError, TData>>, fetch?: RequestInit}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        'initialData'
+      >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetMetersGetTelemetryIp<
+  TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
+  TError = AxiosError<unknown>,
+>(
+  ip: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
+        TError,
+        TData
+      >
+    >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
 /**
  * @summary Get raw data from external API
  */
 
-export function useGetMetersGetTelemetryIp<TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError = unknown>(
- ip: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError, TData>>, fetch?: RequestInit}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetMetersGetTelemetryIp<
+  TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
+  TError = AxiosError<unknown>,
+>(
+  ip: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
+        TError,
+        TData
+      >
+    >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getGetMetersGetTelemetryIpQueryOptions(ip, options)
 
-  const queryOptions = getGetMetersGetTelemetryIpQueryOptions(ip,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  query.queryKey = queryOptions.queryKey
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Update an existing meter
  */
-export type putMetersIdResponse200 = {
-  data: void
-  status: 200
-}
-    
-export type putMetersIdResponseComposite = putMetersIdResponse200;
-    
-export type putMetersIdResponse = putMetersIdResponseComposite & {
-  headers: Headers;
-}
-
-export const getPutMetersIdUrl = (id: number,) => {
-
-
-  
-
-  return `http://localhost:3333/meters/${id}`
+export const putMetersId = (
+  id: number,
+  putMetersIdBody: PutMetersIdBody,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.default.put(
+    `http://localhost:3333/meters/${id}`,
+    putMetersIdBody,
+    options
+  )
 }
 
-export const putMetersId = async (id: number,
-    putMetersIdBody: PutMetersIdBody, options?: RequestInit): Promise<putMetersIdResponse> => {
-  
-  const res = await fetch(getPutMetersIdUrl(id),
-  {      
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      putMetersIdBody,)
+export const getPutMetersIdMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putMetersId>>,
+    TError,
+    { id: number; data: PutMetersIdBody },
+    TContext
+  >
+  axios?: AxiosRequestConfig
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putMetersId>>,
+  TError,
+  { id: number; data: PutMetersIdBody },
+  TContext
+> => {
+  const mutationKey = ['putMetersId']
+  const { mutation: mutationOptions, axios: axiosOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, axios: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putMetersId>>,
+    { id: number; data: PutMetersIdBody }
+  > = (props) => {
+    const { id, data } = props ?? {}
+
+    return putMetersId(id, data, axiosOptions)
   }
-)
 
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
-  const data: putMetersIdResponse['data'] = body ? JSON.parse(body) : {}
-
-  return { data, status: res.status, headers: res.headers } as putMetersIdResponse
+  return { mutationFn, ...mutationOptions }
 }
 
+export type PutMetersIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putMetersId>>
+>
+export type PutMetersIdMutationBody = PutMetersIdBody
+export type PutMetersIdMutationError = AxiosError<unknown>
 
-
-
-export const getPutMetersIdMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putMetersId>>, TError,{id: number;data: PutMetersIdBody}, TContext>, fetch?: RequestInit}
-): UseMutationOptions<Awaited<ReturnType<typeof putMetersId>>, TError,{id: number;data: PutMetersIdBody}, TContext> => {
-
-const mutationKey = ['putMetersId'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putMetersId>>, {id: number;data: PutMetersIdBody}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  putMetersId(id,data,fetchOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PutMetersIdMutationResult = NonNullable<Awaited<ReturnType<typeof putMetersId>>>
-    export type PutMetersIdMutationBody = PutMetersIdBody
-    export type PutMetersIdMutationError = unknown
-
-    /**
+/**
  * @summary Update an existing meter
  */
-export const usePutMetersId = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putMetersId>>, TError,{id: number;data: PutMetersIdBody}, TContext>, fetch?: RequestInit}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putMetersId>>,
-        TError,
-        {id: number;data: PutMetersIdBody},
-        TContext
-      > => {
+export const usePutMetersId = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof putMetersId>>,
+      TError,
+      { id: number; data: PutMetersIdBody },
+      TContext
+    >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof putMetersId>>,
+  TError,
+  { id: number; data: PutMetersIdBody },
+  TContext
+> => {
+  const mutationOptions = getPutMetersIdMutationOptions(options)
 
-      const mutationOptions = getPutMetersIdMutationOptions(options);
+  return useMutation(mutationOptions, queryClient)
+}
 
-      return useMutation(mutationOptions , queryClient);
-    }
-    
+/**
+ * @summary Delete a meter
+ */
+export const deleteMetersId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.default.delete(`http://localhost:3333/meters/${id}`, options)
+}
+
+export const getDeleteMetersIdMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMetersId>>,
+    TError,
+    { id: number },
+    TContext
+  >
+  axios?: AxiosRequestConfig
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteMetersId>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ['deleteMetersId']
+  const { mutation: mutationOptions, axios: axiosOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, axios: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteMetersId>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {}
+
+    return deleteMetersId(id, axiosOptions)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type DeleteMetersIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteMetersId>>
+>
+
+export type DeleteMetersIdMutationError = AxiosError<unknown>
+
+/**
+ * @summary Delete a meter
+ */
+export const useDeleteMetersId = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteMetersId>>,
+      TError,
+      { id: number },
+      TContext
+    >
+    axios?: AxiosRequestConfig
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteMetersId>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationOptions = getDeleteMetersIdMutationOptions(options)
+
+  return useMutation(mutationOptions, queryClient)
+}

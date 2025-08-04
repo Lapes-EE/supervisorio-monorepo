@@ -10,7 +10,7 @@ export default defineConfig({
 			target: "./src/http/gen/endpoints",
 			schemas: "./src/http/gen/model",
 			client: "react-query",
-			httpClient: "fetch",
+			httpClient: "axios",
 			fileExtension: '.gen.ts',
 			baseUrl: "http://localhost:3333",
 			// mock: true,

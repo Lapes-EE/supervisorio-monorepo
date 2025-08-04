@@ -8,8 +8,8 @@
 
 export type PostMetersBody = {
   /** @minLength 1 */
-  name: string;
+  name: string
   /** @minLength 1 */
-  ip: string;
-  description?: string;
-};
+  ip: string
+  description?: string
+}
