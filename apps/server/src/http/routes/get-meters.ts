@@ -1,5 +1,6 @@
 import { asc } from 'drizzle-orm'
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
+import { isIP } from 'is-ip'
 import { z } from 'zod/v4'
 import { db } from '@/db/connections'
 import { schema } from '@/db/schema'
@@ -16,7 +17,9 @@ export const getMeters: FastifyPluginCallbackZod = (app) => {
             z.object({
               id: z.number(),
               name: z.string(),
-              ip: z.string(),
+              ip: z.string().refine((val) => isIP(val), {
+                error: 'IP inválido',
+              }),
               description: z.string().nullish(),
             })
           ),

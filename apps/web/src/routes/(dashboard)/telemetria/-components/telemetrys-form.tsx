@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouteContext } from '@tanstack/react-router'
+import { isIP } from 'is-ip'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -26,7 +27,12 @@ import { usePostMeters } from '@/http/gen/endpoints/lapes-scada-api.gen'
 
 const formCreatemeterSchema = z.object({
   name: z.string().min(1, 'O nome do medidor é requerido'),
-  ip: z.string().min(1, 'O IP do medidor é requerido'),
+  ip: z
+    .string()
+    .min(1, 'O IP do medidor é requerido')
+    .refine((val) => isIP(val), {
+      error: 'IP inválido',
+    }),
   description: z.string().optional(),
 })
 

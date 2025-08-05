@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate, useRouteContext } from '@tanstack/react-router'
+import { isIP } from 'is-ip'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -25,7 +26,13 @@ import type { GetMeters200Item } from '@/http/gen/model'
 
 const formEditMeterSchema = z.object({
   name: z.string().min(1, 'O nome do medidor é requerido'),
-  ip: z.string().min(1, 'O IP do medidor é requerido'),
+
+  ip: z
+    .string()
+    .min(1, 'O IP do medidor é requerido')
+    .refine((val) => isIP(val), {
+      error: 'IP inválido',
+    }),
   description: z.string().optional(),
 })
 
@@ -36,7 +43,7 @@ interface TelemetryEditFormProps {
 
 export function TelemetryEditForm({ meters, meterId }: TelemetryEditFormProps) {
   const { queryClient } = useRouteContext({
-    from: '/(dashboard)/telemetria/$meterId/edit',
+    from: '/(dashboard)/telemetria',
   })
   const mutation = usePutMetersId()
   const navigate = useNavigate()

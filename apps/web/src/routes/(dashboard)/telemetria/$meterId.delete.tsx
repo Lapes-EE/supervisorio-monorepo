@@ -24,9 +24,7 @@ export const Route = createFileRoute('/(dashboard)/telemetria/$meterId/delete')(
 function RouteComponent() {
   const navigate = useNavigate()
   const { meterId } = Route.useParams()
-  const { queryClient } = useRouteContext({
-    from: '/(dashboard)/telemetria/$meterId/delete',
-  })
+  const { queryClient } = useRouteContext({ from: '/(dashboard)/telemetria' })
   const mutation = useDeleteMetersId()
 
   function handleDeleteMeter() {
@@ -45,6 +43,7 @@ function RouteComponent() {
         if (!open) {
           navigate({
             to: '/telemetria',
+            from: '/telemetria',
           })
         }
       }}
