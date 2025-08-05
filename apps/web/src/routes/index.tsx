@@ -1,8 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Separator } from '@/components/ui/separator'
 
 export const Route = createFileRoute('/')({
   component: Dashboard,
+  beforeLoad: () => {
+    throw redirect({ to: '/supervisorio' })
+  },
 })
 
 function Dashboard() {
