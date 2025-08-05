@@ -15,6 +15,13 @@
       "when": 1753200169779,
       "tag": "0001_thin_mister_sinister",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1754416706241,
+      "tag": "0002_nostalgic_viper",
+      "breakpoints": true
     }
   ]
 }
