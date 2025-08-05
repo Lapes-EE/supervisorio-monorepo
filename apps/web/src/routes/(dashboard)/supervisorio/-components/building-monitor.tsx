@@ -56,7 +56,7 @@ const sensors: Sensor[] = [
     type: 'energy',
     value: 45.3,
     unit: 'kW',
-    status: 'normal',
+    status: 'warning',
     position: { x: 20, y: 75 },
     floor: '1° Andar',
     lastUpdate: '2024-01-23 14:30:15',
@@ -76,7 +76,7 @@ const sensors: Sensor[] = [
     value: 67.8,
     unit: 'kW',
     status: 'normal',
-    position: { x: 35, y: 75 },
+    position: { x: 45, y: 75 },
     floor: '1° Andar',
     lastUpdate: '2024-01-23 14:30:18',
     limits: { min: 30, max: 100 },
@@ -95,7 +95,7 @@ const sensors: Sensor[] = [
     value: 52.4,
     unit: 'kW',
     status: 'normal',
-    position: { x: 50, y: 75 },
+    position: { x: 60, y: 65 },
     floor: '1° Andar',
     lastUpdate: '2024-01-23 14:30:10',
     limits: { min: 25, max: 85 },
@@ -114,7 +114,7 @@ const sensors: Sensor[] = [
     value: 89.7,
     unit: 'kW',
     status: 'warning',
-    position: { x: 65, y: 75 },
+    position: { x: 60, y: 75 },
     floor: '1° Andar',
     lastUpdate: '2024-01-23 14:30:05',
     limits: { min: 40, max: 90 },
@@ -211,7 +211,7 @@ const sensors: Sensor[] = [
     value: 125.8,
     unit: 'kW',
     status: 'critical',
-    position: { x: 65, y: 50 },
+    position: { x: 55, y: 50 },
     floor: '2° Andar',
     lastUpdate: '2024-01-23 14:30:05',
     limits: { min: 50, max: 120 },
@@ -394,6 +394,14 @@ export function BuildingMonitor() {
         <CardContent className="p-0">
           {/* Imagem do corte lateral do prédio */}
           <div className="relative h-[600px] w-full ">
+            {/** biome-ignore lint/performance/noImgElement: This project doesn't use nextjs for better Image component */}
+            <img
+              alt="Corte lateral do edifício"
+              className="h-full w-full object-cover"
+              decoding="async"
+              loading="lazy"
+              src="/placeholder.svg?height=600&width=800"
+            />
             {/* Overlay com estrutura básica do prédio */}
             <div className="pointer-events-none absolute inset-0">
               {/* Linhas dos andares */}
@@ -458,17 +466,15 @@ export function BuildingMonitor() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="flex items-center gap-2">
               <div className="h-4 w-4 rounded-full bg-green-500" />
-              <span className="text-sm">Normal (0-80% da capacidade)</span>
+              <span className="text-sm">Normal</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="h-4 w-4 rounded-full bg-yellow-500" />
-              <span className="text-sm">Atenção (80-95% da capacidade)</span>
+              <span className="text-sm">Atenção</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="h-4 w-4 animate-pulse rounded-full bg-red-500" />
-              <span className="text-sm">
-                Crítico (acima de 95% da capacidade)
-              </span>
+              <span className="text-sm">Crítico</span>
             </div>
           </div>
           <div className="mt-4 text-gray-600 text-sm dark:text-gray-400">
