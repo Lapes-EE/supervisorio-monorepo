@@ -1,11 +1,9 @@
 import { Link, type ToOptions, useMatchRoute } from '@tanstack/react-router'
 import {
-  Calendar,
   ClipboardList,
   Home,
   Inbox,
   type LucideIcon,
-  Search,
   Settings,
 } from 'lucide-react'
 import {
@@ -29,7 +27,7 @@ type SidebarItem = {
 const items: SidebarItem[] = [
   {
     title: 'Supervisório',
-    url: { to: '/' },
+    url: { to: '/supervisorio' },
     icon: Home,
   },
   {
@@ -39,18 +37,8 @@ const items: SidebarItem[] = [
   },
   {
     title: 'Placeholder',
-    url: { to: '/demo/tanstack-query' },
+    url: { to: '/' },
     icon: Inbox,
-  },
-  {
-    title: 'Placeholder',
-    url: '#',
-    icon: Calendar,
-  },
-  {
-    title: 'Placeholder',
-    url: '#',
-    icon: Search,
   },
   {
     title: 'Configurações',
