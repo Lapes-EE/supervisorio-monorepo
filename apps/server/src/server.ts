@@ -12,11 +12,13 @@ import {
 import { pino } from 'pino'
 import { createMeters } from './http/routes/create-meters'
 import { deleteMeter } from './http/routes/delete-meters'
+import { getDatabaseTelemetry } from './http/routes/get-database-telemetry'
 import { getMeters } from './http/routes/get-meters'
 import { getTelemetryByIp } from './http/routes/get-telemetry-by-ip'
 import { updateMeter } from './http/routes/update-meters'
+import { startTelemetryCollector } from './services/telemetry-collector'
 
-const logger = pino({
+export const logger = pino({
   transport: {
     target: 'pino-pretty',
   },
@@ -37,7 +39,7 @@ server.setValidatorCompiler(validatorCompiler)
 server.register(fastifySwagger, {
   openapi: {
     info: {
-      title: 'LAPES - SCADA api',
+      title: 'LAPES - API',
       description: 'API for supervisory control and data acquisition',
       version: '1.0.0',
     },
@@ -58,6 +60,7 @@ server.register(getTelemetryByIp)
 server.register(updateMeter)
 server.register(getMeters)
 server.register(deleteMeter)
+server.register(getDatabaseTelemetry)
 
 server.get('/openapi.json', (_, reply) => {
   const spec = server.swagger()
@@ -67,6 +70,8 @@ server.get('/openapi.json', (_, reply) => {
 const start = async () => {
   try {
     await server.listen({ port: env.PORT, host: '0.0.0.0' })
+
+    startTelemetryCollector()
   } catch (err) {
     server.log.error(err)
     process.exit(1)

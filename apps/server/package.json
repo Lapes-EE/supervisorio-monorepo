@@ -18,6 +18,9 @@
     "fastify": "^5.4.0",
     "fastify-type-provider-zod": "^5.0.2",
     "is-ip": "^5.0.1",
+    "node-cron": "^4.2.1",
+    "p-queue": "^8.1.0",
+    "p-retry": "^6.2.1",
     "postgres": "^3.4.7",
     "zod": "^4.0.5"
   },
