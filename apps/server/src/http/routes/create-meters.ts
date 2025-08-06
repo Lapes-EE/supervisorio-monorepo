@@ -10,7 +10,7 @@ export const createMeters: FastifyPluginCallbackZod = (app) => {
     {
       schema: {
         summary: 'Register a new meter',
-        tags: ['Telemetry'],
+        tags: ['Meters'],
         body: z.object({
           name: z.string().min(1, 'Meter name is required'),
           ip: z

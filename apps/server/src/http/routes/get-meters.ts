@@ -11,7 +11,7 @@ export const getMeters: FastifyPluginCallbackZod = (app) => {
     {
       schema: {
         summary: 'Get all meters',
-        tags: ['Telemetry'],
+        tags: ['Meters'],
         response: {
           200: z.array(
             z.object({

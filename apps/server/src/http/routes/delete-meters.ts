@@ -10,7 +10,7 @@ export const deleteMeter: FastifyPluginCallbackZod = (app) => {
     {
       schema: {
         summary: 'Delete a meter',
-        tags: ['Telemetry'],
+        tags: ['Meters'],
         params: z.object({
           id: z.coerce.number(),
         }),

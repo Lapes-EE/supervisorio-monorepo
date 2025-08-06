@@ -11,7 +11,7 @@ export const updateMeter: FastifyPluginCallbackZod = (app) => {
     {
       schema: {
         summary: 'Update an existing meter',
-        tags: ['Telemetry'],
+        tags: ['Meters'],
         params: z.object({
           id: z.coerce.number(),
         }),
