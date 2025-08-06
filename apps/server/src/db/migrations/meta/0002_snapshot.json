@@ -1,5 +1,5 @@
 {
-  "id": "a56914be-8d35-4cd4-a0cb-71ec9a753ff9",
+  "id": "91b14371-a9f9-4108-8c32-db8cedec341b",
   "prevId": "02478b21-0101-4cf6-b3ba-a58d18ff0ed7",
   "version": "7",
   "dialect": "postgresql",
@@ -12,6 +12,12 @@
           "name": "id",
           "type": "serial",
           "primaryKey": true,
+          "notNull": true
+        },
+        "meter_id": {
+          "name": "meter_id",
+          "type": "integer",
+          "primaryKey": false,
           "notNull": true
         },
         "time": {
@@ -359,7 +365,17 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "measures_meter_id_meters_id_fk": {
+          "name": "measures_meter_id_meters_id_fk",
+          "tableFrom": "measures",
+          "tableTo": "meters",
+          "columnsFrom": ["meter_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},

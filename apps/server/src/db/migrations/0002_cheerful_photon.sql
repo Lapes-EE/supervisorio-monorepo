@@ -1,5 +1,6 @@
 CREATE TABLE "measures" (
 	"id" serial PRIMARY KEY NOT NULL,
+	"meter_id" integer NOT NULL,
 	"time" timestamp DEFAULT now() NOT NULL,
 	"tensao_fase_neutro_a" real,
 	"tensao_fase_neutro_b" real,
@@ -58,3 +59,5 @@ CREATE TABLE "measures" (
 	"thd_corrente_c" real,
 	"temperatura_sensor_interno" real
 );
+--> statement-breakpoint
+ALTER TABLE "measures" ADD CONSTRAINT "measures_meter_id_meters_id_fk" FOREIGN KEY ("meter_id") REFERENCES "public"."meters"("id") ON DELETE cascade ON UPDATE no action;

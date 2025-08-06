@@ -1,7 +1,13 @@
-import { pgTable, real, serial, timestamp } from 'drizzle-orm/pg-core'
+import { integer, pgTable, real, serial, timestamp } from 'drizzle-orm/pg-core'
+import { meters } from './meters'
 
 export const measures = pgTable('measures', {
   id: serial('id').primaryKey(),
+
+  meterId: integer('meter_id')
+    .notNull()
+    .references(() => meters.id, { onDelete: 'cascade' }),
+
   time: timestamp('time', { withTimezone: false, mode: 'string' })
     .notNull()
     .defaultNow(),
