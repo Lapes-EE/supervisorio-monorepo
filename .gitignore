@@ -158,4 +158,7 @@ sketch
 # Turborepo task cache
 .turbo
 
+# Docker-compose
+.data
+
 # End of https://www.toptal.com/developers/gitignore/api/react,turbo,node
