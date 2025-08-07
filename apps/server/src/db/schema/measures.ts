@@ -8,7 +8,7 @@ export const measures = pgTable('measures', {
     .notNull()
     .references(() => meters.id, { onDelete: 'cascade' }),
 
-  time: timestamp('time', { withTimezone: false, mode: 'string' })
+  time: timestamp('time', { withTimezone: true, mode: 'string' })
     .notNull()
     .defaultNow(),
 
