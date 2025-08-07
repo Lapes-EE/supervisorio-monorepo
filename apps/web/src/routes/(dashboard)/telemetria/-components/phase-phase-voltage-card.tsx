@@ -21,19 +21,19 @@ export function PhasePhaseVoltageCard({
       <CardContent className="space-y-2">
         <TelemetryItem
           isLoading={isLoading}
-          label="AB"
+          label="Fase A-B"
           suffix="V"
           value={telemetryData?.tensao_fase_fase_ab}
         />
         <TelemetryItem
           isLoading={isLoading}
-          label="BC"
+          label="Fase B-C"
           suffix="V"
           value={telemetryData?.tensao_fase_fase_bc}
         />
         <TelemetryItem
           isLoading={isLoading}
-          label="CA"
+          label="Fase C-A"
           suffix="V"
           value={telemetryData?.tensao_fase_fase_ca}
         />

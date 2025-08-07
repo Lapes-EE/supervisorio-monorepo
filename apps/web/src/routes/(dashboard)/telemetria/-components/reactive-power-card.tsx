@@ -4,41 +4,48 @@ import TelemetryItem from './telemetry-item'
 
 type TelemetryData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>['data']
 
-interface CurrentCardProps {
+export function ReactivePowerCard({
+  telemetryData,
+  isLoading,
+}: {
   telemetryData: TelemetryData | undefined
   isLoading: boolean
-}
-
-export function CurrentCard({ telemetryData, isLoading }: CurrentCardProps) {
+}) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Corrente</CardTitle>
+        <CardTitle>Potência reativa</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
         <TelemetryItem
           isLoading={isLoading}
           label="Fase A"
-          suffix="A"
-          value={telemetryData?.corrente_a}
+          suffix="var"
+          value={telemetryData?.potencia_reativa_a}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase B"
-          suffix="A"
-          value={telemetryData?.corrente_b}
+          suffix="var"
+          value={telemetryData?.potencia_reativa_b}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase C"
-          suffix="A"
-          value={telemetryData?.corrente_c}
+          suffix="var"
+          value={telemetryData?.potencia_reativa_c}
         />
         <TelemetryItem
           isLoading={isLoading}
-          label="Neutro Calculado"
-          suffix="A"
-          value={telemetryData?.corrente_de_neutro_calculado}
+          label="Soma Aritmética"
+          suffix="var"
+          value={telemetryData?.potencia_reativa_total_soma_aritmetica}
+        />
+        <TelemetryItem
+          isLoading={isLoading}
+          label="Soma Vetorial"
+          suffix="var"
+          value={telemetryData?.potencia_reativa_total_soma_vetorial}
         />
       </CardContent>
     </Card>

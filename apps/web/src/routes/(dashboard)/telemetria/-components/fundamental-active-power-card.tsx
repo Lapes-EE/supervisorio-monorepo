@@ -13,6 +13,11 @@ export function FundamentalActivePowerCard({
   telemetryData,
   isLoading,
 }: FundamentalActivePowerCardProps) {
+  const total =
+    (telemetryData?.potencia_ativa_fundamental_a ?? 0) +
+    (telemetryData?.potencia_ativa_fundamental_b ?? 0) +
+    (telemetryData?.potencia_ativa_fundamental_c ?? 0)
+
   return (
     <Card>
       <CardHeader>
@@ -21,31 +26,27 @@ export function FundamentalActivePowerCard({
       <CardContent className="space-y-2">
         <TelemetryItem
           isLoading={isLoading}
-          label="A"
-          suffix="kW"
-          value={
-            ((telemetryData?.potencia_ativa_fundamental_a ?? 0) +
-              (telemetryData?.potencia_ativa_harmonica_a ?? 0)) /
-            1000
-          }
+          label="Fase A"
+          suffix="W"
+          value={telemetryData?.potencia_ativa_fundamental_a}
         />
         <TelemetryItem
           isLoading={isLoading}
-          label="B"
-          suffix="kW"
-          value={(telemetryData?.potencia_ativa_fundamental_b ?? 0) / 1000}
+          label="Fase B"
+          suffix="W"
+          value={telemetryData?.potencia_ativa_fundamental_b}
         />
         <TelemetryItem
           isLoading={isLoading}
-          label="C"
-          suffix="kW"
-          value={(telemetryData?.potencia_ativa_fundamental_c ?? 0) / 1000}
+          label="Fase C"
+          suffix="W"
+          value={telemetryData?.potencia_ativa_fundamental_c}
         />
         <TelemetryItem
           isLoading={isLoading}
-          label="Soma"
-          suffix="kW"
-          value={(telemetryData?.potencia_ativa_fundamental_total ?? 0) / 1000}
+          label="Total"
+          suffix="W"
+          value={total}
         />
       </CardContent>
     </Card>

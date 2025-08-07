@@ -21,21 +21,27 @@ export function HarmonicActivePowerCard({
       <CardContent className="space-y-2">
         <TelemetryItem
           isLoading={isLoading}
-          label="A"
+          label="Fase A"
           suffix="W"
           value={telemetryData?.potencia_ativa_harmonica_a}
         />
         <TelemetryItem
           isLoading={isLoading}
-          label="B"
+          label="Fase B"
           suffix="W"
           value={telemetryData?.potencia_ativa_harmonica_b}
         />
         <TelemetryItem
           isLoading={isLoading}
-          label="C"
+          label="Fase C"
           suffix="W"
           value={telemetryData?.potencia_ativa_harmonica_c}
+        />
+        <TelemetryItem
+          isLoading={isLoading}
+          label="Total"
+          suffix="W"
+          value={telemetryData?.potencia_ativa_harmonica_total}
         />
       </CardContent>
     </Card>

@@ -21,19 +21,19 @@ export function PhaseNeutralVoltageCard({
       <CardContent className="space-y-2">
         <TelemetryItem
           isLoading={isLoading}
-          label="A"
+          label="Fase A"
           suffix="V"
           value={telemetryData?.tensao_fase_neutro_a}
         />
         <TelemetryItem
           isLoading={isLoading}
-          label="B"
+          label="Fase B"
           suffix="V"
           value={telemetryData?.tensao_fase_neutro_b}
         />
         <TelemetryItem
           isLoading={isLoading}
-          label="C"
+          label="Fase C"
           suffix="V"
           value={telemetryData?.tensao_fase_neutro_c}
         />

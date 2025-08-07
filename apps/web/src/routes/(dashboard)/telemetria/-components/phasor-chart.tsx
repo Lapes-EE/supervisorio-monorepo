@@ -1,4 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import type { getMetersGetTelemetryIp } from '@/http/gen/endpoints/lapes-scada-api.gen'
+
+type TelemetryData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>['data']
 
 export interface Phasor {
   name: string
@@ -10,10 +19,13 @@ export interface Phasor {
 
 interface PhasorChartProps {
   phasors: Phasor[]
+  telemetryData: TelemetryData | undefined
 }
 
-export default function PhasorChart({ phasors }: PhasorChartProps) {
-  // Função para converter coordenadas polares para cartesianas
+export default function PhasorChart({
+  phasors,
+  telemetryData,
+}: PhasorChartProps) {
   const polarToCartesian = (
     angle: number | undefined,
     radius: number,
@@ -23,48 +35,45 @@ export default function PhasorChart({ phasors }: PhasorChartProps) {
     const angleInRadians = ((angle ?? 0) * Math.PI) / 180.0
     return {
       x: centerX + radius * Math.cos(angleInRadians),
-      y: centerY + radius * Math.sin(angleInRadians),
+      y: centerY - radius * Math.sin(angleInRadians),
     }
   }
 
-  const svgSize = 300
+  const svgSize = 180
   const center = svgSize / 2
-  const maxRadius = 120
+  const maxRadius = 90
+
+  const phaseData = [
+    {
+      name: 'Fase A',
+      color: 'var(--chart-1)',
+      angle: telemetryData?.angulo_fase_a,
+      phi: telemetryData?.phi_fase_a,
+    },
+    {
+      name: 'Fase B',
+      color: 'var(--chart-2)',
+      angle: telemetryData?.angulo_fase_b,
+      phi: telemetryData?.phi_fase_b,
+    },
+    {
+      name: 'Fase C',
+      color: 'var(--chart-3)',
+      angle: telemetryData?.angulo_fase_c,
+      phi: telemetryData?.phi_fase_c,
+    },
+  ]
 
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="flex h-full w-full flex-col">
       <CardHeader>
-        <CardTitle>Diagrama Polar de Fasores Complexos</CardTitle>
+        <CardTitle>Diagrama Fasorial</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col items-center">
+      <CardContent className="grid grid-cols-2 items-center gap-4">
         <div className="relative">
-          <svg className="rounded-lg border" height={svgSize} width={svgSize}>
-            <title>Diagrama Polar de Fasores Complexos</title>
-
-            {/* Definir marcadores de seta */}
-            <defs>
-              {phasors.map((phasor) => (
-                <marker
-                  id={`arrowhead-${phasor.name}`}
-                  key={phasor.name}
-                  markerHeight="8"
-                  markerUnits="strokeWidth"
-                  markerWidth="12"
-                  orient="auto"
-                  refX="10"
-                  refY="4"
-                >
-                  <polygon
-                    fill={phasor.color}
-                    points="0,0 0,8 12,4"
-                    stroke={phasor.color}
-                  />
-                </marker>
-              ))}
-            </defs>
-
-            {/* Círculos concêntricos para referência */}
-            {[0.25, 0.5, 0.75, 1].map((ratio) => (
+          <svg className="rounded-lg" height={svgSize} width={svgSize}>
+            <title>Diagrama Fasorial</title>
+            {[0.5, 1].map((ratio) => (
               <circle
                 cx={center}
                 cy={center}
@@ -76,155 +85,82 @@ export default function PhasorChart({ phasors }: PhasorChartProps) {
                 strokeWidth="1"
               />
             ))}
-
-            {/* Linhas radiais para referência angular */}
-            {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(
-              (angle) => {
-                const endPoint = polarToCartesian(
-                  angle,
-                  maxRadius,
-                  center,
-                  center
-                )
-                return (
-                  <line
-                    key={angle}
-                    stroke="#f1f5f9"
-                    strokeWidth="0.5"
-                    x1={center}
-                    x2={endPoint.x}
-                    y1={center}
-                    y2={endPoint.y}
-                  />
-                )
-              }
-            )}
-
-            {/* Eixos principais */}
             <line
-              stroke="#94a3b8"
-              strokeWidth="1"
-              x1={center - maxRadius}
-              x2={center + maxRadius}
+              stroke="#1f2937"
+              strokeWidth="0.5"
+              x1={0}
+              x2={svgSize}
               y1={center}
               y2={center}
             />
             <line
-              stroke="#94a3b8"
-              strokeWidth="1"
+              stroke="#1f2937"
+              strokeWidth="0.5"
               x1={center}
               x2={center}
-              y1={center - maxRadius}
-              y2={center + maxRadius}
+              y1={0}
+              y2={svgSize}
             />
-
-            {/* Labels dos ângulos principais */}
             <text
-              fill="#64748b"
-              fontSize="12"
-              textAnchor="start"
-              x={center + maxRadius + 10}
-              y={center + 5}
+              fill="#1f2937"
+              fontSize="10"
+              textAnchor="end"
+              x={svgSize - 10}
+              y={center - 5}
             >
               0°
             </text>
-            <text
-              fill="#64748b"
-              fontSize="12"
-              textAnchor="middle"
-              x={center - 5}
-              y={center - maxRadius - 5}
-            >
-              90°
-            </text>
-            <text
-              fill="#64748b"
-              fontSize="12"
-              textAnchor="end"
-              x={center - maxRadius - 10}
-              y={center + 5}
-            >
-              180°
-            </text>
-            <text
-              fill="#64748b"
-              fontSize="12"
-              textAnchor="middle"
-              x={center - 5}
-              y={center + maxRadius + 15}
-            >
-              270°
-            </text>
-
-            {/* Fasores */}
-            {phasors.map((phasor, index) => {
+            {phasors.map((phasor) => {
               const endPoint = polarToCartesian(
                 phasor.angle,
                 maxRadius * phasor.magnitude,
                 center,
                 center
               )
-              const labelPoint = polarToCartesian(
-                phasor.angle,
-                maxRadius * phasor.magnitude + 20,
-                center,
-                center
-              )
-
               return (
                 <g key={phasor.name}>
-                  {/* Linha do fasor */}
                   <line
-                    markerEnd={`url(#arrowhead-${index})`}
+                    markerEnd={`url(#arrowhead-${phasor.name})`}
                     stroke={phasor.color}
-                    strokeWidth="3"
+                    strokeWidth="5"
                     x1={center}
                     x2={endPoint.x}
                     y1={center}
                     y2={endPoint.y}
                   />
-
-                  {/* Label do fasor */}
-                  <text
-                    dominantBaseline="middle"
-                    fill={phasor.color}
-                    fontSize="14"
-                    fontWeight="bold"
-                    textAnchor="middle"
-                    x={labelPoint.x}
-                    y={labelPoint.y}
-                  >
-                    {phasor.label}
-                  </text>
                 </g>
               )
             })}
-
-            {/* Ponto central */}
             <circle cx={center} cy={center} fill="#1f2937" r="3" />
           </svg>
         </div>
 
-        {/* Legenda */}
-        <div className="mt-6 flex flex-wrap justify-center gap-6">
-          {phasors.map((phasor) => (
-            <div className="flex items-center gap-2" key={phasor.name}>
-              <div
-                className="h-4 w-4 rounded-full"
-                style={{ backgroundColor: phasor.color }}
-              />
-              <span className="font-medium text-sm">
-                {phasor.name} ({phasor.label})
+        {/* Valores (ângulo e phi) */}
+        <div className="flex flex-col gap-2">
+          {phaseData.map((phase) => (
+            <div
+              className="flex w-40 justify-end gap-4 font-mono text-sm"
+              key={phase.name}
+            >
+              <span>{phase.angle?.toFixed(1) ?? '0.0'}°</span>
+              <span className="text-gray-500">
+                φ {phase.phi?.toFixed(1) ?? '0.0'}°
               </span>
             </div>
           ))}
         </div>
-
-        {/* Informações técnicas */}
-        <div className="mt-4 text-center text-muted-foreground text-sm">
-          <p>Sistema trifásico equilibrado • Módulo: 1 • Defasagem: 120°</p>
-        </div>
       </CardContent>
+      <CardFooter className="col-span-2 mt-2 flex justify-evenly text-sm">
+        {phaseData.map((phase) => (
+          <div className="flex items-center gap-2" key={phase.name}>
+            <div
+              className="h-3 w-3 rounded-full"
+              style={{ backgroundColor: phase.color }}
+            />
+            <span>{phase.name}</span>
+          </div>
+        ))}
+      </CardFooter>
     </Card>
   )
 }

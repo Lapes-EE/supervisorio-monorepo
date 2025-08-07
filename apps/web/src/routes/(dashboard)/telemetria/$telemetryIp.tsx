@@ -6,13 +6,15 @@ import { getMetersGetTelemetryIp } from '@/http/gen/endpoints/lapes-scada-api.ge
 import PhasorChart, {
   type Phasor,
 } from '@/routes/(dashboard)/telemetria/-components/phasor-chart'
+import { ApparentPowerCard } from './-components/apparent-power-card'
 import { CurrentCard } from './-components/current-card'
-import { FrequencyCard } from './-components/frequency-card'
 import { FundamentalActivePowerCard } from './-components/fundamental-active-power-card'
 import { HarmonicActivePowerCard } from './-components/harmonic-active-power-card'
-import { PhaseAngleCard } from './-components/phase-angle-card'
 import { PhaseNeutralVoltageCard } from './-components/phase-neutral-voltage-card'
 import { PhasePhaseVoltageCard } from './-components/phase-phase-voltage-card'
+import { PowerFactorCard } from './-components/power-factor-card'
+import { ReactivePowerCard } from './-components/reactive-power-card'
+import { TemperatureCard } from './-components/temperature-card'
 import { TotalActivePowerCard } from './-components/total-active-power-card'
 
 export const Route = createFileRoute('/(dashboard)/telemetria/$telemetryIp')({
@@ -22,11 +24,10 @@ export const Route = createFileRoute('/(dashboard)/telemetria/$telemetryIp')({
       <AlertCircleIcon />
       <AlertTitle>{error.message}</AlertTitle>
       <AlertDescription>
-        <p>Please verify your billing information and try again.</p>
+        <p>Por favor, verifique se todos os apps estão rodando</p>
         <ul className="list-inside list-disc text-sm">
-          <li>Check your card details</li>
-          <li>Ensure sufficient funds</li>
-          <li>Verify billing address</li>
+          <li>Banco de dados está rodando?</li>
+          <li>A API está rodando?</li>
         </ul>
       </AlertDescription>
     </Alert>
@@ -114,50 +115,77 @@ function Dashboard() {
   ]
 
   return (
-    <div className="space-y-4 rounded-md border p-4">
-      {/* Parte superior */}
-      <div className="grid grid-cols-3 gap-4">
-        {/* Coluna 1 - Fasores */}
-        <div className="col-span-2 row-span-2">
-          <PhasorChart phasors={phasors} />
+    <div className="space-y-4">
+      {/* Tensões e Correntes */}
+      <div className="rounded-md border p-4">
+        <h2 className="mb-4 font-semibold text-lg">Tensões e correntes</h2>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
+          <div className="lg:col-span-2">
+            <PhasorChart phasors={phasors} telemetryData={telemetryData} />
+          </div>
+          <PhaseNeutralVoltageCard
+            isLoading={telemetryDataIsLoading}
+            telemetryData={telemetryData}
+          />
+          <PhasePhaseVoltageCard
+            isLoading={telemetryDataIsLoading}
+            telemetryData={telemetryData}
+          />
+          <CurrentCard
+            isLoading={telemetryDataIsLoading}
+            telemetryData={telemetryData}
+          />
+          <div className="lg:col-span-2">
+            {/* <ImbalanceCard
+              isLoading={telemetryDataIsLoading}
+              telemetryData={telemetryData}
+            /> */}
+          </div>
         </div>
-
-        {/* Coluna 2 - Frequência */}
-        <FrequencyCard telemetryData={telemetryData} />
-
-        {/* Coluna 2 - Ângulos */}
-        <PhaseAngleCard
-          isLoading={telemetryDataIsLoading}
-          telemetryData={telemetryData}
-        />
       </div>
 
-      {/* Grid inferior */}
-      <div className="grid grid-cols-3 gap-4">
-        <PhaseNeutralVoltageCard
-          isLoading={telemetryDataIsLoading}
-          telemetryData={telemetryData}
-        />
-        <PhasePhaseVoltageCard
-          isLoading={telemetryDataIsLoading}
-          telemetryData={telemetryData}
-        />
-        <CurrentCard
-          isLoading={telemetryDataIsLoading}
-          telemetryData={telemetryData}
-        />
-        <TotalActivePowerCard
-          isLoading={telemetryDataIsLoading}
-          telemetryData={telemetryData}
-        />
-        <FundamentalActivePowerCard
-          isLoading={telemetryDataIsLoading}
-          telemetryData={telemetryData}
-        />
-        <HarmonicActivePowerCard
-          isLoading={telemetryDataIsLoading}
-          telemetryData={telemetryData}
-        />
+      {/* Potências */}
+      <div className="rounded-md border p-4">
+        <h2 className="mb-4 font-semibold text-lg">Potências</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <TotalActivePowerCard
+            isLoading={telemetryDataIsLoading}
+            telemetryData={telemetryData}
+          />
+          <FundamentalActivePowerCard
+            isLoading={telemetryDataIsLoading}
+            telemetryData={telemetryData}
+          />
+          <HarmonicActivePowerCard
+            isLoading={telemetryDataIsLoading}
+            telemetryData={telemetryData}
+          />
+          <ApparentPowerCard
+            isLoading={telemetryDataIsLoading}
+            telemetryData={telemetryData}
+          />
+          <ReactivePowerCard
+            isLoading={telemetryDataIsLoading}
+            telemetryData={telemetryData}
+          />
+        </div>
+      </div>
+
+      {/* Fator de potência e temperatura */}
+      <div className="rounded-md border p-4">
+        <h2 className="mb-4 font-semibold text-lg">
+          Fator de potência e temperatura
+        </h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <PowerFactorCard
+            isLoading={telemetryDataIsLoading}
+            telemetryData={telemetryData}
+          />
+          <TemperatureCard
+            isLoading={telemetryDataIsLoading}
+            telemetryData={telemetryData}
+          />
+        </div>
       </div>
     </div>
   )
