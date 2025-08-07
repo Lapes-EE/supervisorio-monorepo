@@ -10,6 +10,7 @@ const telemetryQuerySchema = z.object({
   endDate: z.iso.datetime().optional(),
   period: z
     .enum([
+      'last_5_minutes',
       'last_hour',
       'last_6_hours',
       'last_12_hours',
@@ -28,6 +29,11 @@ function getPeriodDates(period: string) {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
   switch (period) {
+    case 'last_5_minutes':
+      return {
+        startDate: new Date(now.getTime() - 5 * 60 * 1000),
+        endDate: now,
+      }
     case 'last_hour':
       return {
         startDate: new Date(now.getTime() - 60 * 60 * 1000),

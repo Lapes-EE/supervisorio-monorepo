@@ -22,6 +22,13 @@
       "when": 1754422210508,
       "tag": "0002_cheerful_photon",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1754513776263,
+      "tag": "0003_legal_prowler",
+      "breakpoints": true
     }
   ]
 }
