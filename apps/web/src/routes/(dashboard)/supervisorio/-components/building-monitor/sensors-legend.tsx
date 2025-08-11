@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export function SensorsLegend() {
   return (
-    <Card className="mt-6">
+    <Card>
       <CardHeader>
         <CardTitle className="text-lg">
           Sensores de Energia - 13 Pontos de Monitoramento
