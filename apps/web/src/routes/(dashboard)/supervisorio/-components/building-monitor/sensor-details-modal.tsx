@@ -1,12 +1,3 @@
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -15,6 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { SelectPeriod } from './period-select'
+import { SensorChart } from './sensor-chart'
 import { SensorIcon } from './sensor-icon'
 import { useSensorStatus } from './sensor-status-utils'
 import type { Sensor } from './types'
@@ -46,7 +39,6 @@ export function SensorDetailsModal({
             </DialogHeader>
 
             <div className="space-y-6">
-              {/* Valor atual e status */}
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2 font-bold text-3xl">
@@ -62,36 +54,14 @@ export function SensorDetailsModal({
                 {getStatusBadge(sensor.status)}
               </div>
 
-              {/* Gráfico histórico */}
               <div>
-                <h4 className="mb-3 font-semibold text-lg">
-                  Histórico (Últimas 5 minutos)
+                <h4 className="mb-3 flex gap-2 font-semibold text-lg">
+                  <p>Histórico</p>
+                  <SelectPeriod />
                 </h4>
-                <ResponsiveContainer height={200} width="100%">
-                  <LineChart data={sensor.history}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line
-                      dataKey="value"
-                      stroke={(() => {
-                        if (sensor.status === 'critical') {
-                          return '#ef4444'
-                        }
-                        if (sensor.status === 'warning') {
-                          return '#f59e0b'
-                        }
-                        return '#10b981'
-                      })()}
-                      strokeWidth={2}
-                      type="monotone"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <SensorChart sensor={sensor} />
               </div>
 
-              {/* Ações */}
               <div className="flex gap-2">
                 <Button size="sm" variant="outline">
                   Ver Histórico Completo
