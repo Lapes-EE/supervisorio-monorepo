@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type PostMeters201 = {
-  createdAt: string;
+export type GetTelemetry200Period = {
+  startDate: string;
+  endDate: string;
 };
