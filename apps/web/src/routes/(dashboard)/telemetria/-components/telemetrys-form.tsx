@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { usePostMeters } from '@/http/gen/endpoints/lapes-scada-api.gen'
+import { usePostMeters } from '@/http/gen/endpoints/lapes-api.gen'
 
 const formCreatemeterSchema = z.object({
   name: z.string().min(1, 'O nome do medidor é requerido'),

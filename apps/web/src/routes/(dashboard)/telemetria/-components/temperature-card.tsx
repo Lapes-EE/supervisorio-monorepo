@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { getMetersGetTelemetryIp } from '@/http/gen/endpoints/lapes-scada-api.gen'
+import type { getMetersGetTelemetryIp } from '@/http/gen/endpoints/lapes-api.gen'
 
 type TelemetryData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>['data']
 

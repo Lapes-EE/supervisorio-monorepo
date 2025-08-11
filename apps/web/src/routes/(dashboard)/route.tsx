@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet, useRouterState } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import { Label } from '@/components/ui/label'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { dayjs } from '@/lib/dayjs'
@@ -14,6 +15,15 @@ function RouteComponent() {
   })
   const formattedPath = formatPathname(pathname)
 
+  const [now, setNow] = useState(new Date())
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date())
+    }, 30_000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <div className="space-y-4 p-4">
       <div className="flex flex-row justify-between">
@@ -22,7 +32,7 @@ function RouteComponent() {
           <Label className="font-bold">{formattedPath}</Label>
         </div>
         <div className="flex flex-row items-center justify-center gap-1">
-          <Label>{dayjs(new Date()).format('DD/MM/YYYY HH:mm UTC Z')}</Label>
+          <Label>{dayjs(now).format('DD/MM/YYYY HH:mm:ss UTC Z')}</Label>
         </div>
       </div>
       <Outlet />

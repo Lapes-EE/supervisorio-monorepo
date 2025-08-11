@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router'
-import { getMeters } from '@/http/gen/endpoints/lapes-scada-api.gen'
+import { getMeters } from '@/http/gen/endpoints/lapes-api.gen'
 import { TelemetryForm } from './-components/telemetrys-form'
 import { TelemetryList } from './-components/telemetrys-list'
 

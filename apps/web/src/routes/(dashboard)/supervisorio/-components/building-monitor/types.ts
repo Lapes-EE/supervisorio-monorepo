@@ -12,3 +12,23 @@ export interface Sensor {
   trend: 'up' | 'down' | 'stable'
   history: Array<{ time: string; value: number }>
 }
+
+export interface Position {
+  x: number
+  y: number
+}
+
+export interface Limits {
+  min: number
+  max: number
+}
+
+export interface Meter {
+  id: number
+  name: string
+  ip: string
+  description?: string | null
+  unit: string
+  position: Position
+  limits: Limits
+}

@@ -9,8 +9,10 @@ export const SensorIcon = ({ status }: { status: Sensor['status'] }) => {
         return 'text-red-500'
       case 'warning':
         return 'text-yellow-500'
-      default:
+      case 'normal':
         return 'text-green-500'
+      default:
+        return 'text-blue-500'
     }
   }
 

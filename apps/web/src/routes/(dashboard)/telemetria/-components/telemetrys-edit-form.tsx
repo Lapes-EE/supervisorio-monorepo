@@ -21,7 +21,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { usePutMetersId } from '@/http/gen/endpoints/lapes-scada-api.gen'
+import { usePutMetersId } from '@/http/gen/endpoints/lapes-api.gen'
 import type { GetMeters200Item } from '@/http/gen/model'
 
 const formEditMeterSchema = z.object({

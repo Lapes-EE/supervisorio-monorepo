@@ -1,5 +1,4 @@
-import { createFileRoute, useRouteContext } from '@tanstack/react-router'
-import type { GetMeters200Item } from '@/http/gen/model'
+import { createFileRoute, useLoaderData } from '@tanstack/react-router'
 import { TelemetryEditForm } from '@/routes/(dashboard)/telemetria/-components/telemetrys-edit-form'
 
 export const Route = createFileRoute('/(dashboard)/telemetria/$meterId/edit')({
@@ -7,12 +6,8 @@ export const Route = createFileRoute('/(dashboard)/telemetria/$meterId/edit')({
 })
 
 function RouteComponent() {
-  const { queryClient } = useRouteContext({ from: '__root__' })
   const { meterId } = Route.useParams()
-  const data = queryClient.getQueryData<GetMeters200Item[]>(['Meters'])
+  const data = useLoaderData({ from: '/(dashboard)/telemetria' })
   console.log(data)
-  if (!data) {
-    return
-  }
   return <TelemetryEditForm meterId={meterId} meters={data} />
 }

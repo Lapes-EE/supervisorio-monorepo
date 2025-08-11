@@ -13,7 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { useDeleteMetersId } from '@/http/gen/endpoints/lapes-scada-api.gen'
+import { useDeleteMetersId } from '@/http/gen/endpoints/lapes-api.gen'
 
 export const Route = createFileRoute('/(dashboard)/telemetria/$meterId/delete')(
   {
