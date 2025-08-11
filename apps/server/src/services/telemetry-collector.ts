@@ -8,9 +8,9 @@ import { getTelemetryFromMeter } from './telemetry-service'
 const queue = new PQueue({ concurrency: 14 })
 
 export function startTelemetryCollector() {
-  logger.info('[telemetry] Coletor agendado a cada 30s.')
+  logger.info('[telemetry] Coletor agendado a cada 10s.')
 
-  cron.schedule('*/30 * * * * *', async () => {
+  cron.schedule('*/10 * * * * *', async () => {
     logger.info('[telemetry] Iniciando ciclo de coleta...')
 
     try {

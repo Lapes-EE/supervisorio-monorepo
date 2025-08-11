@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "pnpm env:load tsx watch src/server.ts",
+    "start": "pnpm env:load tsx src/server.ts",
     "env:load": "dotenv -e ../../.env --",
     "build": "tsc",
     "db:generate": "pnpm env:load drizzle-kit generate",
