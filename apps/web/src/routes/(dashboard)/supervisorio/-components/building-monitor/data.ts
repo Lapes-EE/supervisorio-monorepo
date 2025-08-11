@@ -1,49 +1,39 @@
-import { useQuery } from '@tanstack/react-query'
-import { getMeters } from '@/http/gen/endpoints/lapes-scada-api.gen'
+import { useQueries, useQuery } from '@tanstack/react-query'
+import { getMeters, getTelemetry } from '@/http/gen/endpoints/lapes-api.gen'
+import type {
+  GetTelemetry200,
+  GetTelemetry200DataItem,
+  GetTelemetryPeriod,
+} from '@/http/gen/model'
 import { dayjs } from '@/lib/dayjs'
-import type { Sensor } from './types'
+import type { ToggleSearchSchema } from '../..'
+import type { Meter, Sensor } from './types'
 
 const fixedPositions: Array<{ x: number; y: number }> = [
+  // Primeiro andar
   { x: 80, y: 75 },
-  { x: 50, y: 75 },
-  { x: 60, y: 65 },
-  { x: 60, y: 75 },
   { x: 20, y: 75 },
-  { x: 35, y: 75 },
+  { x: 50, y: 75 },
 
+  // Segundo andar
   { x: 20, y: 50 },
   { x: 50, y: 50 },
-  { x: 60, y: 50 },
-  { x: 60, y: 40 },
   { x: 80, y: 50 },
 
-  { x: 30, y: 25 },
+  // Terceiro andar
   { x: 50, y: 25 },
-  { x: 70, y: 25 },
+  { x: 80, y: 25 },
+  { x: 20, y: 25 },
+
+  { x: 70, y: 40 },
+  { x: 60, y: 40 },
+
+  { x: 70, y: 65 },
+  { x: 60, y: 65 },
+  { x: 50, y: 90 },
 ]
 
-interface Position {
-  x: number
-  y: number
-}
-
-interface Limits {
-  min: number
-  max: number
-}
-
-export interface Meter {
-  id: number
-  name: string
-  ip: string
-  description?: string | null
-  unit: string
-  position: Position
-  limits: Limits
-}
-
-// Função 1: Busca os medidores com posição fixa aplicada
-export async function getMetersFull(): Promise<Meter[]> {
+async function getMetersFull(filter: ToggleSearchSchema): Promise<Meter[]> {
   const response = await getMeters()
   const data = response.data
 
@@ -54,98 +44,199 @@ export async function getMetersFull(): Promise<Meter[]> {
       throw new Error(`Faltam dados para o medidor ${index}`)
     }
 
+    if (filter.type === 'frequency') {
+      return {
+        ...meter,
+        unit: 'Hz',
+        position,
+        limits: { min: 58, max: 61 },
+      }
+    }
+
+    if (filter.type === 'current') {
+      return {
+        ...meter,
+        unit: 'A',
+        position,
+        limits: { min: -1, max: 5 },
+      }
+    }
+
+    if (filter.type === 'power') {
+      return {
+        ...meter,
+        unit: 'W',
+        position,
+        limits: { min: -1, max: 4000 },
+      }
+    }
+
     return {
       ...meter,
-      unit: 'kW',
+      unit: 'V',
       position,
-      limits: { min: 20, max: 100 },
+      limits: { min: 210, max: 224 },
     }
   })
 }
 
-// Função 2: Gera histórico fictício
-export function getSensorHistory(
-  sensorId: number
+function getSensorHistory(
+  telemetryData: GetTelemetry200DataItem[],
+  filter: ToggleSearchSchema
 ): Array<{ time: string; value: number }> {
-  const idNum = Number(sensorId)
+  if (!telemetryData || telemetryData.length === 0) {
+    return []
+  }
 
-  return Array.from({ length: 10 }, (_, j) => {
-    const time = dayjs('2024-01-23T08:00:00')
-      .add(j * 5, 'minute')
-      .format('HH:mm')
+  if (filter.type === 'frequency') {
+    return telemetryData
+      .filter((item) => item.frequencia !== null)
+      .map((item) => ({
+        time: dayjs(item.time).format('HH:mm:ss'),
+        value: Number((item.frequencia ?? 0).toFixed(2)),
+      }))
+      .sort((a, b) => a.time.localeCompare(b.time))
+  }
 
-    const baseValue = 40 + (idNum % 10) * 5
-    const value = Number((baseValue + j * 0.5).toFixed(2))
+  if (filter.type === 'current') {
+    return telemetryData
+      .filter((item) => item.correnteA !== null)
+      .map((item) => ({
+        time: dayjs(item.time).format('HH:mm:ss'),
+        value: Number((item.correnteA ?? 0).toFixed(2)),
+      }))
+      .sort((a, b) => a.time.localeCompare(b.time))
+  }
 
-    return { time, value }
-  })
+  if (filter.type === 'power') {
+    return telemetryData
+      .filter((item) => item.potenciaAparenteTotalAritmetica !== null)
+      .map((item) => ({
+        time: dayjs(item.time).format('HH:mm:ss'),
+        value: Number((item.potenciaAparenteTotalAritmetica ?? 0).toFixed(2)),
+      }))
+      .sort((a, b) => a.time.localeCompare(b.time))
+  }
+
+  return telemetryData
+    .filter((item) => item.tensaoFaseNeutroA !== null)
+    .map((item) => ({
+      time: dayjs(item.time).format('HH:mm:ss'),
+      value: Number((item.tensaoFaseNeutroA ?? 0).toFixed(2)),
+    }))
+    .sort((a, b) => a.time.localeCompare(b.time))
 }
 
-// Função 3: Combina medidor + histórico + status/trend
-export function getSensorDetails(meter: Meter): Sensor {
-  const history = getSensorHistory(meter.id)
-  const lastMeasure = history.at(-1)
-  const prevMeasure = history.at(-2)
+function calculateSensorStatus(
+  value: number,
+  limits: { min: number; max: number }
+): Sensor['status'] {
+  const { min, max } = limits
+  const range = max - min
+  const threshold = 0.1 * range
 
-  // Status cíclico
-  const statusIndex = Number(meter.id) - 101
-  let status: Sensor['status'] = 'normal'
-  if (statusIndex % 7 === 6) {
-    status = 'critical'
-  } else if (statusIndex % 7 === 5) {
-    status = 'warning'
+  if (value < min || value > max) {
+    return 'critical'
   }
 
-  // Tendência
-  let trend: Sensor['trend'] = 'stable'
-  if (lastMeasure && prevMeasure) {
-    if (lastMeasure.value > prevMeasure.value) {
-      trend = 'up'
-    } else if (lastMeasure.value < prevMeasure.value) {
-      trend = 'down'
-    }
+  const nearMin = value >= min && value <= min + threshold
+  const nearMax = value <= max && value >= max - threshold
+
+  if (nearMin || nearMax) {
+    return 'warning'
   }
 
-  return {
-    id: meter.id,
-    description: meter.description || '',
-    limits: meter.limits,
-    name: meter.name,
-    position: meter.position,
-    unit: meter.unit,
-    status,
-    trend,
-    value: lastMeasure?.value ?? 0,
-    lastUpdate: lastMeasure?.time ?? dayjs().format('HH:mm'),
-    history,
-  }
+  return 'normal'
 }
 
-// Hook para buscar todos os sensores com detalhes
-export function useSensors() {
+function calculateSensorTrend(
+  last?: { value: number },
+  prev?: { value: number }
+): Sensor['trend'] {
+  const threshold = 0.5
+  if (!(last && prev)) {
+    return 'stable'
+  }
+
+  const diff = last.value - prev.value
+
+  if (diff > threshold) {
+    return 'up'
+  }
+
+  if (diff < -threshold) {
+    return 'down'
+  }
+
+  return 'stable'
+}
+
+export function useSensors(
+  filter: ToggleSearchSchema,
+  period: GetTelemetryPeriod
+) {
   const {
     data: meters,
-    isLoading,
-    error,
+    isLoading: metersLoading,
+    error: metersError,
   } = useQuery({
-    queryKey: ['Meters'],
-    queryFn: getMetersFull,
+    queryKey: ['Meters', filter.type],
+    queryFn: () => getMetersFull(filter),
   })
 
-  const sensorsQuery = useQuery({
-    queryKey: ['Sensors', meters?.map((m) => m.ip)],
-    queryFn: () => {
-      if (!meters) {
-        return []
-      }
-      return Promise.all(meters.map((meter) => getSensorDetails(meter)))
-    },
-    enabled: !!meters,
+  const telemetryQueries = useQueries({
+    queries:
+      meters?.map((meter) => ({
+        refetchInterval: 1000 * 30,
+        queryKey: ['Telemetry', meter.id, period],
+        queryFn: async (): Promise<GetTelemetry200> => {
+          const response = await getTelemetry({
+            period,
+            meterId: meter.id,
+          })
+          return response.data
+        },
+        enabled: !!meters,
+      })) || [],
   })
+
+  const sensorsData = meters?.map((meter, index) => {
+    const telemetryQuery = telemetryQueries[index]
+    const telemetryResponse = telemetryQuery?.data
+    const telemetryData = telemetryResponse?.data || []
+
+    const history = getSensorHistory(telemetryData, filter)
+    const lastMeasure = history.at(-1)
+    const prevMeasure = history.at(-2)
+
+    const value = lastMeasure?.value ?? 0
+    const status = calculateSensorStatus(value, meter.limits)
+    const trend = calculateSensorTrend(lastMeasure, prevMeasure)
+
+    return {
+      id: meter.id,
+      description: meter.description || '',
+      limits: meter.limits,
+      name: meter.name,
+      position: meter.position,
+      unit: meter.unit,
+      status,
+      trend,
+      value,
+      lastUpdate: lastMeasure?.time ?? dayjs().format('HH:mm'),
+      history,
+    } satisfies Sensor
+  })
+
+  const isLoading =
+    metersLoading || telemetryQueries.some((query) => query.isLoading)
+
+  const error =
+    metersError || telemetryQueries.find((query) => query.error)?.error
 
   return {
-    data: sensorsQuery.data,
-    isLoading: isLoading || sensorsQuery.isLoading,
-    error: error || sensorsQuery.error,
+    data: sensorsData,
+    isLoading,
+    error,
   }
 }

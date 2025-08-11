@@ -1,7 +1,10 @@
+import NumberFlow from '@number-flow/react'
+import { useSearch } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useSensors } from './data'
 import { SensorIcon } from './sensor-icon'
+import { useSensorStatus } from './sensor-status-utils'
 import type { Sensor } from './types'
 
 interface BuildingLayoutProps {
@@ -9,7 +12,27 @@ interface BuildingLayoutProps {
 }
 
 export function BuildingLayout({ onSensorClick }: BuildingLayoutProps) {
-  const { data: sensors } = useSensors()
+  const { period } = useSearch({ from: '/(dashboard)/supervisorio/' })
+  const { getTrendIcon } = useSensorStatus()
+  const search = useSearch({ from: '/(dashboard)/supervisorio/' })
+  const { data: sensors, isLoading: isSensorLoading } = useSensors(
+    search,
+    period
+  )
+
+  function getSensorStatusColor(status: string, isLoading?: boolean) {
+    if (isLoading) {
+      return '#9ca3af' // Gray for loading state
+    }
+    if (status === 'critical') {
+      return '#ef4444' // Red
+    }
+    if (status === 'warning') {
+      return '#f59e0b' // Yellow
+    }
+    return '#10b981' // Green
+  }
+
   return (
     <Card className="relative overflow-hidden">
       <CardContent className="p-0">
@@ -21,7 +44,7 @@ export function BuildingLayout({ onSensorClick }: BuildingLayoutProps) {
             className="h-full w-full object-cover"
             decoding="async"
             loading="lazy"
-            src="/placeholder.svg?height=600&width=800"
+            src="/placeholder.svg"
           />
           {/* Overlay com estrutura básica do prédio */}
           <div className="pointer-events-none absolute inset-0">
@@ -45,42 +68,41 @@ export function BuildingLayout({ onSensorClick }: BuildingLayoutProps) {
           {/* Sensores clicáveis */}
           {sensors?.map((sensor) => (
             <div
-              className="-translate-x-1/2 -translate-y-1/2 absolute"
+              className="-translate-x-1/2 -translate-y-1/2 absolute h-20 w-20"
               key={sensor.id}
               style={{
                 left: `${sensor.position.x}%`,
                 top: `${sensor.position.y}%`,
               }}
             >
-              <div className="mb-1 select-none text-center font-medium text-gray-700 text-sm">
-                {sensor.value}
-                {sensor.unit}
+              <div className="flex flex-col items-center">
+                <div className="mb-1 flex select-none items-center justify-center gap-1 text-center font-medium text-gray-700 text-sm">
+                  <NumberFlow
+                    format={{ minimumFractionDigits: 2 }}
+                    suffix={sensor.unit}
+                    value={sensor.value}
+                  />
+                  {getTrendIcon(sensor.trend)}
+                </div>
+
+                <Button
+                  className="relative z-10 transform rounded-full border-2 bg-white p-2 shadow-lg transition-all duration-200 hover:scale-110 hover:bg-white/50"
+                  onClick={() => onSensorClick(sensor)}
+                  size="icon"
+                  style={{
+                    borderColor: getSensorStatusColor(
+                      sensor.status,
+                      isSensorLoading
+                    ),
+                  }}
+                  title={`${sensor.name}: ${sensor.value}${sensor.unit}`}
+                >
+                  <SensorIcon status={sensor.status} />
+                  {sensor.status === 'critical' && (
+                    <div className="absolute inset-0 animate-ping rounded-full bg-red-500 opacity-30" />
+                  )}
+                </Button>
               </div>
-
-              <Button
-                className="relative z-10 transform rounded-full border-2 bg-white p-2 shadow-lg transition-all duration-200 hover:scale-110 hover:bg-white/50"
-                onClick={() => onSensorClick(sensor)}
-                size="icon"
-                style={{
-                  borderColor: (() => {
-                    if (sensor.status === 'critical') {
-                      return '#ef4444'
-                    }
-                    if (sensor.status === 'warning') {
-                      return '#f59e0b'
-                    }
-                    return '#10b981'
-                  })(),
-                }}
-                title={`${sensor.name}: ${sensor.value}${sensor.unit}`}
-              >
-                <SensorIcon status={sensor.status} />
-
-                {/* Indicador pulsante para alarmes críticos */}
-                {sensor.status === 'critical' && (
-                  <div className="absolute inset-0 animate-ping rounded-full bg-red-500 opacity-30" />
-                )}
-              </Button>
             </div>
           ))}
         </div>
