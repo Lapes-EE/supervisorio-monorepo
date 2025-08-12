@@ -5,7 +5,7 @@ export function SensorsLegend() {
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">
-          Sensores de Energia - 13 Pontos de Monitoramento
+          Sensores de Energia - 14 Pontos de Monitoramento
         </CardTitle>
       </CardHeader>
       <CardContent>

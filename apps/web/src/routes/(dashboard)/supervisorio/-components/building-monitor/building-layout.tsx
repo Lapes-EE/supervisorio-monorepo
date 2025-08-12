@@ -37,30 +37,25 @@ export function BuildingLayout({ onSensorClick }: BuildingLayoutProps) {
     <Card className="relative overflow-hidden">
       <CardContent className="p-0">
         {/* Imagem do corte lateral do prédio */}
-        <div className="relative h-[600px] w-full ">
+        <div className="relative flex h-[600px] w-full items-start">
           {/** biome-ignore lint/performance/noImgElement: This project doesn't use nextjs for better Image component */}
           <img
             alt="Corte lateral do edifício"
-            className="h-full w-full object-cover"
+            className="h-full w-full"
             decoding="async"
             loading="lazy"
-            src="/placeholder.svg"
+            src="/monitor.png"
           />
           {/* Overlay com estrutura básica do prédio */}
           <div className="pointer-events-none absolute inset-0">
-            {/* Linhas dos andares */}
-            <div className="absolute right-[10%] bottom-[20%] left-[10%] h-0.5 bg-gray-400 opacity-50" />
-            <div className="absolute right-[10%] bottom-[45%] left-[10%] h-0.5 bg-gray-400 opacity-50" />
-            <div className="absolute right-[10%] bottom-[70%] left-[10%] h-0.5 bg-gray-400 opacity-50" />
-
             {/* Labels dos andares */}
-            <div className="absolute bottom-[75%] left-[2%] rounded bg-white px-2 py-1 font-semibold text-gray-700 text-sm shadow">
+            <div className="absolute bottom-[78%] left-[2%] rounded bg-white px-2 py-1 font-semibold text-gray-700 text-sm shadow">
               3° Andar
             </div>
-            <div className="absolute bottom-[50%] left-[2%] rounded bg-white px-2 py-1 font-semibold text-gray-700 text-sm shadow">
+            <div className=" absolute bottom-[45%] left-[2%] rounded bg-white px-2 py-1 font-semibold text-gray-700 text-sm shadow">
               2° Andar
             </div>
-            <div className="absolute bottom-[25%] left-[2%] rounded bg-white px-2 py-1 font-semibold text-gray-700 text-sm shadow">
+            <div className="absolute bottom-[15%] left-[2%] rounded bg-white px-2 py-1 font-semibold text-gray-700 text-sm shadow">
               1° Andar
             </div>
           </div>

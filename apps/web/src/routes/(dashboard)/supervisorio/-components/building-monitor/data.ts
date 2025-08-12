@@ -11,26 +11,27 @@ import type { Meter, Sensor } from './types'
 
 const fixedPositions: Array<{ x: number; y: number }> = [
   // Primeiro andar
-  { x: 80, y: 75 },
-  { x: 20, y: 75 },
-  { x: 50, y: 75 },
+  { x: 75, y: 90 },
+  { x: 20, y: 90 },
+  { x: 50, y: 90 },
 
   // Segundo andar
-  { x: 20, y: 50 },
-  { x: 50, y: 50 },
-  { x: 80, y: 50 },
+  { x: 20, y: 60 },
+  { x: 50, y: 60 },
+  { x: 75, y: 60 },
 
   // Terceiro andar
   { x: 50, y: 25 },
-  { x: 80, y: 25 },
+  { x: 75, y: 25 },
   { x: 20, y: 25 },
 
-  { x: 70, y: 40 },
-  { x: 60, y: 40 },
+  // Auditório
+  { x: 85, y: 45 },
+  { x: 95, y: 45 },
 
-  { x: 70, y: 65 },
-  { x: 60, y: 65 },
-  { x: 50, y: 90 },
+  { x: 85, y: 86 }, // Biblioteca
+  { x: 75, y: 80 }, // Elevador
+  { x: 95, y: 90 }, // Geral
 ]
 
 async function getMetersFull(filter: ToggleSearchSchema): Promise<Meter[]> {
