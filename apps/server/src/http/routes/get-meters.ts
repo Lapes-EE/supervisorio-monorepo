@@ -26,22 +26,18 @@ export const getMeters: FastifyPluginCallbackZod = (app) => {
         },
       },
     },
-    async () => {
-      try {
-        const result = await db
-          .select({
-            id: schema.meters.id,
-            name: schema.meters.name,
-            ip: schema.meters.ip,
-            description: schema.meters.description,
-          })
-          .from(schema.meters)
-          .orderBy(asc(schema.meters.name))
+    async (_, reply) => {
+      const result = await db
+        .select({
+          id: schema.meters.id,
+          name: schema.meters.name,
+          ip: schema.meters.ip,
+          description: schema.meters.description,
+        })
+        .from(schema.meters)
+        .orderBy(asc(schema.meters.name))
 
-        return result
-      } catch {
-        throw new Error('Erro ao buscar dados na API externa')
-      }
+      return reply.status(200).send(result)
     }
   )
 }

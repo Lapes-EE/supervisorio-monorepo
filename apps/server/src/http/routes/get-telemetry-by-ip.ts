@@ -20,8 +20,11 @@ export const getTelemetryByIp: FastifyPluginCallbackZod = (app) => {
         },
       },
     },
-    async ({ params }) => {
-      return await getTelemetryFromMeter(params.ip)
+    async (request, reply) => {
+      const meterIp = request.params.ip
+      const telemetry = await getTelemetryFromMeter(meterIp)
+
+      return reply.status(200).send(telemetry)
     }
   )
 }

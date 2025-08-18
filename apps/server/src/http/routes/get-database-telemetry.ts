@@ -75,7 +75,7 @@ function getPeriodDates(period: string) {
         endDate: now,
       }
     default:
-      throw new Error('Período inválido')
+      throw new Error('Invalid period')
   }
 }
 
@@ -176,7 +176,7 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
         },
       },
     },
-    async (request) => {
+    async (request, reply) => {
       const { meterId, startDate, endDate, period } = request.query
 
       // Determinar as datas de filtro
@@ -232,7 +232,7 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
         })
       }).length
 
-      return {
+      reply.status(200).send({
         data,
         total,
         period: {
@@ -240,7 +240,7 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
           endDate: filterEndDate.toISOString(),
         },
         nullCount,
-      }
+      })
     }
   )
 }

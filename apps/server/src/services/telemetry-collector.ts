@@ -1,8 +1,8 @@
 import cron from 'node-cron'
 import PQueue from 'p-queue'
 import pRetry from 'p-retry'
+import { logger } from '@/app'
 import { getAllMeters, insertMeasure } from '@/db/queries'
-import { logger } from '@/server'
 import { getTelemetryFromMeter } from './telemetry-service'
 
 const queue = new PQueue({ concurrency: 14 })

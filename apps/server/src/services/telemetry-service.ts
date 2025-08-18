@@ -1,6 +1,6 @@
+import { logger } from '@/app'
 import { indices } from '@/http/types/format-telemetry-response'
 import type { Formatted } from '@/http/types/get-telemetry-response'
-import { logger } from '@/server'
 
 interface ResponseData {
   sucesso: boolean

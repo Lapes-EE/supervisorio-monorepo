@@ -25,6 +25,12 @@ export const updateMeter: FastifyPluginCallbackZod = (app) => {
             }),
           description: z.string().optional(),
         }),
+        response: {
+          200: z.object({}),
+          404: z.object({
+            error: z.string(),
+          }),
+        },
       },
     },
     async (request, reply) => {
@@ -42,7 +48,7 @@ export const updateMeter: FastifyPluginCallbackZod = (app) => {
         return reply.status(404).send({ error: 'Meter not found' })
       }
 
-      return reply.status(201).send()
+      return reply.status(200).send({})
     }
   )
 }

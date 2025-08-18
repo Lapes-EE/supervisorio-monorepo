@@ -4,6 +4,9 @@ import { z } from 'zod'
 export const env = createEnv({
   server: {
     PORT: z.coerce.number().default(3333),
+    NODE_ENV: z
+      .enum(['development', 'production', 'test'])
+      .default('development'),
     DATABASE_URL: z.url(),
     POSTGRES_USER: z.string(),
     POSTGRES_PASSWORD: z.string(),

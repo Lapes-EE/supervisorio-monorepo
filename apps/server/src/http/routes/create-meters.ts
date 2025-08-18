@@ -41,9 +41,6 @@ export const createMeters: FastifyPluginCallbackZod = (app) => {
         .returning()
 
       const insertedRoom = result[0]
-      if (!insertedRoom) {
-        throw new Error('Failed to create new room')
-      }
 
       return reply.status(201).send({ createdAt: insertedRoom.createdAt })
     }
