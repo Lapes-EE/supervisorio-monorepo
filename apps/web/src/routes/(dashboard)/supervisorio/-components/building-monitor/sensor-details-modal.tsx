@@ -6,10 +6,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { toggleSearchSchema } from '../../-types'
 import { SelectPeriod } from './period-select'
 import { SensorChart } from './sensor-chart'
-import { SensorIcon } from './sensor-icon'
-import { useSensorStatus } from './sensor-status-utils'
 import type { Sensor } from './types'
 
 interface SensorDetailsModalProps {
@@ -21,8 +21,7 @@ export function SensorDetailsModal({
   sensor,
   onClose,
 }: SensorDetailsModalProps) {
-  const { getStatusBadge, getTrendIcon } = useSensorStatus()
-
+  const phaseOptions = toggleSearchSchema.shape.phase.def.defaultValue
   return (
     <Dialog onOpenChange={onClose} open={!!sensor}>
       <DialogContent className="max-w-2xl">
@@ -30,7 +29,6 @@ export function SensorDetailsModal({
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <SensorIcon status={sensor.status} />
                 {sensor.name}
               </DialogTitle>
               <DialogDescription>
@@ -41,17 +39,31 @@ export function SensorDetailsModal({
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="flex items-center gap-2 font-bold text-3xl">
-                    {sensor.value}
-                    {sensor.unit}
-                    {getTrendIcon(sensor.trend)}
-                  </div>
-                  <div className="text-gray-600 text-sm dark:text-gray-400">
-                    Limites: {sensor.limits.min} - {sensor.limits.max}{' '}
-                    {sensor.unit}
+                  <div className="flex w-full items-center justify-between gap-2 font-bold text-3xl">
+                    <div className="flex flex-col">
+                      {phaseOptions.map((label, idx) => {
+                        const colorVar = [
+                          'var(--chart-1)',
+                          'var(--chart-2)',
+                          'var(--chart-3)',
+                        ][idx % 3]
+                        return (
+                          <div className="flex items-center gap-2" key={label}>
+                            <Label
+                              className="font-bold text-2xl"
+                              style={{ color: colorVar }}
+                            >
+                              {label}:
+                            </Label>
+                            <span>
+                              {sensor.value[idx]} {sensor.unit}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
                   </div>
                 </div>
-                {getStatusBadge(sensor.status)}
               </div>
 
               <div>

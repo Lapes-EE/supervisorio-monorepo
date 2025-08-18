@@ -3,14 +3,18 @@ export interface Sensor {
   id: number
   name: string
   description: string
-  value: number
+  value: number[]
   unit: string
-  status: string
+  // status: string
+  hasPhases: boolean
   position: { x: number; y: number } // Posição em porcentagem
   lastUpdate: string
-  limits: { min: number; max: number }
+  // limits: { min: number; max: number }
   trend: 'up' | 'down' | 'stable'
-  history: Array<{ time: string; value: number }>
+  history: Array<
+    | { time: string; phaseA: number; phaseB: number; phaseC: number }
+    | { time: string; value: number }
+  >
 }
 
 export interface Position {
@@ -30,5 +34,5 @@ export interface Meter {
   description?: string | null
   unit: string
   position: Position
-  limits: Limits
+  // limits: Limits
 }

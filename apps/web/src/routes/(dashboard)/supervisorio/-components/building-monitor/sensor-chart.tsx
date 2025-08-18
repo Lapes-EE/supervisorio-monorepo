@@ -13,9 +13,21 @@ interface SensorChartProps {
 
 export function SensorChart({ sensor }: SensorChartProps) {
   const chartConfig = {
-    measure: {
-      label: 'Medição',
-      color: '#2563eb',
+    value: {
+      label: 'Valor',
+      color: 'var(--chart-4)',
+    },
+    phaseA: {
+      label: 'Fase A',
+      color: 'var(--chart-1)',
+    },
+    phaseB: {
+      label: 'Fase B',
+      color: 'var(--chart-2)',
+    },
+    phaseC: {
+      label: 'Fase C',
+      color: 'var(--chart-3)',
     },
   } satisfies ChartConfig
 
@@ -59,15 +71,25 @@ export function SensorChart({ sensor }: SensorChartProps) {
         />
         <Line
           dataKey="value"
-          stroke={(() => {
-            if (sensor.status === 'critical') {
-              return '#ef4444'
-            }
-            if (sensor.status === 'warning') {
-              return '#f59e0b'
-            }
-            return '#10b981'
-          })()}
+          stroke="var(--color-value)"
+          strokeWidth={2}
+          type="monotone"
+        />
+        <Line
+          dataKey="phaseA"
+          stroke="var(--color-phaseA)"
+          strokeWidth={2}
+          type="monotone"
+        />
+        <Line
+          dataKey="phaseB"
+          stroke="var(--color-phaseB)"
+          strokeWidth={2}
+          type="monotone"
+        />
+        <Line
+          dataKey="phaseC"
+          stroke="var(--color-phaseC)"
           strokeWidth={2}
           type="monotone"
         />

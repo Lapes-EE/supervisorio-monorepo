@@ -2,9 +2,8 @@ import NumberFlow from '@number-flow/react'
 import { useSearch } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { toggleSearchSchema } from '../../-types'
 import { useSensors } from './data'
-import { SensorIcon } from './sensor-icon'
-import { useSensorStatus } from './sensor-status-utils'
 import type { Sensor } from './types'
 
 interface BuildingLayoutProps {
@@ -13,25 +12,22 @@ interface BuildingLayoutProps {
 
 export function BuildingLayout({ onSensorClick }: BuildingLayoutProps) {
   const { period } = useSearch({ from: '/(dashboard)/supervisorio/' })
-  const { getTrendIcon } = useSensorStatus()
   const search = useSearch({ from: '/(dashboard)/supervisorio/' })
-  const { data: sensors, isLoading: isSensorLoading } = useSensors(
-    search,
-    period
-  )
+  const { data: sensors } = useSensors(search, period)
+  const phaseOptions = toggleSearchSchema.shape.phase.def.defaultValue
 
-  function getSensorStatusColor(status: string, isLoading?: boolean) {
-    if (isLoading) {
-      return '#9ca3af' // Gray for loading state
-    }
-    if (status === 'critical') {
-      return '#ef4444' // Red
-    }
-    if (status === 'warning') {
-      return '#f59e0b' // Yellow
-    }
-    return '#10b981' // Green
-  }
+  // function getSensorStatusColor(status: string, isLoading?: boolean) {
+  //   if (isLoading) {
+  //     return '#9ca3af' // Gray for loading state
+  //   }
+  //   if (status === 'critical') {
+  //     return '#ef4444' // Red
+  //   }
+  //   if (status === 'warning') {
+  //     return '#f59e0b' // Yellow
+  //   }
+  //   return '#10b981' // Green
+  // }
 
   return (
     <Card className="relative overflow-hidden">
@@ -70,34 +66,45 @@ export function BuildingLayout({ onSensorClick }: BuildingLayoutProps) {
                 top: `${sensor.position.y}%`,
               }}
             >
-              <div className="flex flex-col items-center">
-                <div className="mb-1 flex select-none items-center justify-center gap-1 text-center font-medium text-gray-700 text-sm">
-                  <NumberFlow
-                    format={{ minimumFractionDigits: 2 }}
-                    suffix={sensor.unit}
-                    value={sensor.value}
-                  />
-                  {getTrendIcon(sensor.trend)}
+              <Button
+                className="relative z-10 h-full transform border-2 bg-white p-2 shadow-lg transition-all duration-200 hover:scale-110 hover:bg-white/50"
+                onClick={() => onSensorClick(sensor)}
+                title={`${sensor.name}: ${sensor.value}${sensor.unit}`}
+              >
+                <div className="flex flex-col items-center">
+                  {phaseOptions
+                    .map((phase, idx) =>
+                      search.phase.includes(phase) ? { phase, idx } : null
+                    )
+                    .filter(Boolean)
+                    .map(({ phase, idx }) => {
+                      // Escolhe a cor baseada no índice do valor
+                      const colorVar = [
+                        'var(--chart-1)',
+                        'var(--chart-2)',
+                        'var(--chart-3)',
+                      ][idx % 3]
+                      return (
+                        <div
+                          className="mb-1 flex select-none items-center justify-center gap-1 text-center font-medium text-gray-700 text-sm"
+                          key={phase}
+                          style={{ color: colorVar }}
+                        >
+                          <NumberFlow
+                            className="font-bold text-lg"
+                            format={{ minimumFractionDigits: 2 }}
+                            suffix={sensor.unit}
+                            value={
+                              Array.isArray(sensor.value)
+                                ? sensor.value[idx]
+                                : sensor.value
+                            }
+                          />
+                        </div>
+                      )
+                    })}
                 </div>
-
-                <Button
-                  className="relative z-10 transform rounded-full border-2 bg-white p-2 shadow-lg transition-all duration-200 hover:scale-110 hover:bg-white/50"
-                  onClick={() => onSensorClick(sensor)}
-                  size="icon"
-                  style={{
-                    borderColor: getSensorStatusColor(
-                      sensor.status,
-                      isSensorLoading
-                    ),
-                  }}
-                  title={`${sensor.name}: ${sensor.value}${sensor.unit}`}
-                >
-                  <SensorIcon status={sensor.status} />
-                  {sensor.status === 'critical' && (
-                    <div className="absolute inset-0 animate-ping rounded-full bg-red-500 opacity-30" />
-                  )}
-                </Button>
-              </div>
+              </Button>
             </div>
           ))}
         </div>
