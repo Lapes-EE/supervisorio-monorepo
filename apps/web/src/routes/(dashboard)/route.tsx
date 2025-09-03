@@ -1,7 +1,6 @@
 import { createFileRoute, Outlet, useRouterState } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { Label } from '@/components/ui/label'
-import { SidebarTrigger } from '@/components/ui/sidebar'
 import { dayjs } from '@/lib/dayjs'
 import { formatPathname } from '@/lib/format-pathname'
 
@@ -28,7 +27,6 @@ function RouteComponent() {
     <div className="space-y-4 p-4">
       <div className="flex flex-row justify-between">
         <div className="flex h-5 items-center space-x-4">
-          <SidebarTrigger />
           <Label className="font-bold">{formattedPath}</Label>
         </div>
         <div className="flex flex-row items-center justify-center gap-1">
