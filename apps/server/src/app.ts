@@ -10,6 +10,7 @@ import {
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
 import { pino } from 'pino'
+import { changeStatusMeters } from './http/routes/change-meter-status'
 import { createMeters } from './http/routes/create-meters'
 import { deleteMeter } from './http/routes/delete-meters'
 import { getDatabaseTelemetry } from './http/routes/get-database-telemetry'
@@ -27,7 +28,7 @@ export const logger = pino({
   },
 })
 
-const server = fastify({
+const api = fastify({
   logger:
     process.env.NODE_ENV === 'development'
       ? {
@@ -42,16 +43,16 @@ const server = fastify({
       : false,
 }).withTypeProvider<ZodTypeProvider>()
 
-server.register(fastifyCors, {
+api.register(fastifyCors, {
   origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
 })
 
-server.setSerializerCompiler(serializerCompiler)
-server.setValidatorCompiler(validatorCompiler)
+api.setSerializerCompiler(serializerCompiler)
+api.setValidatorCompiler(validatorCompiler)
 
 if (env.NODE_ENV === 'development') {
-  server.register(fastifySwagger, {
+  api.register(fastifySwagger, {
     openapi: {
       info: {
         title: 'LAPES - API',
@@ -62,7 +63,7 @@ if (env.NODE_ENV === 'development') {
     transform: jsonSchemaTransform,
   })
 
-  server.register(fastifyApiReference, {
+  api.register(fastifyApiReference, {
     routePrefix: '/docs',
     configuration: {
       theme: 'deepSpace',
@@ -70,20 +71,21 @@ if (env.NODE_ENV === 'development') {
   })
 }
 
-server.get('/health', () => {
+api.get('/health', () => {
   return { status: 'ok' }
 })
 
-server.register(createMeters)
-server.register(getTelemetryByIp)
-server.register(updateMeter)
-server.register(getMeters)
-server.register(deleteMeter)
-server.register(getDatabaseTelemetry)
+api.register(changeStatusMeters)
+api.register(createMeters)
+api.register(getTelemetryByIp)
+api.register(updateMeter)
+api.register(getMeters)
+api.register(deleteMeter)
+api.register(getDatabaseTelemetry)
 
-server.get('/openapi.json', (_, reply) => {
-  const spec = server.swagger()
+api.get('/openapi.json', (_, reply) => {
+  const spec = api.swagger()
   reply.send(spec)
 })
 
-export { server as api }
+export { api }

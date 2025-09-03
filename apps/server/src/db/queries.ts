@@ -5,7 +5,10 @@ import { measures } from './schema/measures'
 import { meters } from './schema/meters'
 
 export function getAllMeters() {
-  return db.select({ ip: meters.ip }).from(meters)
+  return db
+    .select({ ip: meters.ip })
+    .from(meters)
+    .where(eq(meters.active, true))
 }
 
 export async function insertMeasure(data: Partial<Formatted>, ip: string) {

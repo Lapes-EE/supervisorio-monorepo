@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:16
+    container_name: supervisorio-postgr
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -29,3 +30,16 @@ services:
       -c max_parallel_workers_per_gather=4
       -c max_parallel_workers=12
       -c max_parallel_maintenance_workers=4
+
+  hyper:
+    image: timescale/timescaledb:latest-pg17
+    container_name: hyper_supervisorio-postgr
+    restart: always
+    environment:
+      POSTGRES_USER: ${HYPER_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${HYPER_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${HYPER_POSTGRES_DB}
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./.data/hyper_postgres:/var/lib/postgresql/data

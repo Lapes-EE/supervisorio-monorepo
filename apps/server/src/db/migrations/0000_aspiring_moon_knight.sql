@@ -1,7 +1,7 @@
 CREATE TABLE "measures" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"meter_id" integer NOT NULL,
-	"time" timestamp DEFAULT now() NOT NULL,
+	"time" timestamp with time zone DEFAULT now() NOT NULL,
 	"tensao_fase_neutro_a" real,
 	"tensao_fase_neutro_b" real,
 	"tensao_fase_neutro_c" real,
@@ -60,4 +60,20 @@ CREATE TABLE "measures" (
 	"temperatura_sensor_interno" real
 );
 --> statement-breakpoint
+CREATE TABLE "meters" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
+	"ip" text NOT NULL,
+	"description" text,
+	"active" boolean DEFAULT true NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "meters_ip_unique" UNIQUE("ip")
+);
+--> statement-breakpoint
 ALTER TABLE "measures" ADD CONSTRAINT "measures_meter_id_meters_id_fk" FOREIGN KEY ("meter_id") REFERENCES "public"."meters"("id") ON DELETE cascade ON UPDATE no action;
+
+ALTER TABLE measures DROP CONSTRAINT measures_pkey;
+ALTER TABLE measures ADD PRIMARY KEY (time, id);
+
+-- Transformar a tabela "measures" em hypertable
+SELECT create_hypertable('measures', 'time', chunk_time_interval => interval '1 day');
