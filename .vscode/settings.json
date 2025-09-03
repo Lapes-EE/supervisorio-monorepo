@@ -23,6 +23,5 @@
     "**/routeTree.gen.ts": true,
     "**/gen/**": true
   },
-  "css.lint.unknownAtRules": "ignore",
-  "postman.settings.dotenv-detection-notification-visibility": false
+  "css.lint.unknownAtRules": "ignore"
 }

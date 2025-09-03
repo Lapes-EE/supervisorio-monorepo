@@ -26,6 +26,13 @@
     },
     "api:generate": {
       "cache": false
+    },
+    "ui": {
+      "cache": false,
+      "interactive": true
+    },
+    "test": {
+      "cache": true
     }
   }
 }

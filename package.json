@@ -10,7 +10,9 @@
     "db:migrate": "turbo run db:migrate",
     "db:studio": "turbo run db:studio",
     "api:generate": "turbo run api:generate",
-    "prepare": "husky"
+    "prepare": "husky",
+    "ui": "turbo -F @repo/web ui --",
+    "test": "turbo -F @repo/server test"
   },
   "packageManager": "pnpm@9.4.0",
   "devDependencies": {

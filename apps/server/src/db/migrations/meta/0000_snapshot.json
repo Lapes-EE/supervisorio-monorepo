@@ -370,12 +370,8 @@
           "name": "measures_meter_id_meters_id_fk",
           "tableFrom": "measures",
           "tableTo": "meters",
-          "columnsFrom": [
-            "meter_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["meter_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -436,9 +432,7 @@
         "meters_ip_unique": {
           "name": "meters_ip_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "ip"
-          ]
+          "columns": ["ip"]
         }
       },
       "policies": {},

@@ -1,5 +1,5 @@
 {
-	"name": "web",
+	"name": "@repo/web",
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -7,7 +7,8 @@
 		"build": "vite build && tsc",
 		"serve": "vite preview",
 		"test": "vitest run",
-		"api:generate": "orval"
+		"api:generate": "orval",
+		"ui": "pnpm dlx shadcn@latest add --"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.1.1",
@@ -36,6 +37,7 @@
 		"dayjs": "^1.11.13",
 		"is-ip": "^5.0.1",
 		"lucide-react": "^0.476.0",
+		"next-themes": "^0.4.6",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"react-hook-form": "^7.60.0",
