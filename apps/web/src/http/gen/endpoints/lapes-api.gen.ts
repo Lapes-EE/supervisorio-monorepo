@@ -38,6 +38,8 @@ import type {
   GetTelemetryParams,
   PostMeters201,
   PostMetersBody,
+  PutMetersId200,
+  PutMetersId404,
   PutMetersIdBody
 } from '../model';
 
@@ -45,6 +47,67 @@ import type {
 
 
 
+/**
+ * @summary Change meter status
+ */
+export const patchMeterId = (
+    id: number, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.default.patch(
+      `http://localhost:3333/meter/${id}`,undefined,options
+    );
+  }
+
+
+
+export const getPatchMeterIdMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchMeterId>>, TError,{id: number}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof patchMeterId>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['patchMeterId'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchMeterId>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  patchMeterId(id,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PatchMeterIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchMeterId>>>
+    
+    export type PatchMeterIdMutationError = AxiosError<unknown>
+
+    /**
+ * @summary Change meter status
+ */
+export const usePatchMeterId = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchMeterId>>, TError,{id: number}, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof patchMeterId>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+
+      const mutationOptions = getPatchMeterIdMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Register a new meter
  */
@@ -285,7 +348,7 @@ export function useGetMetersGetTelemetryIp<TData = Awaited<ReturnType<typeof get
 export const putMetersId = (
     id: number,
     putMetersIdBody: PutMetersIdBody, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+ ): Promise<AxiosResponse<PutMetersId200>> => {
     
     
     return axios.default.put(
@@ -296,7 +359,7 @@ export const putMetersId = (
 
 
 
-export const getPutMetersIdMutationOptions = <TError = AxiosError<unknown>,
+export const getPutMetersIdMutationOptions = <TError = AxiosError<PutMetersId404>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putMetersId>>, TError,{id: number;data: PutMetersIdBody}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof putMetersId>>, TError,{id: number;data: PutMetersIdBody}, TContext> => {
 
@@ -323,12 +386,12 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type PutMetersIdMutationResult = NonNullable<Awaited<ReturnType<typeof putMetersId>>>
     export type PutMetersIdMutationBody = PutMetersIdBody
-    export type PutMetersIdMutationError = AxiosError<unknown>
+    export type PutMetersIdMutationError = AxiosError<PutMetersId404>
 
     /**
  * @summary Update an existing meter
  */
-export const usePutMetersId = <TError = AxiosError<unknown>,
+export const usePutMetersId = <TError = AxiosError<PutMetersId404>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putMetersId>>, TError,{id: number;data: PutMetersIdBody}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof putMetersId>>,

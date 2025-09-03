@@ -6,15 +6,26 @@ export interface Sensor {
   value: number[]
   unit: string
   // status: string
+  active: boolean
   hasPhases: boolean
   position: { x: number; y: number } // Posição em porcentagem
   lastUpdate: string
   // limits: { min: number; max: number }
   trend: 'up' | 'down' | 'stable'
-  history: Array<
-    | { time: string; phaseA: number; phaseB: number; phaseC: number }
-    | { time: string; value: number }
-  >
+  history: History
+}
+
+export type SinglePoint = { time: string; value: number }
+export type PhasePoint = {
+  time: string
+  phaseA: number
+  phaseB: number
+  phaseC: number
+}
+
+export type History = {
+  single: SinglePoint[]
+  phases: PhasePoint[]
 }
 
 export interface Position {
@@ -31,6 +42,7 @@ export interface Meter {
   id: number
   name: string
   ip: string
+  active: boolean
   description?: string | null
   unit: string
   position: Position

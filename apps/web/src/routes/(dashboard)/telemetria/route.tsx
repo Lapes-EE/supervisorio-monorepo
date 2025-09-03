@@ -28,10 +28,11 @@ function Dashboard() {
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         <TelemetryForm />
         {data?.map((list) => (
           <TelemetryList
+            active={list.active}
             description={list.description}
             id={list.id}
             ip={list.ip}

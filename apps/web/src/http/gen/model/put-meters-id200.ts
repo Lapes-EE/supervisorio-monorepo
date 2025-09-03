@@ -6,11 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetMeters200Item = {
-  id: number;
-  name: string;
-  ip: string;
-  /** @nullable */
-  description?: string | null;
-  active: boolean;
-};
+export type PutMetersId200 = { [key: string]: unknown };

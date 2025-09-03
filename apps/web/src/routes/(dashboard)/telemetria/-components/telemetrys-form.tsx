@@ -64,7 +64,7 @@ export function TelemetryForm() {
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger asChild className="col-span-3">
+      <DialogTrigger asChild className="col-span-4">
         <Button variant="outline">Cadastrar Medidor</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

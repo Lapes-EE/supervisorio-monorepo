@@ -9,7 +9,13 @@ import {
 } from '@/components/ui/card'
 import type { GetMeters200Item } from '@/http/gen/model'
 
-export function TelemetryList({ id, ip, name, description }: GetMeters200Item) {
+export function TelemetryList({
+  id,
+  ip,
+  name,
+  description,
+  active,
+}: GetMeters200Item) {
   const navigate = useNavigate()
 
   function handleClick(_: React.MouseEvent<HTMLDivElement>) {
@@ -18,9 +24,12 @@ export function TelemetryList({ id, ip, name, description }: GetMeters200Item) {
       params: { telemetryIp: ip },
     })
   }
-
   return (
-    <Card className="relative hover:scale-105 hover:cursor-pointer">
+    <Card
+      className={`relative hover:scale-105 hover:cursor-pointer ${
+        active ? '' : 'border border-red-500'
+      }`}
+    >
       <div className="absolute top-2 right-2 z-50 flex gap-2">
         <Link
           params={{ meterId: id.toString() }}

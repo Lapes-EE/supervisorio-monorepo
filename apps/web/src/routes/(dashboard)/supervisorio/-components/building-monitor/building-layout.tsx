@@ -1,7 +1,11 @@
 import NumberFlow from '@number-flow/react'
-import { useSearch } from '@tanstack/react-router'
+import { useRouteContext, useSearch } from '@tanstack/react-router'
+import { RefreshCcw } from 'lucide-react'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import { usePatchMeterId } from '@/http/gen/endpoints/lapes-api.gen'
 import { toggleSearchSchema } from '../../-types'
 import { useSensors } from './data'
 import type { Sensor } from './types'
@@ -11,10 +15,25 @@ interface BuildingLayoutProps {
 }
 
 export function BuildingLayout({ onSensorClick }: BuildingLayoutProps) {
-  const { period } = useSearch({ from: '/(dashboard)/supervisorio/' })
   const search = useSearch({ from: '/(dashboard)/supervisorio/' })
-  const { data: sensors } = useSensors(search, period)
+  const { queryClient } = useRouteContext({
+    from: '/(dashboard)/supervisorio/',
+  })
+  const { data: sensors } = useSensors(search, search.period)
   const phaseOptions = toggleSearchSchema.shape.phase.def.defaultValue
+  const mutation = usePatchMeterId()
+
+  function handleRefresh(sensorId: number) {
+    console.log('Muatation')
+    mutation.mutate(
+      { id: sensorId },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['Meters', search.type] })
+        },
+      }
+    )
+  }
 
   // function getSensorStatusColor(status: string, isLoading?: boolean) {
   //   if (isLoading) {
@@ -33,78 +52,86 @@ export function BuildingLayout({ onSensorClick }: BuildingLayoutProps) {
     <Card className="relative overflow-hidden">
       <CardContent className="p-0">
         {/* Imagem do corte lateral do prédio */}
-        <div className="relative flex h-[600px] w-full items-start">
+        <div className="relative flex h-full w-full items-start">
           {/** biome-ignore lint/performance/noImgElement: This project doesn't use nextjs for better Image component */}
           <img
             alt="Corte lateral do edifício"
             className="h-full w-full"
             decoding="async"
             loading="lazy"
-            src="/monitor.png"
+            src="/anexoC.svg"
           />
-          {/* Overlay com estrutura básica do prédio */}
-          <div className="pointer-events-none absolute inset-0">
-            {/* Labels dos andares */}
-            <div className="absolute bottom-[78%] left-[2%] rounded bg-white px-2 py-1 font-semibold text-gray-700 text-sm shadow">
-              3° Andar
-            </div>
-            <div className=" absolute bottom-[45%] left-[2%] rounded bg-white px-2 py-1 font-semibold text-gray-700 text-sm shadow">
-              2° Andar
-            </div>
-            <div className="absolute bottom-[15%] left-[2%] rounded bg-white px-2 py-1 font-semibold text-gray-700 text-sm shadow">
-              1° Andar
-            </div>
-          </div>
 
           {/* Sensores clicáveis */}
           {sensors?.map((sensor) => (
             <div
-              className="-translate-x-1/2 -translate-y-1/2 absolute h-20 w-20"
+              className="-translate-x-1/2 -translate-y-1/2 absolute"
               key={sensor.id}
               style={{
                 left: `${sensor.position.x}%`,
                 top: `${sensor.position.y}%`,
               }}
             >
-              <Button
-                className="relative z-10 h-full transform border-2 bg-white p-2 shadow-lg transition-all duration-200 hover:scale-110 hover:bg-white/50"
-                onClick={() => onSensorClick(sensor)}
-                title={`${sensor.name}: ${sensor.value}${sensor.unit}`}
-              >
-                <div className="flex flex-col items-center">
-                  {phaseOptions
-                    .map((phase, idx) =>
-                      search.phase.includes(phase) ? { phase, idx } : null
-                    )
-                    .filter(Boolean)
-                    .map(({ phase, idx }) => {
-                      // Escolhe a cor baseada no índice do valor
-                      const colorVar = [
-                        'var(--chart-1)',
-                        'var(--chart-2)',
-                        'var(--chart-3)',
-                      ][idx % 3]
-                      return (
-                        <div
-                          className="mb-1 flex select-none items-center justify-center gap-1 text-center font-medium text-gray-700 text-sm"
-                          key={phase}
-                          style={{ color: colorVar }}
-                        >
-                          <NumberFlow
-                            className="font-bold text-lg"
-                            format={{ minimumFractionDigits: 2 }}
-                            suffix={sensor.unit}
-                            value={
-                              Array.isArray(sensor.value)
-                                ? sensor.value[idx]
-                                : sensor.value
-                            }
-                          />
-                        </div>
+              {sensor.active ? (
+                <Button
+                  className="relative z-10 h-full transform border-2 bg-background shadow-lg transition-all duration-200 hover:scale-110 hover:bg-primary-foreground/85"
+                  data-active={sensor.active}
+                  onClick={() => onSensorClick(sensor)}
+                  title={`${sensor.name}: ${sensor.value}${sensor.unit}`}
+                >
+                  <div className="flex flex-col items-center">
+                    <Label className="text-foreground">{sensor.name}</Label>
+                    {phaseOptions
+                      .map((phase, idx) =>
+                        search.phase.includes(phase) ? { phase, idx } : null
                       )
-                    })}
-                </div>
-              </Button>
+                      .filter(Boolean)
+                      .map(({ phase, idx }) => {
+                        const colorVar = [
+                          'var(--chart-1)',
+                          'var(--chart-2)',
+                          'var(--chart-3)',
+                        ][idx % 3]
+
+                        return (
+                          <div
+                            className="mb-1 flex select-none items-center justify-center gap-1 text-center font-medium text-gray-700 text-sm"
+                            key={phase}
+                            style={{ color: colorVar }}
+                          >
+                            <NumberFlow
+                              className="font-bold text-lg"
+                              format={{ minimumFractionDigits: 2 }}
+                              suffix={sensor.unit}
+                              value={
+                                Array.isArray(sensor.value)
+                                  ? sensor.value[idx]
+                                  : sensor.value
+                              }
+                            />
+                          </div>
+                        )
+                      })}
+                  </div>
+                </Button>
+              ) : (
+                <Alert
+                  className="relative z-10 w-40 border-2 border-red-500 bg-background shadow-lg"
+                  variant="destructive"
+                >
+                  <AlertTitle>{sensor.name}</AlertTitle>
+                  <AlertDescription className="flex items-center justify-center font-light text-sm">
+                    <p>Está com alguma falha</p>
+                    <Button
+                      onClick={() => handleRefresh(sensor.id)}
+                      size="icon"
+                      variant="ghost"
+                    >
+                      <RefreshCcw />
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
             </div>
           ))}
         </div>

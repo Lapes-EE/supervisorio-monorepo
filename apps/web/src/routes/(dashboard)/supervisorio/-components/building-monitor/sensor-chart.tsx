@@ -8,7 +8,7 @@ import {
 import type { Sensor } from './types'
 
 interface SensorChartProps {
-  sensor: Sensor | null
+  sensor: Sensor
 }
 
 export function SensorChart({ sensor }: SensorChartProps) {
@@ -38,7 +38,7 @@ export function SensorChart({ sensor }: SensorChartProps) {
   }
   return (
     <ChartContainer className="min-h-[200px] w-full" config={chartConfig}>
-      <LineChart accessibilityLayer data={sensor.history}>
+      <LineChart accessibilityLayer data={sensor.history.phases}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="time" />
         <YAxis domain={['dataMin', 'dataMax']} />

@@ -12,7 +12,7 @@ export const Route = createFileRoute('/(dashboard)/supervisorio/')({
 
 export default function Dashboard() {
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen">
       <BuildingMonitor />
 
       <Separator className="my-8" />

@@ -16,3 +16,5 @@ export * from './get-telemetry200-period';
 export * from './post-meters-body';
 export * from './post-meters201';
 export * from './put-meters-id-body';
+export * from './put-meters-id200';
+export * from './put-meters-id404';

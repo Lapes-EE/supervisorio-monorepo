@@ -7,23 +7,23 @@ import type {
 } from '@/http/gen/model'
 import { dayjs } from '@/lib/dayjs'
 import type { ToggleSearchSchema } from '../../-types'
-import type { Meter, Sensor } from './types'
+import type { History, Meter, PhasePoint, Sensor, SinglePoint } from './types'
 
 const fixedPositions: Array<{ x: number; y: number }> = [
   // Primeiro andar
   { x: 75, y: 90 },
-  { x: 20, y: 90 },
   { x: 50, y: 90 },
+  { x: 20, y: 90 },
 
   // Segundo andar
-  { x: 20, y: 58 },
   { x: 50, y: 58 },
+  { x: 20, y: 58 },
   { x: 75, y: 58 },
 
   // Terceiro andar
-  { x: 50, y: 25 },
-  { x: 75, y: 25 },
   { x: 20, y: 25 },
+  { x: 75, y: 25 },
+  { x: 50, y: 25 },
 
   // Auditório
   { x: 85, y: 45 },
@@ -83,25 +83,19 @@ async function getMetersFull(filter: ToggleSearchSchema): Promise<Meter[]> {
 
 function getSensorHistory(
   telemetryData: GetTelemetry200DataItem[],
-  filter: ToggleSearchSchema
-): Array<
-  | { time: string; phaseA: number; phaseB: number; phaseC: number }
-  | { time: string; value: number }
-> {
-  if (!telemetryData || telemetryData.length === 0) {
-    return []
+  filter: ToggleSearchSchema,
+  hasPhase: boolean
+): History {
+  if (!telemetryData?.length) {
+    return { single: [], phases: [] }
   }
 
-  // Para tipos que possuem dados por fase (current, power, voltage)
-  if (
-    filter.type === 'current' ||
-    filter.type === 'power' ||
-    filter.type === 'voltage'
-  ) {
-    return telemetryData.map((item) => {
-      let phaseAValue: number
-      let phaseBValue: number
-      let phaseCValue: number
+  // Sensores trifásicos (current, power, voltage)
+  if (hasPhase) {
+    const phases: PhasePoint[] = telemetryData.map((item) => {
+      let phaseAValue = 0
+      let phaseBValue = 0
+      let phaseCValue = 0
 
       switch (filter.type) {
         case 'current':
@@ -115,13 +109,14 @@ function getSensorHistory(
             ((item.potenciaAparenteA ?? 0) / 1000).toFixed(2)
           )
           phaseBValue = Number(
-            ((item.potenciaAparenteA ?? 0) / 1000).toFixed(2)
+            ((item.potenciaAparenteB ?? 0) / 1000).toFixed(2)
           )
           phaseCValue = Number(
-            ((item.potenciaAparenteA ?? 0) / 1000).toFixed(2)
+            ((item.potenciaAparenteC ?? 0) / 1000).toFixed(2)
           )
           break
 
+        // 'voltage' e default
         default:
           phaseAValue = Number((item.tensaoFaseNeutroA ?? 0).toFixed(2))
           phaseBValue = Number((item.tensaoFaseNeutroB ?? 0).toFixed(2))
@@ -136,11 +131,13 @@ function getSensorHistory(
         phaseC: phaseCValue,
       }
     })
+
+    return { phases, single: [] }
   }
 
-  // Para frequency (valor único)
+  // Valor único (frequency) ou default (tensão fase A como single)
   if (filter.type === 'frequency') {
-    return telemetryData
+    const single: SinglePoint[] = telemetryData
       .filter(
         (item) => item.frequencia !== null && item.frequencia !== undefined
       )
@@ -148,13 +145,15 @@ function getSensorHistory(
         time: dayjs(item.time).format('HH:mm:ss'),
         value: Number((item.frequencia ?? 0).toFixed(2)),
       }))
+    return { single, phases: [] }
   }
 
-  // Default: retorna tensão da fase A como valor único
-  return telemetryData.map((item) => ({
+  const single: SinglePoint[] = telemetryData.map((item) => ({
     time: dayjs(item.time).format('HH:mm:ss'),
     value: Number((item.tensaoFaseNeutroA ?? 0).toFixed(2)),
   }))
+
+  return { single, phases: [] }
 }
 
 // function calculateSensorStatus(
@@ -214,72 +213,80 @@ export function useSensors(
     queryFn: () => getMetersFull(filter),
   })
 
+  function isPhasePoint(point: SinglePoint | PhasePoint): point is PhasePoint {
+    return 'phaseA' in point && 'phaseB' in point && 'phaseC' in point
+  }
+
+  function isSinglePoint(
+    point: SinglePoint | PhasePoint
+  ): point is SinglePoint {
+    return 'value' in point
+  }
+
   const telemetryQueries = useQueries({
     queries:
       meters?.map((meter) => ({
         refetchInterval: 1000 * 30,
         queryKey: ['Telemetry', meter.id, period],
         queryFn: async (): Promise<GetTelemetry200> => {
-          const response = await getTelemetry({
-            period,
-            meterId: meter.id,
-          })
+          const response = await getTelemetry({ period, meterId: meter.id })
           return response.data
         },
         enabled: !!meters,
-      })) || [],
+      })) ?? [],
   })
 
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: TODO: I will refactor this later
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: TODO: i will refactor this later
   const sensorsData = meters?.map((meter, index) => {
-    const telemetryQuery = telemetryQueries[index]
-    const telemetryResponse = telemetryQuery?.data
-    const telemetryData = telemetryResponse?.data || []
-    const history = getSensorHistory(telemetryData, filter)
-    const lastMeasure = history.at(-1)
-    const prevMeasure = history.at(-2)
-
-    // Determina se é um sensor de fases múltiplas ou valor único
+    const telemetryResponse = telemetryQueries[index]?.data
+    const telemetryData = telemetryResponse?.data ?? []
     const hasPhases =
       filter.type === 'current' ||
       filter.type === 'power' ||
       filter.type === 'voltage'
+    const history = getSensorHistory(telemetryData, filter, hasPhases)
 
-    if (hasPhases && lastMeasure && 'phaseA' in lastMeasure) {
-      // Para sensores com múltiplas fases, retorna array com valores das 3 fases
-      const valuePhaseA = lastMeasure.phaseA ?? 0
-      const valuePhaseB = lastMeasure.phaseB ?? 0
-      const valuePhaseC = lastMeasure.phaseC ?? 0
-      const value = [valuePhaseA, valuePhaseB, valuePhaseC]
+    // Últimas medidas conforme o tipo
+    const lastMeasure = hasPhases
+      ? history.phases.at(-1)
+      : history.single.at(-1)
+    const prevMeasure = hasPhases
+      ? history.phases.at(-2)
+      : history.single.at(-2)
 
-      const prevValuePhaseA =
-        prevMeasure && 'phaseA' in prevMeasure ? (prevMeasure.phaseA ?? 0) : 0
-      const prevValuePhaseB =
-        prevMeasure && 'phaseA' in prevMeasure ? (prevMeasure.phaseB ?? 0) : 0
-      const prevValuePhaseC =
-        prevMeasure && 'phaseA' in prevMeasure ? (prevMeasure.phaseC ?? 0) : 0
-
-      // const statusPhaseA = calculateSensorStatus(valuePhaseA, meter.limits)
-      // const statusPhaseB = calculateSensorStatus(valuePhaseB, meter.limits)
-      // const statusPhaseC = calculateSensorStatus(valuePhaseC, meter.limits)
-
-      const avgCurrentValue = value.reduce((sum, val) => sum + val, 0) / 3
+    if (hasPhases && lastMeasure && isPhasePoint(lastMeasure)) {
+      const value = [
+        lastMeasure.phaseA ?? 0,
+        lastMeasure.phaseB ?? 0,
+        lastMeasure.phaseC ?? 0,
+      ]
+      const prevValue = [
+        prevMeasure && isPhasePoint(prevMeasure)
+          ? (prevMeasure.phaseA ?? 0)
+          : 0,
+        prevMeasure && isPhasePoint(prevMeasure)
+          ? (prevMeasure.phaseB ?? 0)
+          : 0,
+        prevMeasure && isPhasePoint(prevMeasure)
+          ? (prevMeasure.phaseC ?? 0)
+          : 0,
+      ]
+      const avgCurrentValue =
+        value.reduce((acc, v) => acc + v, 0) / value.length
       const avgPrevValue =
-        (prevValuePhaseA + prevValuePhaseB + prevValuePhaseC) / 3
+        prevValue.reduce((acc, v) => acc + v, 0) / prevValue.length
       const trend = calculateSensorTrend(
         { value: avgCurrentValue, time: lastMeasure.time },
         { value: avgPrevValue, time: prevMeasure?.time ?? '' }
       )
-
       return {
         id: meter.id,
         description: meter.description || '',
-        // limits: meter.limits,
         name: meter.name,
         position: meter.position,
         unit: meter.unit,
+        active: meter.active,
         hasPhases: true,
-        // status: worstStatus,
         trend,
         value,
         lastUpdate: lastMeasure.time ?? dayjs().format('HH:mm'),
@@ -287,28 +294,24 @@ export function useSensors(
       } satisfies Sensor
     }
 
-    // Para sensores de valor único (frequency e outros)
+    // Valor único
     const singleValue =
-      lastMeasure && 'value' in lastMeasure ? lastMeasure.value : 0
+      lastMeasure && isSinglePoint(lastMeasure) ? lastMeasure.value : 0
     const value = [singleValue]
     const prevValue =
-      prevMeasure && 'value' in prevMeasure ? prevMeasure.value : 0
-
-    // const status = calculateSensorStatus(singleValue, meter.limits)
+      prevMeasure && isSinglePoint(prevMeasure) ? prevMeasure.value : 0
     const trend = calculateSensorTrend(
       { value: singleValue, time: lastMeasure?.time ?? '' },
       { value: prevValue, time: prevMeasure?.time ?? '' }
     )
-
     return {
       id: meter.id,
       description: meter.description || '',
-      // limits: meter.limits,
       name: meter.name,
       position: meter.position,
       unit: meter.unit,
       hasPhases: false,
-      // status,
+      active: meter.active,
       trend,
       value,
       lastUpdate: lastMeasure?.time ?? dayjs().format('HH:mm'),
@@ -316,14 +319,9 @@ export function useSensors(
     } satisfies Sensor
   })
 
-  const isLoading =
-    metersLoading || telemetryQueries.some((query) => query.isLoading)
-  const error =
-    metersError || telemetryQueries.find((query) => query.error)?.error
+  const isLoading = metersLoading || telemetryQueries.some((q) => q.isLoading)
 
-  return {
-    data: sensorsData,
-    isLoading,
-    error,
-  }
+  const error = metersError || telemetryQueries.find((q) => q.error)?.error
+
+  return { data: sensorsData, isLoading, error }
 }
