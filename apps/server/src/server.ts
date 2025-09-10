@@ -6,7 +6,7 @@ import { startTelemetryCollector } from './services/telemetry-collector'
 api
   .listen({ port: env.PORT, host: '0.0.0.0' })
   .then(() => {
-    if (env.NODE_ENV !== 'on') {
+    if (process.env.NODE_ENV !== 'on') {
       startTelemetryCollector()
       startDisabledMetersRetry()
     }
