@@ -6,7 +6,7 @@ export const env = createEnv({
     PORT: z.coerce.number().default(3333),
     API_URL: z.string(),
     NODE_ENV: z
-      .enum(['development', 'production', 'test'])
+      .enum(['development', 'on', 'test'])
       .default('development'),
     HYPER_DATABASE_URL: z.string(),
     HYPER_POSTGRES_USER: z.string(),
