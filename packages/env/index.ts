@@ -13,6 +13,7 @@ export const env = createEnv({
   },
   runtimeEnv: {
     PORT: process.env.PORT,
+    NODE_ENV: process.env.NODE_ENV,
     API_URL: process.env.API_URL,
     HYPER_DATABASE_URL: process.env.HYPER_DATABASE_URL,
     HYPER_POSTGRES_USER: process.env.HYPER_POSTGRES_USER,
