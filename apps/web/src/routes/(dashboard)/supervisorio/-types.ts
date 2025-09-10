@@ -1,8 +1,10 @@
 import z from 'zod'
 import { GetTelemetryPeriod } from '@/http/gen/model'
 
+export const typeOption = ['voltage', 'power', 'current', 'frequency'] as const
+
 export const toggleSearchSchema = z.object({
-  type: z.enum(['voltage', 'power', 'current', 'frequency']).default('voltage'),
+  type: z.enum(typeOption).default('voltage'),
   period: z.enum(GetTelemetryPeriod).default('last_5_minutes'),
   phase: z.array(z.enum(['A', 'B', 'C'])).default(['A', 'B', 'C']),
 })

@@ -1,4 +1,5 @@
-import { useNavigate, useRouteContext, useSearch } from '@tanstack/react-router'
+import type { QueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import {
   Select,
   SelectContent,
@@ -9,12 +10,16 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { GetTelemetryPeriod } from '@/http/gen/model'
+import type { ToggleSearchSchema } from '../../-types'
 
-export function SelectPeriod() {
-  const { period } = useSearch({ from: '/(dashboard)/supervisorio/' })
-  const { queryClient } = useRouteContext({
-    from: '/(dashboard)/supervisorio/',
-  })
+interface SelectPeriodProps {
+  queryClient: QueryClient
+  search: ToggleSearchSchema
+}
+
+export function SelectPeriod({ queryClient, search }: SelectPeriodProps) {
+  const period = search.period
+
   const navigate = useNavigate()
   const periodLabels: Record<string, string> = {
     last_5_minutes: 'Últimos 5 minutos',
@@ -29,7 +34,7 @@ export function SelectPeriod() {
   }
 
   const handleChange = (value: GetTelemetryPeriod) => {
-    navigate({ to: '/supervisorio', search: { period: value } })
+    navigate({ to: '.', search: { period: value } })
     queryClient.invalidateQueries({ queryKey: ['Sensors'] })
   }
 

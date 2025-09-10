@@ -56,7 +56,7 @@ export const patchMeterId = (
     
     
     return axios.default.patch(
-      `http://localhost:3333/meter/${id}`,undefined,options
+      `https://supervisorio-monorepo.onrender.com/meter/${id}`,undefined,options
     );
   }
 
@@ -117,7 +117,7 @@ export const postMeters = (
     
     
     return axios.default.post(
-      `http://localhost:3333/meters`,
+      `https://supervisorio-monorepo.onrender.com/meters`,
       postMetersBody,options
     );
   }
@@ -179,13 +179,13 @@ export const getMeters = (
     
     
     return axios.default.get(
-      `http://localhost:3333/meters`,options
+      `https://supervisorio-monorepo.onrender.com/meters`,options
     );
   }
 
 
 export const getGetMetersQueryKey = () => {
-    return [`http://localhost:3333/meters`] as const;
+    return [`https://supervisorio-monorepo.onrender.com/meters`] as const;
     }
 
     
@@ -265,13 +265,13 @@ export const getMetersGetTelemetryIp = (
     
     
     return axios.default.get(
-      `http://localhost:3333/meters/getTelemetry/${ip}`,options
+      `https://supervisorio-monorepo.onrender.com/meters/getTelemetry/${ip}`,options
     );
   }
 
 
 export const getGetMetersGetTelemetryIpQueryKey = (ip: string,) => {
-    return [`http://localhost:3333/meters/getTelemetry/${ip}`] as const;
+    return [`https://supervisorio-monorepo.onrender.com/meters/getTelemetry/${ip}`] as const;
     }
 
     
@@ -352,7 +352,7 @@ export const putMetersId = (
     
     
     return axios.default.put(
-      `http://localhost:3333/meters/${id}`,
+      `https://supervisorio-monorepo.onrender.com/meters/${id}`,
       putMetersIdBody,options
     );
   }
@@ -414,7 +414,7 @@ export const deleteMetersId = (
     
     
     return axios.default.delete(
-      `http://localhost:3333/meters/${id}`,options
+      `https://supervisorio-monorepo.onrender.com/meters/${id}`,options
     );
   }
 
@@ -476,7 +476,7 @@ export const getTelemetry = (
     
     
     return axios.default.get(
-      `http://localhost:3333/telemetry`,{
+      `https://supervisorio-monorepo.onrender.com/telemetry`,{
     ...options,
         params: {...params, ...options?.params},}
     );
@@ -484,7 +484,7 @@ export const getTelemetry = (
 
 
 export const getGetTelemetryQueryKey = (params?: GetTelemetryParams,) => {
-    return [`http://localhost:3333/telemetry`, ...(params ? [params]: [])] as const;
+    return [`https://supervisorio-monorepo.onrender.com/telemetry`, ...(params ? [params]: [])] as const;
     }
 
     

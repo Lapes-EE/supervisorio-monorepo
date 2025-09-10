@@ -1,9 +1,10 @@
+import { TanStackDevtools } from '@tanstack/react-devtools'
 import type { QueryClient } from '@tanstack/react-query'
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { NewAppSidebar } from '@/components/app-sidebar-new.tsx'
 import { ThemeProvider } from '@/components/theme-provider.tsx'
-import TanStackQueryLayout from '../integrations/tanstack-query/layout.tsx'
+import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -18,14 +19,25 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         disableTransitionOnChange
         storageKey="vite-ui-theme"
       >
-        <div className="flex w-full items-center justify-center">
+        <div className="flex h-full w-full items-center justify-center">
           <NewAppSidebar />
         </div>
-        <Outlet />
+        <div className="flex-1 ">
+          <Outlet />
+        </div>
       </ThemeProvider>
-      <TanStackRouterDevtools />
-
-      <TanStackQueryLayout />
+      <TanStackDevtools
+        config={{
+          position: 'bottom-left',
+        }}
+        plugins={[
+          {
+            name: 'Tanstack Router',
+            render: <TanStackRouterDevtoolsPanel />,
+          },
+          TanStackQueryDevtools,
+        ]}
+      />
     </>
   ),
 })

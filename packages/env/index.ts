@@ -4,13 +4,10 @@ import { z } from 'zod'
 export const env = createEnv({
   server: {
     PORT: z.coerce.number().default(3333),
+    API_URL: z.string(),
     NODE_ENV: z
       .enum(['development', 'production', 'test'])
       .default('development'),
-    DATABASE_URL: z.url(),
-    POSTGRES_USER: z.string(),
-    POSTGRES_PASSWORD: z.string(),
-    POSTGRES_DB: z.string(),
     HYPER_DATABASE_URL: z.string(),
     HYPER_POSTGRES_USER: z.string(),
     HYPER_POSTGRES_PASSWORD: z.string(),
@@ -18,10 +15,7 @@ export const env = createEnv({
   },
   runtimeEnv: {
     PORT: process.env.PORT,
-    DATABASE_URL: process.env.DATABASE_URL,
-    POSTGRES_USER: process.env.POSTGRES_USER,
-    POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
-    POSTGRES_DB: process.env.POSTGRES_DB,
+    API_URL: process.env.API_URL,
     HYPER_DATABASE_URL: process.env.HYPER_DATABASE_URL,
     HYPER_POSTGRES_USER: process.env.HYPER_POSTGRES_USER,
     HYPER_POSTGRES_PASSWORD: process.env.HYPER_POSTGRES_PASSWORD,

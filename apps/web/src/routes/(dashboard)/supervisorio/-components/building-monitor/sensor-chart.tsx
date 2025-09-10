@@ -5,10 +5,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import type { ToggleSearchSchema } from '../../-types'
 import type { Sensor } from './types'
 
 interface SensorChartProps {
   sensor: Sensor
+  search: ToggleSearchSchema
 }
 
 export function SensorChart({ sensor }: SensorChartProps) {

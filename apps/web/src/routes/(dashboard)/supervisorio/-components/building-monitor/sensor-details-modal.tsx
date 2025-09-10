@@ -1,3 +1,4 @@
+import type { QueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -7,7 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { toggleSearchSchema } from '../../-types'
+import { type ToggleSearchSchema, toggleSearchSchema } from '../../-types'
 import { SelectPeriod } from './period-select'
 import { SensorChart } from './sensor-chart'
 import type { Sensor } from './types'
@@ -15,11 +16,15 @@ import type { Sensor } from './types'
 interface SensorDetailsModalProps {
   sensor: Sensor | null
   onClose: () => void
+  queryClient: QueryClient
+  search: ToggleSearchSchema
 }
 
 export function SensorDetailsModal({
   sensor,
   onClose,
+  queryClient,
+  search,
 }: SensorDetailsModalProps) {
   const phaseOptions = toggleSearchSchema.shape.phase.def.defaultValue
   return (
@@ -69,9 +74,9 @@ export function SensorDetailsModal({
               <div>
                 <h4 className="mb-3 flex gap-2 font-semibold text-lg">
                   <p>Histórico</p>
-                  <SelectPeriod />
+                  <SelectPeriod queryClient={queryClient} search={search} />
                 </h4>
-                <SensorChart sensor={sensor} />
+                <SensorChart search={search} sensor={sensor} />
               </div>
 
               <div className="flex gap-2">

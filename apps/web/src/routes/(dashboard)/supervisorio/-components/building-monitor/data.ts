@@ -11,27 +11,27 @@ import type { History, Meter, PhasePoint, Sensor, SinglePoint } from './types'
 
 const fixedPositions: Array<{ x: number; y: number }> = [
   // Primeiro andar
-  { x: 75, y: 90 },
-  { x: 50, y: 90 },
-  { x: 20, y: 90 },
+  { x: 67, y: 92 },
+  { x: 40, y: 92 },
+  { x: 15, y: 92 },
 
   // Segundo andar
-  { x: 50, y: 58 },
-  { x: 20, y: 58 },
-  { x: 75, y: 58 },
+  { x: 40, y: 58 },
+  { x: 15, y: 58 },
+  { x: 67, y: 58 },
 
   // Terceiro andar
-  { x: 20, y: 25 },
-  { x: 75, y: 25 },
-  { x: 50, y: 25 },
+  { x: 15, y: 25 },
+  { x: 67, y: 25 },
+  { x: 40, y: 25 },
 
   // Auditório
-  { x: 85, y: 45 },
-  { x: 95, y: 45 },
+  { x: 88, y: 55 },
+  { x: 94, y: 55 },
 
-  { x: 85, y: 86 }, // Biblioteca
-  { x: 75, y: 75 }, // Elevador
-  { x: 95, y: 90 }, // Geral
+  { x: 91, y: 20 }, // Biblioteca
+  { x: 88, y: 92 }, // Elevador
+  { x: 96, y: 79 }, // Geral
 ]
 
 async function getMetersFull(filter: ToggleSearchSchema): Promise<Meter[]> {
