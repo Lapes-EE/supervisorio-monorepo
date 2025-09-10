@@ -7,7 +7,7 @@
     "env:load": "dotenv -e ../../.env --",
     "pretest": "dotenv -e .env.test.local npx drizzle-kit migrate",
     "test": "dotenv -e .env.test.local vitest run --coverage",
-    "build": "tsc",
+    "build": "tsup src/server.ts && tsc",
     "db:generate": "pnpm env:load drizzle-kit generate",
     "db:migrate": "pnpm env:load drizzle-kit migrate",
     "db:studio": "pnpm env:load drizzle-kit studio"
@@ -37,6 +37,7 @@
     "pino": "^9.7.0",
     "pino-pretty": "^13.0.0",
     "supertest": "^7.1.4",
+    "tsup": "^8.5.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "vitest": "^3.0.5"

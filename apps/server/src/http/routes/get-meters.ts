@@ -37,7 +37,7 @@ export const getMeters: FastifyPluginCallbackZod = (app) => {
           active: schema.meters.active,
         })
         .from(schema.meters)
-        .orderBy(asc(schema.meters.name))
+        .orderBy(asc(schema.meters.id))
 
       return reply.status(200).send(result)
     }
