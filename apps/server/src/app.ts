@@ -31,18 +31,15 @@ export const logger = pino({
 })
 
 const api = fastify({
-  logger:
-    process.env.NODE_ENV === 'development'
-      ? {
-          transport: {
-            target: 'pino-pretty',
-            options: {
-              translateTime: 'HH:MM:ss Z',
-              ignore: 'pid,hostname',
-            },
-          },
-        }
-      : false,
+  logger: {
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        translateTime: 'HH:MM:ss Z',
+        ignore: 'pid,hostname',
+      },
+    },
+  },
 }).withTypeProvider<ZodTypeProvider>()
 
 api.register(fastifyCors, {
@@ -56,34 +53,32 @@ api.register(fastifyJwt, {
 api.setSerializerCompiler(serializerCompiler)
 api.setValidatorCompiler(validatorCompiler)
 
-if (env.NODE_ENV === 'development') {
-  api.register(fastifySwagger, {
-    openapi: {
-      info: {
-        title: 'LAPES - API',
-        description: 'API for supervisory control and data acquisition',
-        version: '1.0.0',
-      },
-      components: {
-        securitySchemes: {
-          bearerAuth: {
-            type: 'http',
-            scheme: 'bearer',
-            bearerFormat: 'JWT',
-          },
+api.register(fastifySwagger, {
+  openapi: {
+    info: {
+      title: 'LAPES - API',
+      description: 'API for supervisory control and data acquisition',
+      version: '1.0.0',
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
         },
       },
     },
-    transform: jsonSchemaTransform,
-  })
+  },
+  transform: jsonSchemaTransform,
+})
 
-  api.register(fastifyApiReference, {
-    routePrefix: '/docs',
-    configuration: {
-      theme: 'deepSpace',
-    },
-  })
-}
+api.register(fastifyApiReference, {
+  routePrefix: '/docs',
+  configuration: {
+    theme: 'deepSpace',
+  },
+})
 
 api.get('/health', () => {
   return { status: 'ok' }
