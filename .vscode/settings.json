@@ -13,15 +13,18 @@
   },
   "files.watcherExclude": {
     "**/routeTree.gen.ts": true,
-    "**/gen/**": true
+    "**/gen/endpoints/**": true,
+    "**/gen/model/**": true
   },
   "search.exclude": {
     "**/routeTree.gen.ts": true,
-    "**/gen/**": true
+    "**/gen/endpoints/**": true,
+    "**/gen/model/**": true
   },
   "files.readonlyInclude": {
     "**/routeTree.gen.ts": true,
-    "**/gen/**": true
+    "**/gen/endpoints/**": true,
+    "**/gen/model/**": true
   },
   "css.lint.unknownAtRules": "ignore"
 }
