@@ -4,13 +4,15 @@ import { isIP } from 'is-ip'
 import z from 'zod'
 import { db } from '@/db/connections.ts'
 import { schema } from '@/db/schema/index.ts'
+import { auth } from '../utils/middleware.auth'
 
 export const updateMeter: FastifyPluginCallbackZod = (app) => {
-  app.put(
+  app.register(auth).put(
     '/meters/:id',
     {
       schema: {
         summary: 'Update an existing meter',
+        security: [{ bearerAuth: [] }],
         tags: ['Meters'],
         params: z.object({
           id: z.coerce.number(),
@@ -32,6 +34,17 @@ export const updateMeter: FastifyPluginCallbackZod = (app) => {
           }),
         },
       },
+      preHandler: [
+        async (request, reply) => {
+          try {
+            await app.authenticate(request, reply)
+          } catch {
+            return reply
+              .status(401)
+              .send({ error: 'Token inválido ou ausente' })
+          }
+        },
+      ],
     },
     async (request, reply) => {
       const { id } = request.params

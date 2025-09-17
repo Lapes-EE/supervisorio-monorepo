@@ -3,18 +3,31 @@ import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import z from 'zod'
 import { db } from '@/db/connections.ts'
 import { schema } from '@/db/schema/index.ts'
+import { auth } from '../utils/middleware.auth'
 
 export const deleteMeter: FastifyPluginCallbackZod = (app) => {
-  app.delete(
+  app.register(auth).delete(
     '/meters/:id',
     {
       schema: {
         summary: 'Delete a meter',
+        security: [{ bearerAuth: [] }],
         tags: ['Meters'],
         params: z.object({
           id: z.coerce.number(),
         }),
       },
+      preHandler: [
+        async (request, reply) => {
+          try {
+            await app.authenticate(request, reply)
+          } catch {
+            return reply
+              .status(401)
+              .send({ error: 'Token inválido ou ausente' })
+          }
+        },
+      ],
     },
     async (request, reply) => {
       const { id } = request.params

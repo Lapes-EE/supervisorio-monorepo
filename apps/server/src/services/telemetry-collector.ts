@@ -8,15 +8,19 @@ import { getAllMeters, insertMeasure } from '@/db/queries'
 import { meters } from '@/db/schema/meters'
 import { getTelemetryFromMeter } from './telemetry-service'
 
+const COLLECT_METERS_DATA_SECONDS = 10 // tempo em minutos para coletar em segundos
+
 const queue = new PQueue({ concurrency: 14 })
 
 // Set para controlar quais medidores estão em processamento
 const processingMeters = new Set<string>()
 
 export function startTelemetryCollector() {
-  logger.info('[telemetry] Coletor agendado a cada 10s.')
+  logger.info(
+    `[telemetry] Coletor agendado a cada ${COLLECT_METERS_DATA_SECONDS}s.`
+  )
 
-  cron.schedule('*/10 * * * * *', async () => {
+  cron.schedule(`*/${COLLECT_METERS_DATA_SECONDS} * * * * *`, async () => {
     logger.info('[telemetry] Iniciando ciclo de coleta...')
 
     try {

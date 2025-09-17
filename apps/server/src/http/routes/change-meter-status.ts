@@ -3,13 +3,15 @@ import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import z from 'zod'
 import { db } from '@/db/connections'
 import { schema } from '@/db/schema'
+import { auth } from '../utils/middleware.auth'
 
 export const changeStatusMeters: FastifyPluginCallbackZod = (app) => {
-  app.patch(
+  app.register(auth).patch(
     '/meter/:id',
     {
       schema: {
         summary: 'Change meter status',
+        security: [{ bearerAuth: [] }],
         tags: ['Meters'],
         params: z.object({
           id: z.coerce.number(),

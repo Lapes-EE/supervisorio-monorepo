@@ -1,4 +1,5 @@
 import fastifyCors from '@fastify/cors'
+import fastifyJwt from '@fastify/jwt'
 import fastifySwagger from '@fastify/swagger'
 import { env } from '@repo/env'
 import fastifyApiReference from '@scalar/fastify-api-reference'
@@ -16,6 +17,7 @@ import { deleteMeter } from './http/routes/delete-meters'
 import { getDatabaseTelemetry } from './http/routes/get-database-telemetry'
 import { getMeters } from './http/routes/get-meters'
 import { getTelemetryByIp } from './http/routes/get-telemetry-by-ip'
+import { login } from './http/routes/login'
 import { updateMeter } from './http/routes/update-meters'
 
 export const logger = pino({
@@ -47,6 +49,9 @@ api.register(fastifyCors, {
   origin: ['http://localhost:3000', 'https://lapes.netlify.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
 })
+api.register(fastifyJwt, {
+  secret: env.JWT_SECRET,
+})
 
 api.setSerializerCompiler(serializerCompiler)
 api.setValidatorCompiler(validatorCompiler)
@@ -58,6 +63,15 @@ if (env.NODE_ENV === 'development') {
         title: 'LAPES - API',
         description: 'API for supervisory control and data acquisition',
         version: '1.0.0',
+      },
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+        },
       },
     },
     transform: jsonSchemaTransform,
@@ -82,6 +96,7 @@ api.register(updateMeter)
 api.register(getMeters)
 api.register(deleteMeter)
 api.register(getDatabaseTelemetry)
+api.register(login)
 
 api.get('/openapi.json', (_, reply) => {
   const spec = api.swagger()
