@@ -7,7 +7,6 @@ export interface Sensor {
   unit: string
   // status: string
   active: boolean
-  hasPhases: boolean
   position: { x: number; y: number } // Posição em porcentagem
   lastUpdate: string
   // limits: { min: number; max: number }
@@ -15,7 +14,6 @@ export interface Sensor {
   history: History
 }
 
-export type SinglePoint = { time: string; value: number }
 export type PhasePoint = {
   time: string
   phaseA: number
@@ -24,7 +22,6 @@ export type PhasePoint = {
 }
 
 export type History = {
-  single: SinglePoint[]
   phases: PhasePoint[]
 }
 

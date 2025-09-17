@@ -58,7 +58,7 @@ export function BuildingLayout({
             className="h-full w-full"
             decoding="async"
             loading="lazy"
-            src="/anexoC.svg"
+            src="/anexoC_f.svg"
           />
 
           {/* Sensores clicáveis */}

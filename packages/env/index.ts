@@ -10,6 +10,8 @@ export const env = createEnv({
     HYPER_POSTGRES_USER: z.string(),
     HYPER_POSTGRES_PASSWORD: z.string(),
     HYPER_POSTGRES_DB: z.string(),
+    JWT_SECRET: z.uuid(),
+    PASSWORD: z.string(),
   },
   runtimeEnv: {
     PORT: process.env.PORT,
@@ -19,6 +21,8 @@ export const env = createEnv({
     HYPER_POSTGRES_USER: process.env.HYPER_POSTGRES_USER,
     HYPER_POSTGRES_PASSWORD: process.env.HYPER_POSTGRES_PASSWORD,
     HYPER_POSTGRES_DB: process.env.HYPER_POSTGRES_DB,
+    JWT_SECRET: process.env.JWT_SECRET,
+    PASSWORD: process.env.PASSWORD,
   },
   emptyStringAsUndefined: true,
 })

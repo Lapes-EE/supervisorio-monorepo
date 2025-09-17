@@ -1,6 +1,6 @@
 import { defineConfig } from "orval";
 
-const backend_url = "https://supervisorio-monorepo.onrender.com"; // Change this to your backend URL
+const backend_url = "http://localhost:3333"; // Change this to your backend URL
 
 export default defineConfig({
 	backend: {
@@ -15,6 +15,10 @@ export default defineConfig({
 			baseUrl: backend_url,
 			// mock: true,
 			override: {
+                // mutator: {
+                //     path: './src/http/gen/custom-instace.ts',
+                //     name: 'customInstance',
+                // },
 				query: {
 					useQuery: true,
 					// useSuspenseQuery: true,

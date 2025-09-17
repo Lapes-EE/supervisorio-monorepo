@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import type { History, Sensor } from './types'
 
-export function useChartZoom<T extends boolean>(sensor?: Sensor, hasPhase?: T) {
-  type DataType = T extends true ? History['phases'] : History['single']
+export function useChartZoom(sensor?: Sensor) {
+  type DataType = History['phases']
 
   const [yDomainTop, setYDomainTop] = useState<number | undefined>(undefined)
   const [yDomainBottom, setYDomainBottom] = useState<number | undefined>(
@@ -18,16 +18,12 @@ export function useChartZoom<T extends boolean>(sensor?: Sensor, hasPhase?: T) {
       return [0, 10]
     }
 
-    let allValues: number[] = []
-    if (hasPhase) {
-      allValues = (data as History['phases']).flatMap((item) => [
-        item.phaseA,
-        item.phaseB,
-        item.phaseC,
-      ])
-    } else {
-      allValues = (data as History['single']).map((item) => item.value)
-    }
+    // Sempre extrai valores das três fases
+    const allValues: number[] = data.flatMap((item) => [
+      item.phaseA,
+      item.phaseB,
+      item.phaseC,
+    ])
 
     if (!allValues.length) {
       return [0, 10]
@@ -49,8 +45,9 @@ export function useChartZoom<T extends boolean>(sensor?: Sensor, hasPhase?: T) {
     }
 
     let reverseOrder = false
-    const data = hasPhase ? sensor.history.phases : sensor.history.single
+    const data = sensor.history.phases
     const dataKeys = data.map((e) => e.time)
+
     let fromIndex = dataKeys.indexOf(from)
     let toIndex = dataKeys.indexOf(to)
 
@@ -68,20 +65,6 @@ export function useChartZoom<T extends boolean>(sensor?: Sensor, hasPhase?: T) {
     }
   }
 
-  // // --- effects ---
-  // useEffect(() => {
-  //   if (sensor?.history) {
-  //     const data = hasPhase ? sensor.history.phases : sensor.history.single
-  //     setVisibleData(data as DataType)
-  //     if (!isZoomed) {
-  //       const [min, max] = getYAxisMinMax(data as DataType)
-  //       setYDomainBottom(min)
-  //       setYDomainTop(max)
-  //     }
-  //   }
-  // }, [sensor, isZoomed, hasPhase])
-
-  // --- actions ---
   const zoomIn = () => {
     if (xDomainLeft === xDomainRight || xDomainRight === '') {
       setXDomainLeft('')
@@ -91,7 +74,6 @@ export function useChartZoom<T extends boolean>(sensor?: Sensor, hasPhase?: T) {
 
     let _xDomainLeft = xDomainLeft
     let _xDomainRight = xDomainRight
-
     const { range, reverseOrder } = getAxisYDomain(_xDomainLeft, _xDomainRight)
     const [bottomPoint, topPoint] = range
 
@@ -112,10 +94,11 @@ export function useChartZoom<T extends boolean>(sensor?: Sensor, hasPhase?: T) {
     }
 
     setIsZoomed(false)
-    const data = hasPhase ? sensor.history.phases : sensor.history.single
+    const data = sensor.history.phases
     setVisibleData(data as DataType)
     setXDomainLeft('')
     setXDomainRight('')
+
     const [min, max] = getYAxisMinMax(data as DataType)
     setYDomainBottom(min)
     setYDomainTop(max)

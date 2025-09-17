@@ -37,7 +37,10 @@ import type {
   GetTelemetry200,
   GetTelemetryParams,
   PostMeters201,
+  PostMeters401,
   PostMetersBody,
+  PostSessionsPassword201,
+  PostSessionsPasswordBody,
   PutMetersId200,
   PutMetersId404,
   PutMetersIdBody
@@ -56,7 +59,7 @@ export const patchMeterId = (
     
     
     return axios.default.patch(
-      `https://supervisorio-monorepo.onrender.com/meter/${id}`,undefined,options
+      `http://localhost:3333/meter/${id}`,undefined,options
     );
   }
 
@@ -117,14 +120,14 @@ export const postMeters = (
     
     
     return axios.default.post(
-      `https://supervisorio-monorepo.onrender.com/meters`,
+      `http://localhost:3333/meters`,
       postMetersBody,options
     );
   }
 
 
 
-export const getPostMetersMutationOptions = <TError = AxiosError<unknown>,
+export const getPostMetersMutationOptions = <TError = AxiosError<PostMeters401>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postMeters>>, TError,{data: PostMetersBody}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof postMeters>>, TError,{data: PostMetersBody}, TContext> => {
 
@@ -151,12 +154,12 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type PostMetersMutationResult = NonNullable<Awaited<ReturnType<typeof postMeters>>>
     export type PostMetersMutationBody = PostMetersBody
-    export type PostMetersMutationError = AxiosError<unknown>
+    export type PostMetersMutationError = AxiosError<PostMeters401>
 
     /**
  * @summary Register a new meter
  */
-export const usePostMeters = <TError = AxiosError<unknown>,
+export const usePostMeters = <TError = AxiosError<PostMeters401>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postMeters>>, TError,{data: PostMetersBody}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postMeters>>,
@@ -179,13 +182,13 @@ export const getMeters = (
     
     
     return axios.default.get(
-      `https://supervisorio-monorepo.onrender.com/meters`,options
+      `http://localhost:3333/meters`,options
     );
   }
 
 
 export const getGetMetersQueryKey = () => {
-    return [`https://supervisorio-monorepo.onrender.com/meters`] as const;
+    return [`http://localhost:3333/meters`] as const;
     }
 
     
@@ -265,13 +268,13 @@ export const getMetersGetTelemetryIp = (
     
     
     return axios.default.get(
-      `https://supervisorio-monorepo.onrender.com/meters/getTelemetry/${ip}`,options
+      `http://localhost:3333/meters/getTelemetry/${ip}`,options
     );
   }
 
 
 export const getGetMetersGetTelemetryIpQueryKey = (ip: string,) => {
-    return [`https://supervisorio-monorepo.onrender.com/meters/getTelemetry/${ip}`] as const;
+    return [`http://localhost:3333/meters/getTelemetry/${ip}`] as const;
     }
 
     
@@ -352,7 +355,7 @@ export const putMetersId = (
     
     
     return axios.default.put(
-      `https://supervisorio-monorepo.onrender.com/meters/${id}`,
+      `http://localhost:3333/meters/${id}`,
       putMetersIdBody,options
     );
   }
@@ -414,7 +417,7 @@ export const deleteMetersId = (
     
     
     return axios.default.delete(
-      `https://supervisorio-monorepo.onrender.com/meters/${id}`,options
+      `http://localhost:3333/meters/${id}`,options
     );
   }
 
@@ -476,7 +479,7 @@ export const getTelemetry = (
     
     
     return axios.default.get(
-      `https://supervisorio-monorepo.onrender.com/telemetry`,{
+      `http://localhost:3333/telemetry`,{
     ...options,
         params: {...params, ...options?.params},}
     );
@@ -484,7 +487,7 @@ export const getTelemetry = (
 
 
 export const getGetTelemetryQueryKey = (params?: GetTelemetryParams,) => {
-    return [`https://supervisorio-monorepo.onrender.com/telemetry`, ...(params ? [params]: [])] as const;
+    return [`http://localhost:3333/telemetry`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -555,3 +558,65 @@ export function useGetTelemetry<TData = Awaited<ReturnType<typeof getTelemetry>>
 
 
 
+/**
+ * @summary Authenticate with e-mail & password
+ */
+export const postSessionsPassword = (
+    postSessionsPasswordBody: PostSessionsPasswordBody, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<PostSessionsPassword201>> => {
+    
+    
+    return axios.default.post(
+      `http://localhost:3333/sessions/password`,
+      postSessionsPasswordBody,options
+    );
+  }
+
+
+
+export const getPostSessionsPasswordMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSessionsPassword>>, TError,{data: PostSessionsPasswordBody}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof postSessionsPassword>>, TError,{data: PostSessionsPasswordBody}, TContext> => {
+
+const mutationKey = ['postSessionsPassword'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postSessionsPassword>>, {data: PostSessionsPasswordBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postSessionsPassword(data,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostSessionsPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof postSessionsPassword>>>
+    export type PostSessionsPasswordMutationBody = PostSessionsPasswordBody
+    export type PostSessionsPasswordMutationError = AxiosError<unknown>
+
+    /**
+ * @summary Authenticate with e-mail & password
+ */
+export const usePostSessionsPassword = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSessionsPassword>>, TError,{data: PostSessionsPasswordBody}, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postSessionsPassword>>,
+        TError,
+        {data: PostSessionsPasswordBody},
+        TContext
+      > => {
+
+      const mutationOptions = getPostSessionsPasswordMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    

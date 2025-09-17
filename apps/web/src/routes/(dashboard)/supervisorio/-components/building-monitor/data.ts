@@ -7,7 +7,7 @@ import type {
 } from '@/http/gen/model'
 import { dayjs } from '@/lib/dayjs'
 import type { ToggleSearchSchema } from '../../-types'
-import type { History, Meter, PhasePoint, Sensor, SinglePoint } from './types'
+import type { History, Meter, PhasePoint, Sensor } from './types'
 
 const fixedPositions: Array<{ x: number; y: number }> = [
   // Primeiro andar
@@ -26,10 +26,10 @@ const fixedPositions: Array<{ x: number; y: number }> = [
   { x: 40, y: 25 },
 
   // Auditório
-  { x: 88, y: 55 },
-  { x: 94, y: 55 },
+  { x: 89, y: 55 },
+  { x: 96, y: 55 },
 
-  { x: 91, y: 20 }, // Biblioteca
+  { x: 96, y: 25 }, // Biblioteca
   { x: 88, y: 92 }, // Elevador
   { x: 96, y: 79 }, // Geral
 ]
@@ -83,77 +83,52 @@ async function getMetersFull(filter: ToggleSearchSchema): Promise<Meter[]> {
 
 function getSensorHistory(
   telemetryData: GetTelemetry200DataItem[],
-  filter: ToggleSearchSchema,
-  hasPhase: boolean
+  filter: ToggleSearchSchema
 ): History {
-  if (!telemetryData?.length) {
-    return { single: [], phases: [] }
-  }
+  // Agora todas as medições são tratadas como trifásicas
+  const phases: PhasePoint[] = telemetryData.map((item) => {
+    let phaseAValue = 0
+    let phaseBValue = 0
+    let phaseCValue = 0
 
-  // Sensores trifásicos (current, power, voltage)
-  if (hasPhase) {
-    const phases: PhasePoint[] = telemetryData.map((item) => {
-      let phaseAValue = 0
-      let phaseBValue = 0
-      let phaseCValue = 0
+    switch (filter.type) {
+      case 'current':
+        phaseAValue = Number((item.correnteA ?? 0).toFixed(2))
+        phaseBValue = Number((item.correnteB ?? 0).toFixed(2))
+        phaseCValue = Number((item.correnteC ?? 0).toFixed(2))
+        break
 
-      switch (filter.type) {
-        case 'current':
-          phaseAValue = Number((item.correnteA ?? 0).toFixed(2))
-          phaseBValue = Number((item.correnteB ?? 0).toFixed(2))
-          phaseCValue = Number((item.correnteC ?? 0).toFixed(2))
-          break
+      case 'power':
+        phaseAValue = Number(((item.potenciaAparenteA ?? 0) / 1000).toFixed(2))
+        phaseBValue = Number(((item.potenciaAparenteB ?? 0) / 1000).toFixed(2))
+        phaseCValue = Number(((item.potenciaAparenteC ?? 0) / 1000).toFixed(2))
+        break
 
-        case 'power':
-          phaseAValue = Number(
-            ((item.potenciaAparenteA ?? 0) / 1000).toFixed(2)
-          )
-          phaseBValue = Number(
-            ((item.potenciaAparenteB ?? 0) / 1000).toFixed(2)
-          )
-          phaseCValue = Number(
-            ((item.potenciaAparenteC ?? 0) / 1000).toFixed(2)
-          )
-          break
-
-        // 'voltage' e default
-        default:
-          phaseAValue = Number((item.tensaoFaseNeutroA ?? 0).toFixed(2))
-          phaseBValue = Number((item.tensaoFaseNeutroB ?? 0).toFixed(2))
-          phaseCValue = Number((item.tensaoFaseNeutroC ?? 0).toFixed(2))
-          break
+      case 'frequency': {
+        // Para frequência, replica o mesmo valor nas três fases
+        const frequencyValue = Number((item.frequencia ?? 0).toFixed(2))
+        phaseAValue = frequencyValue
+        phaseBValue = frequencyValue
+        phaseCValue = frequencyValue
+        break
       }
 
-      return {
-        time: dayjs(item.time).format('HH:mm:ss'),
-        phaseA: phaseAValue,
-        phaseB: phaseBValue,
-        phaseC: phaseCValue,
-      }
-    })
+      default:
+        phaseAValue = Number((item.tensaoFaseNeutroA ?? 0).toFixed(2))
+        phaseBValue = Number((item.tensaoFaseNeutroB ?? 0).toFixed(2))
+        phaseCValue = Number((item.tensaoFaseNeutroC ?? 0).toFixed(2))
+        break
+    }
 
-    return { phases, single: [] }
-  }
+    return {
+      time: dayjs(item.time).format('HH:mm:ss'),
+      phaseA: phaseAValue,
+      phaseB: phaseBValue,
+      phaseC: phaseCValue,
+    }
+  })
 
-  // Valor único (frequency) ou default (tensão fase A como single)
-  if (filter.type === 'frequency') {
-    const single: SinglePoint[] = telemetryData
-      .filter(
-        (item) => item.frequencia !== null && item.frequencia !== undefined
-      )
-      .map((item) => ({
-        time: dayjs(item.time).format('HH:mm:ss'),
-        value: Number((item.frequencia ?? 0).toFixed(2)),
-      }))
-    return { single, phases: [] }
-  }
-
-  const single: SinglePoint[] = telemetryData.map((item) => ({
-    time: dayjs(item.time).format('HH:mm:ss'),
-    value: Number((item.tensaoFaseNeutroA ?? 0).toFixed(2)),
-  }))
-
-  return { single, phases: [] }
+  return { phases }
 }
 
 // function calculateSensorStatus(
@@ -213,16 +188,6 @@ export function useSensors(
     queryFn: () => getMetersFull(filter),
   })
 
-  function isPhasePoint(point: SinglePoint | PhasePoint): point is PhasePoint {
-    return 'phaseA' in point && 'phaseB' in point && 'phaseC' in point
-  }
-
-  function isSinglePoint(
-    point: SinglePoint | PhasePoint
-  ): point is SinglePoint {
-    return 'value' in point
-  }
-
   const telemetryQueries = useQueries({
     queries:
       meters?.map((meter) => ({
@@ -236,40 +201,25 @@ export function useSensors(
       })) ?? [],
   })
 
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: TODO: i will refactor this later
   const sensorsData = meters?.map((meter, index) => {
     const telemetryResponse = telemetryQueries[index]?.data
     const telemetryData = telemetryResponse?.data ?? []
-    const hasPhases =
-      filter.type === 'current' ||
-      filter.type === 'power' ||
-      filter.type === 'voltage'
-    const history = getSensorHistory(telemetryData, filter, hasPhases)
+    const history = getSensorHistory(telemetryData, filter)
 
-    // Últimas medidas conforme o tipo
-    const lastMeasure = hasPhases
-      ? history.phases.at(-1)
-      : history.single.at(-1)
-    const prevMeasure = hasPhases
-      ? history.phases.at(-2)
-      : history.single.at(-2)
+    // Últimas medidas (sempre trifásicas agora)
+    const lastMeasure = history.phases.at(-1)
+    const prevMeasure = history.phases.at(-2)
 
-    if (hasPhases && lastMeasure && isPhasePoint(lastMeasure)) {
+    if (lastMeasure) {
       const value = [
         lastMeasure.phaseA ?? 0,
         lastMeasure.phaseB ?? 0,
         lastMeasure.phaseC ?? 0,
       ]
       const prevValue = [
-        prevMeasure && isPhasePoint(prevMeasure)
-          ? (prevMeasure.phaseA ?? 0)
-          : 0,
-        prevMeasure && isPhasePoint(prevMeasure)
-          ? (prevMeasure.phaseB ?? 0)
-          : 0,
-        prevMeasure && isPhasePoint(prevMeasure)
-          ? (prevMeasure.phaseC ?? 0)
-          : 0,
+        prevMeasure?.phaseA ?? 0,
+        prevMeasure?.phaseB ?? 0,
+        prevMeasure?.phaseC ?? 0,
       ]
       const avgCurrentValue =
         value.reduce((acc, v) => acc + v, 0) / value.length
@@ -279,6 +229,7 @@ export function useSensors(
         { value: avgCurrentValue, time: lastMeasure.time },
         { value: avgPrevValue, time: prevMeasure?.time ?? '' }
       )
+
       return {
         id: meter.id,
         description: meter.description || '',
@@ -286,7 +237,6 @@ export function useSensors(
         position: meter.position,
         unit: meter.unit,
         active: meter.active,
-        hasPhases: true,
         trend,
         value,
         lastUpdate: lastMeasure.time ?? dayjs().format('HH:mm'),
@@ -294,27 +244,17 @@ export function useSensors(
       } satisfies Sensor
     }
 
-    // Valor único
-    const singleValue =
-      lastMeasure && isSinglePoint(lastMeasure) ? lastMeasure.value : 0
-    const value = [singleValue]
-    const prevValue =
-      prevMeasure && isSinglePoint(prevMeasure) ? prevMeasure.value : 0
-    const trend = calculateSensorTrend(
-      { value: singleValue, time: lastMeasure?.time ?? '' },
-      { value: prevValue, time: prevMeasure?.time ?? '' }
-    )
+    // Fallback para quando não há dados
     return {
       id: meter.id,
       description: meter.description || '',
       name: meter.name,
       position: meter.position,
       unit: meter.unit,
-      hasPhases: false,
       active: meter.active,
-      trend,
-      value,
-      lastUpdate: lastMeasure?.time ?? dayjs().format('HH:mm'),
+      trend: 'stable' as const,
+      value: [0, 0, 0],
+      lastUpdate: dayjs().format('HH:mm'),
       history,
     } satisfies Sensor
   })
