@@ -6,6 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
+export * from './delete-meters-id204';
+export * from './delete-meters-id401';
+export * from './delete-meters-id404';
 export * from './get-meters-get-telemetry-ip200';
 export * from './get-meters200-item';
 export * from './get-telemetry-params';
@@ -20,4 +23,5 @@ export * from './post-sessions-password-body';
 export * from './post-sessions-password201';
 export * from './put-meters-id-body';
 export * from './put-meters-id200';
+export * from './put-meters-id401';
 export * from './put-meters-id404';

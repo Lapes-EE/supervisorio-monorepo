@@ -7,6 +7,8 @@
  */
 
 /**
- * Sucesso
+ * Não autorizado, necessita de login
  */
-export type PutMetersId200 = { [key: string]: unknown };
+export type DeleteMetersId401 = {
+  error: string;
+};

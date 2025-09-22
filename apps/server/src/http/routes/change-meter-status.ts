@@ -17,21 +17,26 @@ export const changeStatusMeters: FastifyPluginCallbackZod = (app) => {
           id: z.coerce.number(),
         }),
         response: {
-          204: z.null(),
+          204: z.null().describe('Mudança de estado bem sucedida'),
+          400: z.null().describe('Mudança de estado mal sucedida'),
         },
       },
     },
     async (request, reply) => {
       const { id } = request.params
 
-      await db
-        .update(schema.meters)
-        .set({
-          active: true,
-        })
-        .where(eq(schema.meters.id, id))
+      try {
+        await db
+          .update(schema.meters)
+          .set({
+            active: true,
+          })
+          .where(eq(schema.meters.id, id))
 
-      return reply.status(204).send()
+        return reply.status(204).send()
+      } catch {
+        return reply.status(400).send()
+      }
     }
   )
 }

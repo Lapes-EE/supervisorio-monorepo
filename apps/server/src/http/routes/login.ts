@@ -23,7 +23,8 @@ export const login: FastifyPluginAsyncZod = async (server) => {
             .object({
               token: z.string(),
             })
-            .describe('login is created and token JWT is sended'),
+            .describe('Login realizado, token JWT enviado'),
+          400: z.string().describe('Credenciais inválidas'),
         },
       },
     },
@@ -35,10 +36,14 @@ export const login: FastifyPluginAsyncZod = async (server) => {
         .from(schema.user)
         .where(eq(schema.user.username, username))
 
+      if (!user) {
+        reply.status(400).send('Credenciais inválidas')
+      }
+
       const doesPasswordMatch = await verify(user.password, password)
 
       if (!doesPasswordMatch) {
-        throw new Error('invalid credential')
+        reply.status(400).send('Credenciais inválidas')
       }
 
       const token = await reply.jwtSign(

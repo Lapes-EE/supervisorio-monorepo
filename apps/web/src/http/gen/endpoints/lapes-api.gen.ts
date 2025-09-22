@@ -32,6 +32,9 @@ import type {
 } from 'axios';
 
 import type {
+  DeleteMetersId204,
+  DeleteMetersId401,
+  DeleteMetersId404,
   GetMeters200Item,
   GetMetersGetTelemetryIp200,
   GetTelemetry200,
@@ -42,6 +45,7 @@ import type {
   PostSessionsPassword201,
   PostSessionsPasswordBody,
   PutMetersId200,
+  PutMetersId401,
   PutMetersId404,
   PutMetersIdBody
 } from '../model';
@@ -65,7 +69,7 @@ export const patchMeterId = (
 
 
 
-export const getPatchMeterIdMutationOptions = <TError = AxiosError<unknown>,
+export const getPatchMeterIdMutationOptions = <TError = AxiosError<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchMeterId>>, TError,{id: number}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof patchMeterId>>, TError,{id: number}, TContext> => {
 
@@ -92,12 +96,12 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type PatchMeterIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchMeterId>>>
     
-    export type PatchMeterIdMutationError = AxiosError<unknown>
+    export type PatchMeterIdMutationError = AxiosError<void>
 
     /**
  * @summary Change meter status
  */
-export const usePatchMeterId = <TError = AxiosError<unknown>,
+export const usePatchMeterId = <TError = AxiosError<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchMeterId>>, TError,{id: number}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof patchMeterId>>,
@@ -362,7 +366,7 @@ export const putMetersId = (
 
 
 
-export const getPutMetersIdMutationOptions = <TError = AxiosError<PutMetersId404>,
+export const getPutMetersIdMutationOptions = <TError = AxiosError<PutMetersId401 | PutMetersId404>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putMetersId>>, TError,{id: number;data: PutMetersIdBody}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof putMetersId>>, TError,{id: number;data: PutMetersIdBody}, TContext> => {
 
@@ -389,12 +393,12 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type PutMetersIdMutationResult = NonNullable<Awaited<ReturnType<typeof putMetersId>>>
     export type PutMetersIdMutationBody = PutMetersIdBody
-    export type PutMetersIdMutationError = AxiosError<PutMetersId404>
+    export type PutMetersIdMutationError = AxiosError<PutMetersId401 | PutMetersId404>
 
     /**
  * @summary Update an existing meter
  */
-export const usePutMetersId = <TError = AxiosError<PutMetersId404>,
+export const usePutMetersId = <TError = AxiosError<PutMetersId401 | PutMetersId404>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putMetersId>>, TError,{id: number;data: PutMetersIdBody}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof putMetersId>>,
@@ -413,7 +417,7 @@ export const usePutMetersId = <TError = AxiosError<PutMetersId404>,
  */
 export const deleteMetersId = (
     id: number, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+ ): Promise<AxiosResponse<DeleteMetersId204>> => {
     
     
     return axios.default.delete(
@@ -423,7 +427,7 @@ export const deleteMetersId = (
 
 
 
-export const getDeleteMetersIdMutationOptions = <TError = AxiosError<unknown>,
+export const getDeleteMetersIdMutationOptions = <TError = AxiosError<DeleteMetersId401 | DeleteMetersId404>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMetersId>>, TError,{id: number}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof deleteMetersId>>, TError,{id: number}, TContext> => {
 
@@ -450,12 +454,12 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type DeleteMetersIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteMetersId>>>
     
-    export type DeleteMetersIdMutationError = AxiosError<unknown>
+    export type DeleteMetersIdMutationError = AxiosError<DeleteMetersId401 | DeleteMetersId404>
 
     /**
  * @summary Delete a meter
  */
-export const useDeleteMetersId = <TError = AxiosError<unknown>,
+export const useDeleteMetersId = <TError = AxiosError<DeleteMetersId401 | DeleteMetersId404>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMetersId>>, TError,{id: number}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteMetersId>>,
@@ -574,7 +578,7 @@ export const postSessionsPassword = (
 
 
 
-export const getPostSessionsPasswordMutationOptions = <TError = AxiosError<unknown>,
+export const getPostSessionsPasswordMutationOptions = <TError = AxiosError<string>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSessionsPassword>>, TError,{data: PostSessionsPasswordBody}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof postSessionsPassword>>, TError,{data: PostSessionsPasswordBody}, TContext> => {
 
@@ -601,12 +605,12 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type PostSessionsPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof postSessionsPassword>>>
     export type PostSessionsPasswordMutationBody = PostSessionsPasswordBody
-    export type PostSessionsPasswordMutationError = AxiosError<unknown>
+    export type PostSessionsPasswordMutationError = AxiosError<string>
 
     /**
  * @summary Authenticate with e-mail & password
  */
-export const usePostSessionsPassword = <TError = AxiosError<unknown>,
+export const usePostSessionsPassword = <TError = AxiosError<string>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSessionsPassword>>, TError,{data: PostSessionsPasswordBody}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postSessionsPassword>>,

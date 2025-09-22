@@ -6,6 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
+/**
+ * Não autorizado, necessita de login
+ */
 export type PostMeters401 = {
   error: string;
 };

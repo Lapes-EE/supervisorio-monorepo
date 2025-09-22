@@ -16,6 +16,19 @@ export const deleteMeter: FastifyPluginCallbackZod = (app) => {
         params: z.object({
           id: z.coerce.number(),
         }),
+        response: {
+          204: z.object({}).describe('Sucesso'),
+          404: z
+            .object({
+              error: z.string(),
+            })
+            .describe('Medidor não encontrado'),
+          401: z
+            .object({
+              error: z.string(),
+            })
+            .describe('Não autorizado, necessita de login'),
+        },
       },
       preHandler: [
         async (request, reply) => {
@@ -39,7 +52,7 @@ export const deleteMeter: FastifyPluginCallbackZod = (app) => {
 
       const deletedMeter = result[0]
       if (!deletedMeter) {
-        return reply.status(404).send({ error: 'Meter not found' })
+        return reply.status(404).send({ error: 'Medidor não encontrado  ' })
       }
 
       return reply.status(204).send()

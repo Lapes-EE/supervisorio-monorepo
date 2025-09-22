@@ -6,6 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
+/**
+ * Medidor não encontrado
+ */
 export type PutMetersId404 = {
   error: string;
 };

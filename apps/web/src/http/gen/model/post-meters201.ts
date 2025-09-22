@@ -6,6 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
+/**
+ * Criação de medidor bem sucedida
+ */
 export type PostMeters201 = {
   createdAt: string;
 };

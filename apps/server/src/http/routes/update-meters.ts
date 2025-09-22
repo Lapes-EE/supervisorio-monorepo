@@ -28,10 +28,17 @@ export const updateMeter: FastifyPluginCallbackZod = (app) => {
           description: z.string().optional(),
         }),
         response: {
-          200: z.object({}),
-          404: z.object({
-            error: z.string(),
-          }),
+          200: z.object({}).describe('Sucesso'),
+          401: z
+            .object({
+              error: z.string(),
+            })
+            .describe('Não autorizado, necessita de login'),
+          404: z
+            .object({
+              error: z.string(),
+            })
+            .describe('Medidor não encontrado'),
         },
       },
       preHandler: [

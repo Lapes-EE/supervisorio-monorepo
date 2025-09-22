@@ -12,7 +12,7 @@ export const auth = fastifyPlugin((server: FInstance) => {
       try {
         await request.jwtVerify()
       } catch {
-        reply.code(401).send({ error: 'Invalid token' })
+        reply.code(401).send({ error: 'Token inválido' })
       }
     }
   )

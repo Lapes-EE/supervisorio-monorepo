@@ -7,7 +7,7 @@
  */
 
 /**
- * login is created and token JWT is sended
+ * Login realizado, token JWT enviado
  */
 export type PostSessionsPassword201 = {
   token: string;

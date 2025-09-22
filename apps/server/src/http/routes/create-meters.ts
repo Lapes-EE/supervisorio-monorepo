@@ -24,12 +24,16 @@ export const createMeters: FastifyPluginCallbackZod = (app) => {
           description: z.string().optional(),
         }),
         response: {
-          201: z.object({
-            createdAt: z.date(),
-          }),
-          401: z.object({
-            error: z.string(),
-          }),
+          201: z
+            .object({
+              createdAt: z.date(),
+            })
+            .describe('Criação de medidor bem sucedida'),
+          401: z
+            .object({
+              error: z.string(),
+            })
+            .describe('Não autorizado, necessita de login'),
         },
       },
       preHandler: [

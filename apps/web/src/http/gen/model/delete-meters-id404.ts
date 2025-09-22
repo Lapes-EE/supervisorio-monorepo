@@ -7,6 +7,8 @@
  */
 
 /**
- * Sucesso
+ * Medidor não encontrado
  */
-export type PutMetersId200 = { [key: string]: unknown };
+export type DeleteMetersId404 = {
+  error: string;
+};
