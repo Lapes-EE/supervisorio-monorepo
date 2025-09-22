@@ -4,6 +4,7 @@ import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { NewAppSidebar } from '@/components/app-sidebar-new.tsx'
 import { ThemeProvider } from '@/components/theme-provider.tsx'
+import { Toaster } from '@/components/ui/sonner'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 interface MyRouterContext {
@@ -26,6 +27,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
           <Outlet />
         </div>
       </ThemeProvider>
+      <Toaster />
       <TanStackDevtools
         config={{
           position: 'bottom-left',

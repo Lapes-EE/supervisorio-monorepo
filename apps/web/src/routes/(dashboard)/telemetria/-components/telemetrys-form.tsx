@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouteContext } from '@tanstack/react-router'
+import { useNavigate, useRouteContext } from '@tanstack/react-router'
 import { isIP } from 'is-ip'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -37,9 +38,16 @@ const formCreatemeterSchema = z.object({
 })
 
 export function TelemetryForm() {
+  const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const { queryClient } = useRouteContext({ from: '/(dashboard)/telemetria' })
-  const mutation = usePostMeters()
+  const mutation = usePostMeters({
+    axios: {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    },
+  })
   const form = useForm<z.infer<typeof formCreatemeterSchema>>({
     resolver: zodResolver(formCreatemeterSchema),
     defaultValues: {
@@ -57,6 +65,15 @@ export function TelemetryForm() {
           queryClient.invalidateQueries({ queryKey: ['Meters'] })
           form.reset()
           setOpen(false)
+        },
+        onError: (error) => {
+          toast('Erro ao adicionar medidor', {
+            description: `${error.response?.data.error}, é necessário estar logado`,
+            action: {
+              label: 'Login',
+              onClick: () => navigate({ to: '/login' }),
+            },
+          })
         },
       }
     )

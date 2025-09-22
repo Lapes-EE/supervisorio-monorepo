@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate, useRouteContext } from '@tanstack/react-router'
 import { isIP } from 'is-ip'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -45,7 +46,13 @@ export function TelemetryEditForm({ meters, meterId }: TelemetryEditFormProps) {
   const { queryClient } = useRouteContext({
     from: '/(dashboard)/telemetria',
   })
-  const mutation = usePutMetersId()
+  const mutation = usePutMetersId({
+    axios: {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    },
+  })
   const navigate = useNavigate()
 
   const meterIndex = meters.findIndex((m) => m.id.toString() === meterId)
@@ -65,11 +72,21 @@ export function TelemetryEditForm({ meters, meterId }: TelemetryEditFormProps) {
       { id: Number(meterId), data },
       {
         onSuccess: () => {
+          toast('Medidor editado com sucesso')
           form.reset()
           queryClient.invalidateQueries({ queryKey: ['Meters'] })
           navigate({
             to: '/telemetria',
             from: '/telemetria',
+          })
+        },
+        onError: (error) => {
+          toast('Erro ao editar', {
+            description: `${error.response?.data.error}, é necessário estar logado`,
+            action: {
+              label: 'Login',
+              onClick: () => navigate({ to: '/login' }),
+            },
           })
         },
       }

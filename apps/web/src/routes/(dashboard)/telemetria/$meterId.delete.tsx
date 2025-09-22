@@ -3,6 +3,7 @@ import {
   useNavigate,
   useRouteContext,
 } from '@tanstack/react-router'
+import { toast } from 'sonner'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,7 +26,13 @@ function RouteComponent() {
   const navigate = useNavigate()
   const { meterId } = Route.useParams()
   const { queryClient } = useRouteContext({ from: '/(dashboard)/telemetria' })
-  const mutation = useDeleteMetersId()
+  const mutation = useDeleteMetersId({
+    axios: {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    },
+  })
 
   function handleDeleteMeter() {
     mutation.mutate(
@@ -33,6 +40,15 @@ function RouteComponent() {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ['Meters'] })
+        },
+        onError(error) {
+          toast('Erro ao deletar', {
+            description: `${error.response?.data}, é necessário estar logado`,
+            action: {
+              label: 'Login',
+              onClick: () => navigate({ to: '/login' }),
+            },
+          })
         },
       }
     )

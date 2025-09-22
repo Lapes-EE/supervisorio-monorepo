@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as FullPlanRouteImport } from './routes/full-plan'
 import { Route as dashboardRouteRouteImport } from './routes/(dashboard)/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as dashboardSettingsRouteImport } from './routes/(dashboard)/settings'
 import { Route as dashboardTelemetriaRouteRouteImport } from './routes/(dashboard)/telemetria/route'
 import { Route as dashboardSupervisorioRouteRouteImport } from './routes/(dashboard)/supervisorio/route'
@@ -34,6 +35,11 @@ const dashboardRouteRoute = dashboardRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginIndexRoute = LoginIndexRouteImport.update({
+  id: '/login/',
+  path: '/login/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const dashboardSettingsRoute = dashboardSettingsRouteImport.update({
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/supervisorio': typeof dashboardSupervisorioRouteRouteWithChildren
   '/telemetria': typeof dashboardTelemetriaRouteRouteWithChildren
   '/settings': typeof dashboardSettingsRoute
+  '/login': typeof LoginIndexRoute
   '/telemetria/$telemetryIp': typeof dashboardTelemetriaTelemetryIpRoute
   '/gráficos': typeof dashboardGrChar225ficosIndexRoute
   '/supervisorio/': typeof dashboardSupervisorioIndexRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/': typeof dashboardRouteRouteWithChildren
   '/full-plan': typeof FullPlanRoute
   '/settings': typeof dashboardSettingsRoute
+  '/login': typeof LoginIndexRoute
   '/telemetria/$telemetryIp': typeof dashboardTelemetriaTelemetryIpRoute
   '/gráficos': typeof dashboardGrChar225ficosIndexRoute
   '/supervisorio': typeof dashboardSupervisorioIndexRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/(dashboard)/supervisorio': typeof dashboardSupervisorioRouteRouteWithChildren
   '/(dashboard)/telemetria': typeof dashboardTelemetriaRouteRouteWithChildren
   '/(dashboard)/settings': typeof dashboardSettingsRoute
+  '/login/': typeof LoginIndexRoute
   '/(dashboard)/telemetria/$telemetryIp': typeof dashboardTelemetriaTelemetryIpRoute
   '/(dashboard)/gráficos/': typeof dashboardGrChar225ficosIndexRoute
   '/(dashboard)/supervisorio/': typeof dashboardSupervisorioIndexRoute
@@ -137,6 +146,7 @@ export interface FileRouteTypes {
     | '/supervisorio'
     | '/telemetria'
     | '/settings'
+    | '/login'
     | '/telemetria/$telemetryIp'
     | '/gráficos'
     | '/supervisorio/'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/'
     | '/full-plan'
     | '/settings'
+    | '/login'
     | '/telemetria/$telemetryIp'
     | '/gráficos'
     | '/supervisorio'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/(dashboard)/supervisorio'
     | '/(dashboard)/telemetria'
     | '/(dashboard)/settings'
+    | '/login/'
     | '/(dashboard)/telemetria/$telemetryIp'
     | '/(dashboard)/gráficos/'
     | '/(dashboard)/supervisorio/'
@@ -174,6 +186,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   dashboardRouteRoute: typeof dashboardRouteRouteWithChildren
   FullPlanRoute: typeof FullPlanRoute
+  LoginIndexRoute: typeof LoginIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -197,6 +210,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login/': {
+      id: '/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(dashboard)/settings': {
@@ -322,6 +342,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   dashboardRouteRoute: dashboardRouteRouteWithChildren,
   FullPlanRoute: FullPlanRoute,
+  LoginIndexRoute: LoginIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
