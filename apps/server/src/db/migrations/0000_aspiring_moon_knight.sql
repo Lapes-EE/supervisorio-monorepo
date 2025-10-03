@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS timescaledb;
+
 CREATE TABLE "measures" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"meter_id" integer NOT NULL,
