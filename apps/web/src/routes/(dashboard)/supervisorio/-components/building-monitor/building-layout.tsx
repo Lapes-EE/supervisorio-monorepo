@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { usePatchMeterId } from '@/http/gen/endpoints/lapes-api.gen'
 import { type ToggleSearchSchema, toggleSearchSchema } from '../../-types'
-import { useSensors } from './data'
+import { fixedPositions, useSensors } from './data'
 import type { Sensor } from './types'
 
 interface BuildingLayoutProps {
@@ -26,7 +26,6 @@ export function BuildingLayout({
   const mutation = usePatchMeterId()
 
   function handleRefresh(sensorId: number) {
-    console.log('Mutation')
     mutation.mutate(
       { id: sensorId },
       {
@@ -62,67 +61,76 @@ export function BuildingLayout({
           />
 
           {/* Sensores clicáveis */}
-          {sensors?.map((sensor) => (
-            <div
-              className="-translate-x-1/2 -translate-y-1/2 absolute"
-              key={sensor.id}
-              style={{
-                left: `${sensor.position.x}%`,
-                top: `${sensor.position.y}%`,
-              }}
-            >
-              {sensor.active ? (
-                <Button
-                  className="relative z-10 h-28 w-24 transform border-2 bg-background shadow-lg transition-all duration-200 hover:scale-110 hover:bg-primary-foreground/85"
-                  data-active={sensor.active}
-                  onClick={() => onSensorClick(sensor)}
-                  title={`${sensor.name}: ${sensor.value}${sensor.unit}`}
-                >
-                  <div className="flex flex-col items-center">
-                    <Label className="max-w-[6rem] whitespace-normal break-words text-center text-foreground">
-                      {sensor.name}
-                    </Label>
-                    {activePhases.map(({ phase, idx, color }) => (
-                      <div
-                        className="flex select-none items-center justify-center text-center font-medium text-gray-700 text-xs"
-                        key={phase}
-                        style={{ color }}
+          {/* Sensores clicáveis */}
+          {sensors?.map((sensor) => {
+            const position = fixedPositions.find((pos) => pos.id === sensor.id)
+
+            if (!position) {
+              return null
+            } // caso não exista posição definida para esse sensor.id
+
+            return (
+              <div
+                className="-translate-x-1/2 -translate-y-1/2 absolute"
+                key={sensor.id}
+                style={{
+                  left: `${position.x}%`,
+                  top: `${position.y}%`,
+                }}
+              >
+                {sensor.active ? (
+                  <Button
+                    className="relative z-10 h-28 w-24 transform border-2 bg-background shadow-lg transition-all duration-200 hover:scale-110 hover:bg-primary-foreground/85"
+                    data-active={sensor.active}
+                    onClick={() => onSensorClick(sensor)}
+                    title={`${sensor.name}: ${sensor.value}${sensor.unit}`}
+                  >
+                    <div className="flex flex-col items-center">
+                      <Label className="max-w-[6rem] whitespace-normal break-words text-center text-foreground">
+                        {sensor.id} - {sensor.name}
+                      </Label>
+                      {activePhases.map(({ phase, idx, color }) => (
+                        <div
+                          className="flex select-none items-center justify-center text-center font-medium text-gray-700 text-xs"
+                          key={phase}
+                          style={{ color }}
+                        >
+                          <NumberFlow
+                            className="font-bold text-lg"
+                            format={{ minimumFractionDigits: 2 }}
+                            prefix={`${phase} `}
+                            suffix={sensor.unit}
+                            value={
+                              Array.isArray(sensor.value)
+                                ? sensor.value[idx]
+                                : sensor.value
+                            }
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </Button>
+                ) : (
+                  <Alert
+                    className="relative z-10 w-40 border-2 border-red-500 bg-background shadow-lg"
+                    variant="destructive"
+                  >
+                    <AlertTitle>{sensor.name}</AlertTitle>
+                    <AlertDescription className="flex items-center justify-center font-light text-sm">
+                      <p>Está com alguma falha</p>
+                      <Button
+                        onClick={() => handleRefresh(sensor.id)}
+                        size="icon"
+                        variant="ghost"
                       >
-                        <NumberFlow
-                          className="font-bold text-lg"
-                          format={{ minimumFractionDigits: 2 }}
-                          prefix={`${phase} `}
-                          suffix={sensor.unit}
-                          value={
-                            Array.isArray(sensor.value)
-                              ? sensor.value[idx]
-                              : sensor.value
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </Button>
-              ) : (
-                <Alert
-                  className="relative z-10 w-40 border-2 border-red-500 bg-background shadow-lg"
-                  variant="destructive"
-                >
-                  <AlertTitle>{sensor.name}</AlertTitle>
-                  <AlertDescription className="flex items-center justify-center font-light text-sm">
-                    <p>Está com alguma falha</p>
-                    <Button
-                      onClick={() => handleRefresh(sensor.id)}
-                      size="icon"
-                      variant="ghost"
-                    >
-                      <RefreshCcw />
-                    </Button>
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
-          ))}
+                        <RefreshCcw />
+                      </Button>
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            )
+          })}
         </div>
       </CardContent>
     </Card>

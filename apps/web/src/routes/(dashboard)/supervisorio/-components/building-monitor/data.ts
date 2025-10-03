@@ -9,29 +9,32 @@ import { dayjs } from '@/lib/dayjs'
 import type { ToggleSearchSchema } from '../../-types'
 import type { History, Meter, PhasePoint, Sensor } from './types'
 
-const fixedPositions: Array<{ x: number; y: number }> = [
+export const fixedPositions: Array<{ id: number; x: number; y: number }> = [
   // Primeiro andar
-  { x: 67, y: 92 },
-  { x: 40, y: 92 },
-  { x: 15, y: 92 },
+  { id: 6, x: 15, y: 92 },
+  { id: 10, x: 40, y: 92 },
+  { id: 14, x: 67, y: 92 },
 
   // Segundo andar
-  { x: 40, y: 58 },
-  { x: 15, y: 58 },
-  { x: 67, y: 58 },
+  { id: 8, x: 15, y: 58 },
+  { id: 4, x: 40, y: 58 },
+  { id: 13, x: 67, y: 58 },
 
   // Terceiro andar
-  { x: 15, y: 25 },
-  { x: 67, y: 25 },
-  { x: 40, y: 25 },
+  { id: 11, x: 15, y: 25 },
+  { id: 5, x: 40, y: 25 },
+  { id: 3, x: 67, y: 25 },
+
+  // Biblioteca
+  { id: 12, x: 96, y: 25 },
 
   // Auditório
-  { x: 89, y: 55 },
-  { x: 96, y: 55 },
+  { id: 9, x: 89, y: 55 },
+  { id: 1, x: 96, y: 55 },
 
-  { x: 96, y: 25 }, // Biblioteca
-  { x: 88, y: 92 }, // Elevador
-  { x: 96, y: 79 }, // Geral
+  // Elevador e Geral
+  { id: 7, x: 88, y: 92 },
+  { id: 2, x: 96, y: 79 },
 ]
 
 async function getMetersFull(filter: ToggleSearchSchema): Promise<Meter[]> {

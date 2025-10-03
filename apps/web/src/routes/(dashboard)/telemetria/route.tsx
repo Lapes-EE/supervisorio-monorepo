@@ -13,7 +13,6 @@ export const Route = createFileRoute('/(dashboard)/telemetria')({
 
 function Dashboard() {
   const data = Route.useLoaderData()
-  console.log(data)
 
   const matchRoute = useMatchRoute()
 

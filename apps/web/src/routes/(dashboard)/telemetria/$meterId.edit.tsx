@@ -8,6 +8,5 @@ export const Route = createFileRoute('/(dashboard)/telemetria/$meterId/edit')({
 function RouteComponent() {
   const { meterId } = Route.useParams()
   const data = useLoaderData({ from: '/(dashboard)/telemetria' })
-  console.log(data)
   return <TelemetryEditForm meterId={meterId} meters={data} />
 }
