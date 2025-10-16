@@ -7,7 +7,7 @@
  */
 
 export type GetTelemetry200DataItem = {
-  id: number;
+  id?: number;
   meterId: number;
   time: string;
   /** @nullable */

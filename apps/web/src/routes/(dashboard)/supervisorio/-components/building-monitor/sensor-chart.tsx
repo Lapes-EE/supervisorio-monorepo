@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
 import {
   type ChartConfig,
@@ -6,6 +7,7 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart'
 import type { ToggleSearchSchema } from '../../-types'
+import { useSensors } from './data'
 import type { Sensor } from './types'
 
 interface SensorChartProps {
@@ -13,7 +15,13 @@ interface SensorChartProps {
   search: ToggleSearchSchema
 }
 
-export function SensorChart({ sensor }: SensorChartProps) {
+export function SensorChart({ sensor, search }: SensorChartProps) {
+  const { data: sensors } = useSensors(search, search.period)
+
+  const updatedSensor = useMemo(() => {
+    return sensors?.find((s) => s.id === sensor.id) || sensor
+  }, [sensors, sensor.id, sensor])
+
   const chartConfig = {
     value: {
       label: 'Valor',
@@ -40,7 +48,7 @@ export function SensorChart({ sensor }: SensorChartProps) {
   }
   return (
     <ChartContainer className="min-h-[200px] w-full" config={chartConfig}>
-      <LineChart accessibilityLayer data={sensor.history.phases}>
+      <LineChart accessibilityLayer data={updatedSensor.history.phases}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="time" />
         <YAxis domain={['dataMin', 'dataMax']} />

@@ -3,6 +3,7 @@ import { getMeters, getTelemetry } from '@/http/gen/endpoints/lapes-api.gen'
 import type {
   GetTelemetry200,
   GetTelemetry200DataItem,
+  GetTelemetryAggregation,
   GetTelemetryPeriod,
 } from '@/http/gen/model'
 import { dayjs } from '@/lib/dayjs'
@@ -191,13 +192,55 @@ export function useSensors(
     queryFn: () => getMetersFull(filter),
   })
 
+  const aggregation: GetTelemetryAggregation = (() => {
+    switch (period) {
+      case 'last_5_minutes':
+        return 'raw'
+
+      case 'last_30_minutes':
+        return '30 seconds'
+
+      case 'last_hour':
+        return '1 minute'
+
+      case 'last_6_hours':
+        return '5 minute'
+
+      case 'last_12_hours':
+        return '10 minute'
+
+      case 'last_24_hours':
+        return '20 minute'
+
+      case 'today':
+        return '30 minute'
+
+      case 'last_7_days':
+        return '1 hour'
+
+      case 'this_month':
+      case 'last_30_days':
+        return '3 hours'
+
+      case 'this_year':
+        return '1 day'
+
+      default:
+        return 'raw'
+    }
+  })()
+
   const telemetryQueries = useQueries({
     queries:
       meters?.map((meter) => ({
         refetchInterval: 1000 * 30,
         queryKey: ['Telemetry', meter.id, period],
         queryFn: async (): Promise<GetTelemetry200> => {
-          const response = await getTelemetry({ period, meterId: meter.id })
+          const response = await getTelemetry({
+            period,
+            meterId: meter.id,
+            aggregation,
+          })
           return response.data
         },
         enabled: !!meters,

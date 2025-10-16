@@ -13,4 +13,5 @@ export type GetTelemetry200 = {
   total: number;
   period: GetTelemetry200Period;
   nullCount: number;
+  aggregation: string;
 };

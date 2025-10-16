@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { GetTelemetryPeriod } from './get-telemetry-period';
+import type { GetTelemetryAggregation } from './get-telemetry-aggregation';
 
 export type GetTelemetryParams = {
 /**
@@ -21,4 +22,5 @@ startDate?: string;
  */
 endDate?: string;
 period?: GetTelemetryPeriod;
+aggregation?: GetTelemetryAggregation;
 };

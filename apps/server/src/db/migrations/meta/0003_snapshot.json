@@ -369,13 +369,9 @@
         "measures_meter_id_meters_id_fk": {
           "name": "measures_meter_id_meters_id_fk",
           "tableFrom": "measures",
-          "columnsFrom": [
-            "meter_id"
-          ],
+          "columnsFrom": ["meter_id"],
           "tableTo": "meters",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -435,9 +431,7 @@
       "uniqueConstraints": {
         "meters_ip_unique": {
           "name": "meters_ip_unique",
-          "columns": [
-            "ip"
-          ],
+          "columns": ["ip"],
           "nullsNotDistinct": false
         }
       },

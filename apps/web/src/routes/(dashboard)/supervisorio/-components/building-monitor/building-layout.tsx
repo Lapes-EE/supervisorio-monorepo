@@ -4,6 +4,7 @@ import { RefreshCcw } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Image } from '@/components/ui/image'
 import { Label } from '@/components/ui/label'
 import { usePatchMeterId } from '@/http/gen/endpoints/lapes-api.gen'
 import { type ToggleSearchSchema, toggleSearchSchema } from '../../-types'
@@ -51,11 +52,10 @@ export function BuildingLayout({
       <CardContent className="p-2">
         {/* Imagem do corte lateral do prédio */}
         <div className="relative flex h-full w-full items-start">
-          {/** biome-ignore lint/performance/noImgElement: This project doesn't use nextjs for better Image component */}
-          <img
+          {/** FALLBACK */}
+          <Image
             alt="Corte lateral do edifício"
-            className="h-full w-full"
-            decoding="async"
+            blurSrc="/anexoC_f_blur.png"
             loading="lazy"
             src="/anexoC_f.svg"
           />
@@ -71,7 +71,7 @@ export function BuildingLayout({
 
             return (
               <div
-                className="-translate-x-1/2 -translate-y-1/2 absolute"
+                className="-translate-x-1/2 -translate-y-1/2 absolute z-50"
                 key={sensor.id}
                 style={{
                   left: `${position.x}%`,
@@ -80,14 +80,14 @@ export function BuildingLayout({
               >
                 {sensor.active ? (
                   <Button
-                    className="relative z-10 h-28 w-24 transform border-2 bg-background shadow-lg transition-all duration-200 hover:scale-110 hover:bg-primary-foreground/85"
+                    className="relative h-28 w-24 transform border-2 bg-background shadow-lg transition-all duration-200 hover:scale-110 hover:bg-primary-foreground/85"
                     data-active={sensor.active}
                     onClick={() => onSensorClick(sensor)}
                     title={`${sensor.name}: ${sensor.value}${sensor.unit}`}
                   >
                     <div className="flex flex-col items-center">
                       <Label className="max-w-[6rem] whitespace-normal break-words text-center text-foreground">
-                        {sensor.id} - {sensor.name}
+                        {sensor.name}
                       </Label>
                       {activePhases.map(({ phase, idx, color }) => (
                         <div

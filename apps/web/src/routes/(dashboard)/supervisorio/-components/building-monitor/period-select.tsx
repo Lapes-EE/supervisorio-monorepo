@@ -23,6 +23,7 @@ export function SelectPeriod({ queryClient, search }: SelectPeriodProps) {
   const navigate = useNavigate()
   const periodLabels: Record<string, string> = {
     last_5_minutes: 'Últimos 5 minutos',
+    last_30_minutes: 'Últimos 30 minutos',
     last_hour: 'Última hora',
     last_6_hours: 'Últimas 6 horas',
     last_12_hours: 'Últimas 12 horas',
@@ -31,6 +32,7 @@ export function SelectPeriod({ queryClient, search }: SelectPeriodProps) {
     last_7_days: 'Últimos 7 dias',
     this_month: 'Este mês',
     last_30_days: 'Últimos 30 dias',
+    this_year: 'Este ano',
   }
 
   const handleChange = (value: GetTelemetryPeriod) => {

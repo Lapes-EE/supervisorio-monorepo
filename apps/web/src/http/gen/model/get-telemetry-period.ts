@@ -13,6 +13,7 @@ export type GetTelemetryPeriod = typeof GetTelemetryPeriod[keyof typeof GetTelem
 export const GetTelemetryPeriod = {
   last_5_minutes: 'last_5_minutes',
   last_hour: 'last_hour',
+  last_30_minutes: 'last_30_minutes',
   last_6_hours: 'last_6_hours',
   last_12_hours: 'last_12_hours',
   last_24_hours: 'last_24_hours',
@@ -20,4 +21,5 @@ export const GetTelemetryPeriod = {
   last_7_days: 'last_7_days',
   this_month: 'this_month',
   last_30_days: 'last_30_days',
+  this_year: 'this_year',
 } as const;

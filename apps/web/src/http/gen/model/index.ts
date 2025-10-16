@@ -11,6 +11,7 @@ export * from './delete-meters-id401';
 export * from './delete-meters-id404';
 export * from './get-meters-get-telemetry-ip200';
 export * from './get-meters200-item';
+export * from './get-telemetry-aggregation';
 export * from './get-telemetry-params';
 export * from './get-telemetry-period';
 export * from './get-telemetry200';
