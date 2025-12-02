@@ -1,0 +1,486 @@
+{
+  "id": "2a6db9ba-9a93-4a29-b2de-f1233ff85513",
+  "prevId": "d3c03479-d6a5-420b-b7ac-fdf24a9f0316",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.measures": {
+      "name": "measures",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "meter_id": {
+          "name": "meter_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "time": {
+          "name": "time",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "tensao_fase_neutro_a": {
+          "name": "tensao_fase_neutro_a",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tensao_fase_neutro_b": {
+          "name": "tensao_fase_neutro_b",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tensao_fase_neutro_c": {
+          "name": "tensao_fase_neutro_c",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tensao_fase_fase_ab": {
+          "name": "tensao_fase_fase_ab",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tensao_fase_fase_bc": {
+          "name": "tensao_fase_fase_bc",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tensao_fase_fase_ca": {
+          "name": "tensao_fase_fase_ca",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "frequencia": {
+          "name": "frequencia",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "corrente_a": {
+          "name": "corrente_a",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "corrente_b": {
+          "name": "corrente_b",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "corrente_c": {
+          "name": "corrente_c",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "corrente_de_neutro_medido": {
+          "name": "corrente_de_neutro_medido",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "corrente_de_neutro_calculado": {
+          "name": "corrente_de_neutro_calculado",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_aparente_a": {
+          "name": "potencia_aparente_a",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_aparente_b": {
+          "name": "potencia_aparente_b",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_aparente_c": {
+          "name": "potencia_aparente_c",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_aparente_total_soma_aritmetica": {
+          "name": "potencia_aparente_total_soma_aritmetica",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_aparente_total_soma_vetorial": {
+          "name": "potencia_aparente_total_soma_vetorial",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_ativa_fundamental_a": {
+          "name": "potencia_ativa_fundamental_a",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_ativa_harmonica_a": {
+          "name": "potencia_ativa_harmonica_a",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_ativa_fundamental_harmonica_a": {
+          "name": "potencia_ativa_fundamental_harmonica_a",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_ativa_fundamental_b": {
+          "name": "potencia_ativa_fundamental_b",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_ativa_harmonica_b": {
+          "name": "potencia_ativa_harmonica_b",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_ativa_fundamental_harmonica_b": {
+          "name": "potencia_ativa_fundamental_harmonica_b",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_ativa_fundamental_c": {
+          "name": "potencia_ativa_fundamental_c",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_ativa_harmonica_c": {
+          "name": "potencia_ativa_harmonica_c",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_ativa_fundamental_harmonica_c": {
+          "name": "potencia_ativa_fundamental_harmonica_c",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_ativa_fundamental_total": {
+          "name": "potencia_ativa_fundamental_total",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_ativa_harmonica_total": {
+          "name": "potencia_ativa_harmonica_total",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_ativa_fundamental_harmonica_total": {
+          "name": "potencia_ativa_fundamental_harmonica_total",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_reativa_a": {
+          "name": "potencia_reativa_a",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_reativa_b": {
+          "name": "potencia_reativa_b",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_reativa_c": {
+          "name": "potencia_reativa_c",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_reativa_total_soma_aritmetica": {
+          "name": "potencia_reativa_total_soma_aritmetica",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potencia_reativa_total_soma_vetorial": {
+          "name": "potencia_reativa_total_soma_vetorial",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "angulo_fase_a": {
+          "name": "angulo_fase_a",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "angulo_fase_b": {
+          "name": "angulo_fase_b",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "angulo_fase_c": {
+          "name": "angulo_fase_c",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phi_fase_a": {
+          "name": "phi_fase_a",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phi_fase_b": {
+          "name": "phi_fase_b",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phi_fase_c": {
+          "name": "phi_fase_c",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fp_real_fase_a": {
+          "name": "fp_real_fase_a",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fp_real_fase_b": {
+          "name": "fp_real_fase_b",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fp_real_fase_c": {
+          "name": "fp_real_fase_c",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fp_real_total_soma_aritmetica": {
+          "name": "fp_real_total_soma_aritmetica",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fp_real_total_soma_vetorial": {
+          "name": "fp_real_total_soma_vetorial",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fp_deslocamento_fase_a": {
+          "name": "fp_deslocamento_fase_a",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fp_deslocamento_fase_b": {
+          "name": "fp_deslocamento_fase_b",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fp_deslocamento_fase_c": {
+          "name": "fp_deslocamento_fase_c",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fp_deslocamento_total": {
+          "name": "fp_deslocamento_total",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "thd_tensao_a": {
+          "name": "thd_tensao_a",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "thd_tensao_b": {
+          "name": "thd_tensao_b",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "thd_tensao_c": {
+          "name": "thd_tensao_c",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "thd_corrente_a": {
+          "name": "thd_corrente_a",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "thd_corrente_b": {
+          "name": "thd_corrente_b",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "thd_corrente_c": {
+          "name": "thd_corrente_c",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "temperatura_sensor_interno": {
+          "name": "temperatura_sensor_interno",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "measures_meter_id_meters_id_fk": {
+          "name": "measures_meter_id_meters_id_fk",
+          "tableFrom": "measures",
+          "columnsFrom": ["meter_id"],
+          "tableTo": "meters",
+          "columnsTo": ["id"],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.meters": {
+      "name": "meters",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ip": {
+          "name": "ip",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "meters_ip_unique": {
+          "name": "meters_ip_unique",
+          "columns": ["ip"],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user": {
+      "name": "user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "views": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
