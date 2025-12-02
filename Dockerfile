@@ -5,13 +5,14 @@ RUN corepack enable
 RUN apk add --no-cache libc6-compat
 
 # ---------------------------------------------------
-# Prune Stage: Isolate the web scope
+# Prune Stage: Isolate the target project
 # ---------------------------------------------------
 FROM base AS pruner
 WORKDIR /app
 RUN pnpm add -g turbo
 COPY . .
-RUN pnpm exec turbo prune --scope=@repo/web --docker
+ARG PROJECT
+RUN turbo prune --scope=@repo/${PROJECT} --docker
 
 # ---------------------------------------------------
 # Installer Stage: Install deps and build
@@ -24,28 +25,42 @@ COPY --from=pruner /app/out/json/ .
 COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 
 # Install dependencies
+# We use --no-frozen-lockfile because prune might create slight inconsistencies that are safe to ignore here
 RUN pnpm install --no-frozen-lockfile
 
 # Copy source code
 COPY --from=pruner /app/out/full/ .
 
-# Build the web app
-# Note: If you need build-time env vars (like VITE_API_URL), define ARGs here
-RUN pnpm exec turbo run build --filter=@repo/web...
+# Build the project
+ARG PROJECT
+RUN pnpm exec turbo run build --filter=@repo/${PROJECT}...
 
 # ---------------------------------------------------
-# Runner Stage: Serve with Nginx
+# Runner Stage: Server (Node.js)
 # ---------------------------------------------------
-FROM nginx:alpine AS runner
+FROM base AS server
+WORKDIR /app
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 fastify
+
+COPY --from=installer --chown=fastify:nodejs /app .
+
+WORKDIR /app/apps/server
+USER fastify
+
+EXPOSE 3000
+CMD ["node", "dist/server.js"]
+
+# ---------------------------------------------------
+# Runner Stage: Web (Nginx)
+# ---------------------------------------------------
+FROM nginx:alpine AS web
 WORKDIR /usr/share/nginx/html
 
-# Remove default nginx static assets
 RUN rm -rf ./*
 
-# Copy built assets from installer
 COPY --from=installer /app/apps/web/dist .
-
-# Copy custom nginx config (path relative to build context root)
 COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
