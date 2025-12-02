@@ -11,6 +11,7 @@
     "db:migrate": "pnpm env:load drizzle-kit migrate",
     "db:studio": "pnpm env:load drizzle-kit studio"
   },
+  "packageManager": "pnpm@9.4.0",
   "dependencies": {
     "@faker-js/faker": "^9.9.0",
     "@fastify/cors": "^11.0.1",
