@@ -11,7 +11,7 @@ FROM base AS pruner
 WORKDIR /app
 RUN pnpm add -g turbo
 COPY . .
-RUN turbo prune --scope=@repo/server --docker
+RUN pnpm exec turbo prune --scope=@repo/server --docker
 
 # ---------------------------------------------------
 # Installer Stage: Install deps and build
