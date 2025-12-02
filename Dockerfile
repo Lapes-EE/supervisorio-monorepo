@@ -1,67 +1,51 @@
-FROM node:20-alpine AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+FROM node:22-alpine AS base
+RUN apk update
 RUN apk add --no-cache libc6-compat
 
-# ---------------------------------------------------
-# Prune Stage: Isolate the target project
-# ---------------------------------------------------
-FROM base AS pruner
 WORKDIR /app
-RUN pnpm add -g turbo
+
+# ---- Configurar PNPM ----
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+RUN corepack enable && corepack prepare pnpm@9 --activate
+
+# ----
+FROM base AS prepare
+
+RUN pnpm add -g turbo@2.5.5
+
 COPY . .
-ARG PROJECT
-RUN turbo prune --scope=@repo/${PROJECT} --docker
 
-# ---------------------------------------------------
-# Installer Stage: Install deps and build
-# ---------------------------------------------------
-FROM base AS installer
+RUN turbo prune @repo/server --docker
+
+# ----
+FROM base AS builder
 WORKDIR /app
 
-# Copy pruned package definitions
-COPY --from=pruner /app/out/json/ .
-COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=prepare /app/out/json/ .
+COPY pnpm-lock.yaml .
 
-# Install dependencies
-# We use --no-frozen-lockfile because prune might create slight inconsistencies that are safe to ignore here
-RUN pnpm install --no-frozen-lockfile
+RUN pnpm install --frozen-lockfile --prod=false
 
-# Copy source code
-COPY --from=pruner /app/out/full/ .
+COPY --from=prepare /app/out/full/ .
 
-# Build the project
-ARG PROJECT
-RUN pnpm exec turbo run build --filter=@repo/${PROJECT}...
+RUN pnpm turbo build --filter=@repo/server...
 
-# ---------------------------------------------------
-# Runner Stage: Server (Node.js)
-# ---------------------------------------------------
-FROM base AS server
-WORKDIR /app
+# ----
+FROM node:22-alpine AS supervisorio-server
+RUN apk add --no-cache libc6-compat
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 fastify
-
-COPY --from=installer --chown=fastify:nodejs /app .
-
-WORKDIR /app/apps/server
 USER fastify
 
-EXPOSE 3000
-CMD ["node", "dist/server.js"]
+WORKDIR /app
 
-# ---------------------------------------------------
-# Runner Stage: Web (Nginx)
-# ---------------------------------------------------
-FROM nginx:alpine AS web
-WORKDIR /usr/share/nginx/html
+COPY --from=builder /app .
 
-RUN rm -rf ./*
+COPY --from=builder /app/node_modules ./node_modules
 
-COPY --from=installer /app/apps/web/dist .
-COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 3333
 
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", "apps/server/dist/server.js"]

@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm'
 import cron from 'node-cron'
 import PQueue from 'p-queue'
 import pRetry from 'p-retry'
-import { logger } from '@/app'
+import { api } from '@/app'
 import { db } from '@/db/connections'
 import { getAllMeters, insertMeasure } from '@/db/queries'
 import { meters } from '@/db/schema/meters'
@@ -16,21 +16,21 @@ const queue = new PQueue({ concurrency: 14 })
 const processingMeters = new Set<string>()
 
 export function startTelemetryCollector() {
-  logger.info(
+  api.log.info(
     `[telemetry] Coletor agendado a cada ${COLLECT_METERS_DATA_SECONDS}s.`
   )
 
   cron.schedule(`*/${COLLECT_METERS_DATA_SECONDS} * * * * *`, async () => {
-    logger.info('[telemetry] Iniciando ciclo de coleta...')
+    api.log.info('[telemetry] Iniciando ciclo de coleta...')
 
     try {
       const allMeters = await getAllMeters()
-      logger.info(`[telemetry] ${allMeters.length} medidores encontrados.`)
+      api.log.info(`[telemetry] ${allMeters.length} medidores encontrados.`)
 
       for (const meter of allMeters) {
         // Se o medidor já estiver em processamento, pula
         if (processingMeters.has(meter.ip)) {
-          logger.info(
+          api.log.info(
             { ip: meter.ip },
             '[telemetry] Medidor já em processamento, pulando.'
           )
@@ -45,7 +45,7 @@ export function startTelemetryCollector() {
             await pRetry(() => handleMeter(meter.ip), {
               retries: 5,
               onFailedAttempt: (err) => {
-                logger.warn(
+                api.log.warn(
                   {
                     ip: meter.ip,
                     attemptNumber: err.attemptNumber,
@@ -70,32 +70,32 @@ export function startTelemetryCollector() {
         })
       }
     } catch (err) {
-      logger.error({ err }, '[telemetry] Falha ao buscar medidores')
+      api.log.error({ err }, '[telemetry] Falha ao buscar medidores')
     }
   })
 }
 
 async function handleMeter(ip: string) {
-  logger.info({ ip }, '[telemetry] Coletando telemetria...')
+  api.log.info({ ip }, '[telemetry] Coletando telemetria...')
   const data = await getTelemetryFromMeter(ip)
   await insertMeasure(data, ip)
-  logger.info({ ip }, '[telemetry] Dados salvos com sucesso.')
+  api.log.info({ ip }, '[telemetry] Dados salvos com sucesso.')
 }
 
 async function handleMeterFailure(ip: string) {
-  logger.error(
+  api.log.error(
     { ip },
     '[telemetry] Todas as tentativas falharam. Inserindo registro com dados nulos.'
   )
 
   try {
     await insertMeasure({}, ip)
-    logger.info(
+    api.log.info(
       { ip },
       '[telemetry] Registro com dados nulos inserido com sucesso.'
     )
   } catch (insertError) {
-    logger.error(
+    api.log.error(
       { ip, insertError },
       '[telemetry] Falha ao inserir registro com dados nulos'
     )
@@ -104,8 +104,8 @@ async function handleMeterFailure(ip: string) {
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
-  logger.info('[telemetry] Finalizando: aguardando fila esvaziar...')
+  api.log.info('[telemetry] Finalizando: aguardando fila esvaziar...')
   await queue.onIdle()
-  logger.info('[telemetry] Fila vazia. Encerrando processo.')
+  api.log.info('[telemetry] Fila vazia. Encerrando processo.')
   process.exit()
 })

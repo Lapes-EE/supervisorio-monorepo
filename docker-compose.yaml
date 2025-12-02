@@ -1,8 +1,12 @@
+version: "3.9"
+
 services:
-  # Database (TimescaleDB)
+  # ---------------------------
+  # Banco de Dados TimescaleDB
+  # ---------------------------
   db:
     image: timescale/timescaledb:latest-pg17
-    container_name: supervisorio-db-test
+    container_name: supervisorio-db
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -16,40 +20,44 @@ services:
       timeout: 5s
       retries: 5
 
-  # Backend Server
-  server:
+
+  # ---------------------------
+  # Backend (Fastify / Node)
+  # ---------------------------
+  supervisorio-server:
     build:
       context: .
-      dockerfile: Dockerfile
-      target: server
-      args:
-        PROJECT: server
+      dockerfile: Dockerfile          # teu Dockerfile do server
+      target: supervisorio-server     # target do server no Dockerfile
+    container_name: supervisorio-server
     environment:
-      PORT: 3000
-      NODE_ENV: "on"
+      PORT: 3333
       API_URL: http://localhost:3333
+
       # DB Connection
       HYPER_DATABASE_URL: postgres://postgres:password@db:5432/supervisorio
-      HYPER_POSTGRES_USER: postgres
-      HYPER_POSTGRES_PASSWORD: password
-      HYPER_POSTGRES_DB: supervisorio
+
       # Auth
       JWT_SECRET: "d43a102e-dff8-4310-9f8e-8de8188840b5"
       PASSWORD: "$argon2id$v=19$m=65536,t=3,p=4$wSq5mPIYnkzaGwqR5PPlPA$hvuEkrCSf1XD4ybsw+/EpdxgufYBrwXPHesWxq0fhJA"
-      # node
+
     ports:
-      - "3333:3000"
+      - "3333:3333"
+
     depends_on:
       db:
         condition: service_healthy
 
-  # Frontend Web
-  web:
+
+  # ---------------------------
+  # Frontend (Vite + nginx)
+  # ---------------------------
+  supervisorio-web:
     build:
       context: .
-      dockerfile: Dockerfile
-      target: web
-      args:
-        PROJECT: web
+      dockerfile: Dockerfile.web      # Dockerfile especial do web
+    container_name: supervisorio-web
     ports:
-      - "8080:80"
+      - "3000:80"
+    depends_on:
+      - supervisorio-server

@@ -1,4 +1,4 @@
-import { logger } from '@/app'
+import { api } from '@/app'
 import { indices } from '@/http/types/format-telemetry-response'
 import type { Formatted } from '@/http/types/get-telemetry-response'
 
@@ -24,11 +24,11 @@ export async function getTelemetryFromMeter(ip: string): Promise<Formatted> {
       Object.entries(indices).map(([key, idx]) => [key, data.dados[1][idx]])
     ) as Formatted
 
-    logger.debug('[telemetry-service] Telemetria coletada com sucesso.')
+    api.log.debug('[telemetry-service] Telemetria coletada com sucesso.')
 
     return formatted
   } catch (err) {
-    logger.error({ ip, err }, '[telemetry-service] Erro ao coletar telemetria')
+    api.log.error({ ip, err }, '[telemetry-service] Erro ao coletar telemetria')
     throw new Error(`Erro ao coletar telemetria do medidor ${ip}`)
   }
 }

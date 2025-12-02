@@ -10,7 +10,6 @@ import {
   validatorCompiler,
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
-import { pino } from 'pino'
 import { changeStatusMeters } from './http/routes/change-meter-status'
 import { createMeters } from './http/routes/create-meters'
 import { deleteMeter } from './http/routes/delete-meters'
@@ -21,26 +20,8 @@ import { login } from './http/routes/login'
 import { updateMeter } from './http/routes/update-meters'
 import { auth } from './http/utils/middleware.auth'
 
-export const logger = pino({
-  transport: {
-    target: 'pino-pretty',
-    options: {
-      translateTime: 'HH:MM:ss Z',
-      ignore: 'pid,hostname',
-    },
-  },
-})
-
 const api = fastify({
-  logger: {
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        translateTime: 'HH:MM:ss Z',
-        ignore: 'pid,hostname',
-      },
-    },
-  },
+  logger: true,
 }).withTypeProvider<ZodTypeProvider>()
 
 api.register(fastifyCors, {

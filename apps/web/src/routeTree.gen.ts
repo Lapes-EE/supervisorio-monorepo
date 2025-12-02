@@ -111,7 +111,7 @@ const dashboardTelemetriaMeterIdDeleteRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof dashboardRouteRouteWithChildren
+  '/': typeof IndexRoute
   '/full-plan': typeof FullPlanRoute
   '/gráficos': typeof dashboardGrChar225ficosRouteRouteWithChildren
   '/settings': typeof dashboardSettingsRouteRouteWithChildren
@@ -127,7 +127,7 @@ export interface FileRoutesByFullPath {
   '/telemetria/$meterId/edit': typeof dashboardTelemetriaMeterIdEditRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof dashboardRouteRouteWithChildren
+  '/': typeof IndexRoute
   '/full-plan': typeof FullPlanRoute
   '/gráficos': typeof dashboardGrChar225ficosRouteRouteWithChildren
   '/settings': typeof dashboardSettingsRouteRouteWithChildren
@@ -226,8 +226,8 @@ declare module '@tanstack/react-router' {
     }
     '/(dashboard)': {
       id: '/(dashboard)'
-      path: '/'
-      fullPath: '/'
+      path: ''
+      fullPath: ''
       preLoaderRoute: typeof dashboardRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
