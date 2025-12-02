@@ -5,6 +5,8 @@ import { db } from '@/db/connections.ts'
 import { schema } from '@/db/schema/index.ts'
 import { auth } from '../utils/middleware.auth'
 
+const ISSO_SERIAL_REGEX = /^[A-Z0-9]{3}(?:-[A-Z0-9]{3}){3}$/
+
 export const createMeters: FastifyPluginCallbackZod = (app) => {
   app.register(auth).post(
     '/meters',
@@ -20,6 +22,12 @@ export const createMeters: FastifyPluginCallbackZod = (app) => {
             .min(1, 'Meter ip is required')
             .refine((val) => isIP(val), {
               error: 'IP inválido',
+            }),
+          issoSerial: z
+            .string()
+            .min(1, 'Serial is required')
+            .refine((val) => ISSO_SERIAL_REGEX.test(val), {
+              message: 'Serial inválido. Formato esperado: 258-A17-39C-D6A',
             }),
           description: z.string().optional(),
         }),
@@ -39,7 +47,7 @@ export const createMeters: FastifyPluginCallbackZod = (app) => {
       preHandler: [
         async (request, reply) => {
           try {
-            await app.authenticate(request, reply)
+            await request.jwtVerify()
           } catch {
             return reply
               .status(401)
@@ -49,12 +57,13 @@ export const createMeters: FastifyPluginCallbackZod = (app) => {
       ],
     },
     async (request, reply) => {
-      const { name, ip, description } = request.body
+      const { name, ip, description, issoSerial } = request.body
 
       const result = await db
         .insert(schema.meters)
         .values({
           ip,
+          issoSerial,
           name,
           description,
         })

@@ -33,7 +33,7 @@ export const deleteMeter: FastifyPluginCallbackZod = (app) => {
       preHandler: [
         async (request, reply) => {
           try {
-            await app.authenticate(request, reply)
+            await request.jwtVerify()
           } catch {
             return reply
               .status(401)

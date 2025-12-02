@@ -1,9 +1,12 @@
 import request from 'supertest'
 import { expect, test } from 'vitest'
 import { api } from '@/app'
+import { makeMeters } from '../tests/factories/make-meters'
 
 test('Get meters', async () => {
   api.ready()
+
+  await makeMeters()
 
   const response = await request(api.server).get('/meters')
 

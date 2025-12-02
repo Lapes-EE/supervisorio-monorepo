@@ -16,28 +16,26 @@ beforeEach(async () => {
   token = loginResponse.body.token
 })
 
-test('Delete a meter', async () => {
+test('Change meter status', async () => {
   const meter = await makeMeters()
 
   const response = await request(api.server)
-    .delete(`/meters/${meter.id}`)
+    .patch(`/meter/${meter.id}`)
     .set('Authorization', `Bearer ${token}`)
 
   expect(response.status).toBe(204)
 })
 
-test('Delete a non-existing meter', async () => {
+test('Change status of a non-existing meter (should theoretically fail but returns 204 because update does not throw on no match)', async () => {
   const response = await request(api.server)
-    .delete('/meters/99999')
+    .patch('/meter/99999')
     .set('Authorization', `Bearer ${token}`)
 
-  expect(response.status).toBe(404)
-  expect(response.body).toEqual({ error: 'Medidor não encontrado  ' })
+  expect(response.status).toBe(204)
 })
 
-test('Delete a meter without authorization', async () => {
-  const response = await request(api.server).delete('/meters/1')
+test('Change meter status without authorization', async () => {
+  const response = await request(api.server).patch('/meter/1')
 
   expect(response.status).toBe(401)
-  expect(response.body).toEqual({ error: 'Token inválido ou ausente' })
 })

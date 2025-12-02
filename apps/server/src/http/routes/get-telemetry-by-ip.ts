@@ -7,11 +7,11 @@ import { formattedSchema } from '../types/get-telemetry-response'
 
 export const getTelemetryByIp: FastifyPluginCallbackZod = (app) => {
   app.get(
-    '/meters/getTelemetry/:ip',
+    '/telemetry/:ip',
     {
       schema: {
         summary: 'Get raw data from external API',
-        tags: ['Meters'],
+        tags: ['Telemetry'],
         params: z.object({
           ip: z.string(),
         }),

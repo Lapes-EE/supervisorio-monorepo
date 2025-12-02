@@ -3,10 +3,9 @@ import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import z from 'zod'
 import { db } from '@/db/connections'
 import { schema } from '@/db/schema'
-import { auth } from '../utils/middleware.auth'
 
 export const changeStatusMeters: FastifyPluginCallbackZod = (app) => {
-  app.register(auth).patch(
+  app.patch(
     '/meter/:id',
     {
       schema: {
@@ -19,8 +18,12 @@ export const changeStatusMeters: FastifyPluginCallbackZod = (app) => {
         response: {
           204: z.null().describe('Mudança de estado bem sucedida'),
           400: z.null().describe('Mudança de estado mal sucedida'),
+          401: z
+            .object({ error: z.string() })
+            .describe('Não autorizado, necessita de login'),
         },
       },
+      preHandler: [app.authenticate],
     },
     async (request, reply) => {
       const { id } = request.params

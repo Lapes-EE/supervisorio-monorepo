@@ -19,6 +19,7 @@ import { getMeters } from './http/routes/get-meters'
 import { getTelemetryByIp } from './http/routes/get-telemetry-by-ip'
 import { login } from './http/routes/login'
 import { updateMeter } from './http/routes/update-meters'
+import { auth } from './http/utils/middleware.auth'
 
 export const logger = pino({
   transport: {
@@ -84,6 +85,9 @@ api.get('/health', () => {
   return { status: 'ok' }
 })
 
+api.register(login) // Ensure login route is registered early for authentication
+api.register(auth) // Register auth plugin globally
+
 api.register(changeStatusMeters)
 api.register(createMeters)
 api.register(getTelemetryByIp)
@@ -91,7 +95,6 @@ api.register(updateMeter)
 api.register(getMeters)
 api.register(deleteMeter)
 api.register(getDatabaseTelemetry)
-api.register(login)
 
 api.get('/openapi.json', (_, reply) => {
   const spec = api.swagger()

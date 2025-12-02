@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, test } from 'vitest'
 import { api } from '@/app'
 import { makeMeters } from '../tests/factories/make-meters'
 import { makeTelemetry } from '../tests/factories/make-telemetry'
+import { availableFields } from '../utils/field-mapping'
+import { getPeriodDates } from '../utils/period-utils'
 
 describe('Telemetry API Tests', () => {
   beforeEach(async () => {
@@ -36,6 +38,21 @@ describe('Telemetry API Tests', () => {
           nullCount: expect.any(Number),
         })
       )
+    })
+
+    test('Get telemetry for last_30_minutes period', async () => {
+      const meter = await makeMeters()
+      const twentyFiveMinutesAgo = new Date(
+        Date.now() - 25 * 60 * 1000
+      ).toISOString()
+      await makeTelemetry({ meterId: meter.id, time: twentyFiveMinutesAgo })
+
+      const response = await request(api.server)
+        .get('/telemetry')
+        .query({ meterId: meter.id, period: 'last_30_minutes' })
+
+      expect(response.status).toBe(200)
+      expect(response.body.data).toHaveLength(1)
     })
 
     test('Get telemetry for last_hour period', async () => {
@@ -162,6 +179,20 @@ describe('Telemetry API Tests', () => {
       const response = await request(api.server)
         .get('/telemetry')
         .query({ meterId: meter.id, period: 'last_30_days' })
+
+      expect(response.status).toBe(200)
+      expect(response.body.data).toHaveLength(1)
+    })
+
+    test('Get telemetry for this_year period', async () => {
+      const meter = await makeMeters()
+      const thisYear = new Date()
+      thisYear.setMonth(0, 1) // Set to Jan 1st
+      await makeTelemetry({ meterId: meter.id, time: thisYear.toISOString() })
+
+      const response = await request(api.server)
+        .get('/telemetry')
+        .query({ meterId: meter.id, period: 'this_year' })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(1)
@@ -416,5 +447,220 @@ describe('Telemetry API Tests', () => {
       // Depending on your validation, this might return 400 or handle empty strings
       expect([200, 400]).toContain(response.status)
     })
+  })
+
+  describe('Aggregation Tests', () => {
+    test('Get aggregated telemetry', async () => {
+      const meter = await makeMeters()
+      const now = new Date()
+      const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000)
+
+      // Create multiple telemetry points
+      await makeTelemetry({
+        meterId: meter.id,
+        time: oneHourAgo.toISOString(),
+        frequencia: 60,
+      })
+      await makeTelemetry({
+        meterId: meter.id,
+        time: now.toISOString(),
+        frequencia: 60,
+      })
+
+      const response = await request(api.server).get('/telemetry').query({
+        meterId: meter.id,
+        period: 'last_24_hours',
+        aggregation: '1 hour',
+      })
+
+      expect(response.status).toBe(200)
+      expect(response.body.aggregation).toBe('1 hour')
+      expect(response.body.data.length).toBeGreaterThan(0)
+      // Verify structure of aggregated data
+      expect(response.body.data[0]).toHaveProperty('frequencia')
+      expect(response.body.data[0]).not.toHaveProperty('id') // Aggregated data shouldn't have ID
+    })
+
+    test('Get aggregated telemetry without meterId', async () => {
+      const meter = await makeMeters()
+      await makeTelemetry({
+        meterId: meter.id,
+        time: new Date().toISOString(),
+        frequencia: 60,
+      })
+
+      const response = await request(api.server).get('/telemetry').query({
+        period: 'last_24_hours',
+        aggregation: '1 hour',
+      })
+
+      expect(response.status).toBe(200)
+      expect(response.body.data.length).toBeGreaterThan(0)
+    })
+  })
+})
+
+describe('getPeriodDates', () => {
+  test('should throw error for invalid period', () => {
+    // biome-ignore lint/suspicious/noExplicitAny: This function is typed, so i have to pass 'as any' to force a invalid period
+    expect(() => getPeriodDates('invalid_period' as any)).toThrow(
+      'Invalid period'
+    )
+  })
+})
+
+describe('Field Test', () => {
+  test('should return only selected fields for raw aggregation', async () => {
+    const meter = await makeMeters()
+    await makeTelemetry({
+      meterId: meter.id,
+      frequencia: 60,
+      tensaoFaseNeutroA: 220,
+      correnteA: 10,
+    })
+
+    const response = await request(api.server)
+      .get('/telemetry')
+      .query({
+        meterId: meter.id,
+        period: 'last_24_hours',
+        aggregation: 'raw',
+        fields: ['frequencia', 'correnteA'],
+      })
+
+    expect(response.status).toBe(200)
+    expect(response.body.data).toHaveLength(1)
+    const telemetryData = response.body.data[0]
+
+    // Ensure selected fields are present
+    expect(telemetryData).toHaveProperty('frequencia', 60)
+    expect(telemetryData).toHaveProperty('correnteA', 10)
+
+    // Ensure required fields are present
+    expect(telemetryData).toHaveProperty('id')
+    expect(telemetryData).toHaveProperty('meterId', meter.id)
+    expect(telemetryData).toHaveProperty('time')
+
+    // Ensure unselected fields are NOT present
+    expect(telemetryData).not.toHaveProperty('tensaoFaseNeutroA')
+    expect(telemetryData).not.toHaveProperty('potenciaReativaB')
+  })
+
+  test('should return only selected fields for aggregated data', async () => {
+    const meter = await makeMeters()
+    const now = new Date()
+    now.setMinutes(30, 0, 0) // Ensure we are in the middle of an hour
+    const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000)
+
+    await makeTelemetry({
+      meterId: meter.id,
+      time: tenMinutesAgo.toISOString(),
+      frequencia: 50,
+      tensaoFaseNeutroA: 200,
+    })
+    await makeTelemetry({
+      meterId: meter.id,
+      time: now.toISOString(),
+      frequencia: 70,
+      tensaoFaseNeutroA: 240,
+    })
+
+    const response = await request(api.server)
+      .get('/telemetry')
+      .query({
+        meterId: meter.id,
+        period: 'last_24_hours',
+        aggregation: '1 hour',
+        fields: ['frequencia'],
+      })
+
+    expect(response.status).toBe(200)
+    expect(response.body.data).toHaveLength(1) // Aggregated into one hour
+    const telemetryData = response.body.data[0]
+
+    // Ensure selected fields are present (aggregated value)
+    expect(telemetryData).toHaveProperty('frequencia')
+    expect(telemetryData.frequencia).toBeCloseTo(60) // Average of 50 and 70
+
+    // Ensure required fields are present
+    expect(telemetryData).toHaveProperty('meterId', meter.id)
+    expect(telemetryData).toHaveProperty('time')
+    expect(telemetryData).not.toHaveProperty('id') // Aggregated data shouldn't have ID
+
+    // Ensure unselected fields are NOT present
+    expect(telemetryData).not.toHaveProperty('tensaoFaseNeutroA')
+    expect(telemetryData).not.toHaveProperty('correnteA')
+  })
+
+  test('should return all fields if no fields are specified (raw)', async () => {
+    const meter = await makeMeters()
+    await makeTelemetry({
+      meterId: meter.id,
+      frequencia: 60,
+      tensaoFaseNeutroA: 220,
+    })
+
+    const response = await request(api.server).get('/telemetry').query({
+      meterId: meter.id,
+      period: 'last_24_hours',
+      aggregation: 'raw',
+    })
+
+    expect(response.status).toBe(200)
+    expect(response.body.data).toHaveLength(1)
+    const telemetryData = response.body.data[0]
+
+    // Ensure common fields are present
+    expect(telemetryData).toHaveProperty('id')
+    expect(telemetryData).toHaveProperty('meterId', meter.id)
+    expect(telemetryData).toHaveProperty('time')
+
+    // Ensure all defined availableFields are present (as number or null)
+    for (const field of availableFields) {
+      expect(telemetryData).toHaveProperty(field)
+      if (field === 'frequencia') {
+        expect(telemetryData[field]).toBe(60)
+      } else if (field === 'tensaoFaseNeutroA') {
+        expect(telemetryData[field]).toBe(220)
+      } else {
+        expect(telemetryData[field]).toBeNull()
+      }
+    }
+  })
+
+  test('should return all fields if no fields are specified (aggregated)', async () => {
+    const meter = await makeMeters()
+    await makeTelemetry({
+      meterId: meter.id,
+      frequencia: 60,
+      tensaoFaseNeutroA: 220,
+    })
+
+    const response = await request(api.server).get('/telemetry').query({
+      meterId: meter.id,
+      period: 'last_24_hours',
+      aggregation: '1 hour',
+    })
+
+    expect(response.status).toBe(200)
+    expect(response.body.data).toHaveLength(1)
+    const telemetryData = response.body.data[0]
+
+    // Ensure common fields are present
+    expect(telemetryData).not.toHaveProperty('id') // Aggregated data shouldn't have ID
+    expect(telemetryData).toHaveProperty('meterId', meter.id)
+    expect(telemetryData).toHaveProperty('time')
+
+    // Ensure all defined availableFields are present (as number or null)
+    for (const field of availableFields) {
+      expect(telemetryData).toHaveProperty(field)
+      if (field === 'frequencia') {
+        expect(telemetryData[field]).toBeCloseTo(60) // Average of 60
+      } else if (field === 'tensaoFaseNeutroA') {
+        expect(telemetryData[field]).toBeCloseTo(220) // Average of 220
+      } else {
+        expect(telemetryData[field]).toBeNull()
+      }
+    }
   })
 })
