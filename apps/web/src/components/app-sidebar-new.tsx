@@ -41,12 +41,12 @@ const items: SidebarItem[] = [
 export function NewAppSidebar() {
   const matchRoute = useMatchRoute()
   return (
-    <div className="my-2 flex flex-row">
+    <div className="fixed top-0 left-0 z-50 flex w-full flex-row items-center justify-center border-border border-b bg-background/80 px-6 py-2 shadow-sm backdrop-blur-md">
       <div className="flex flex-row gap-4">
         {items.map((item, index) => {
           const isActive =
             typeof item.url.to === 'string' &&
-            !!matchRoute({ to: item.url.to, fuzzy: false })
+            !!matchRoute({ to: item.url.to, fuzzy: true })
 
           const middleIndex = Math.floor(items.length / 2)
 

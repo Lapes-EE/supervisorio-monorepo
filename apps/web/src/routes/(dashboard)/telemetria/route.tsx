@@ -1,13 +1,12 @@
 import { createFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router'
-import { getMeters } from '@/http/gen/endpoints/lapes-api.gen'
 import { TelemetryForm } from './-components/telemetrys-form'
 import { TelemetryList } from './-components/telemetrys-list'
 
 export const Route = createFileRoute('/(dashboard)/telemetria')({
   component: Dashboard,
-  loader: async () => {
-    const response = await getMeters()
-    return response.data
+  loader: ({ context }) => {
+    const response = context.meters
+    return response
   },
 })
 

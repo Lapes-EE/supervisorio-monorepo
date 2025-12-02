@@ -1,11 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { getMetersGetTelemetryIp } from '@/http/gen/endpoints/lapes-api.gen'
+import type { GetMetersGetTelemetryIp200 } from '@/http/gen/model'
 import TelemetryItem from './telemetry-item'
 
-type TelemetryData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>['data']
-
 interface TotalActivePowerCardProps {
-  telemetryData: TelemetryData | undefined
+  telemetryData: GetMetersGetTelemetryIp200 | undefined
   isLoading: boolean
 }
 

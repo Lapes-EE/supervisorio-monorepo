@@ -35,6 +35,7 @@ const router = createRouter({
   routeTree,
   context: {
     ...getContext(),
+    meters: [],
   },
   defaultPreload: 'intent',
   scrollRestoration: true,

@@ -5,13 +5,23 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { NewAppSidebar } from '@/components/app-sidebar-new.tsx'
 import { ThemeProvider } from '@/components/theme-provider.tsx'
 import { Toaster } from '@/components/ui/sonner'
+import { getMeters } from '@/http/gen/endpoints/lapes-api.gen'
+import type { GetMeters200Item } from '@/http/gen/model'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 interface MyRouterContext {
   queryClient: QueryClient
+  meters: GetMeters200Item[]
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  beforeLoad: async () => {
+    const meters = await getMeters()
+
+    return {
+      meters: meters.data,
+    }
+  },
   component: () => (
     <>
       <ThemeProvider
@@ -23,7 +33,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         <div className="flex h-full w-full items-center justify-center">
           <NewAppSidebar />
         </div>
-        <div className="flex-1 ">
+        <div className="mt-16 mb-2 flex-1">
           <Outlet />
         </div>
       </ThemeProvider>

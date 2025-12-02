@@ -1,14 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { getMetersGetTelemetryIp } from '@/http/gen/endpoints/lapes-api.gen'
+import type { GetTelemetryIp200 } from '@/http/gen/model'
 import TelemetryItem from './telemetry-item'
-
-type TelemetryData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>['data']
 
 export function ReactivePowerCard({
   telemetryData,
   isLoading,
 }: {
-  telemetryData: TelemetryData | undefined
+  telemetryData: GetTelemetryIp200 | undefined
   isLoading: boolean
 }) {
   return (

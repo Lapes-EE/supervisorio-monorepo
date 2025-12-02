@@ -22,6 +22,40 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
     return sensors?.find((s) => s.id === sensor.id) || sensor
   }, [sensors, sensor.id, sensor])
 
+  const chartData = useMemo(() => {
+    if (search.period === 'today') {
+      // Preencher intervalos de 30 em 30 minutos sem dados com valor nulo
+      const totalIntervals = 48 // 24 horas × 2 (a cada 30 min)
+      const existingDataLength = updatedSensor.history.phases.length
+
+      return [
+        ...updatedSensor.history.phases,
+        ...Array.from(
+          { length: totalIntervals - existingDataLength },
+          (_, i) => {
+            const totalMinutes = (existingDataLength + i) * 30
+            const hour = Math.floor(totalMinutes / 60)
+            const minute = totalMinutes % 60
+
+            return {
+              time: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
+              value: null,
+              phaseA: null,
+              phaseB: null,
+              phaseC: null,
+            }
+          }
+        ),
+      ]
+    }
+
+    return updatedSensor.history.phases
+  }, [
+    search.period,
+    updatedSensor.history.phases,
+    updatedSensor.history.phases.length,
+  ])
+
   const chartConfig = {
     value: {
       label: 'Valor',
@@ -46,9 +80,10 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
       <div className="text-center text-gray-500">Nenhum dado disponível</div>
     )
   }
+
   return (
     <ChartContainer className="min-h-[200px] w-full" config={chartConfig}>
-      <LineChart accessibilityLayer data={updatedSensor.history.phases}>
+      <LineChart accessibilityLayer data={chartData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="time" />
         <YAxis domain={['dataMin', 'dataMax']} />
@@ -58,20 +93,23 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
               formatter={(value, name) => (
                 <>
                   <div
-                    className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-[--color-bg]"
+                    className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-(--color-bg)"
                     style={
                       {
                         '--color-bg': `var(--color-${name})`,
                       } as React.CSSProperties
                     }
                   />
-
+                  {chartConfig[name as keyof typeof chartConfig]?.label || name}
                   <div className="ml-auto flex items-baseline gap-0.5 font-medium font-mono text-foreground tabular-nums">
                     {value}
-                    {sensor.unit}
+                    <span className="font-normal text-muted-foreground">
+                      {updatedSensor.unit}
+                    </span>
                   </div>
                 </>
               )}
+              indicator="dot"
               labelFormatter={(value) => {
                 return value
               }}

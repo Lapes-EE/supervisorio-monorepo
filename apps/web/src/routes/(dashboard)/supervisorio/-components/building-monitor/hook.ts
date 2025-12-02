@@ -19,11 +19,9 @@ export function useChartZoom(sensor?: Sensor) {
     }
 
     // Sempre extrai valores das três fases
-    const allValues: number[] = data.flatMap((item) => [
-      item.phaseA,
-      item.phaseB,
-      item.phaseC,
-    ])
+    const allValues: number[] = data
+      .flatMap((item) => [item.phaseA, item.phaseB, item.phaseC])
+      .filter((v): v is number => v !== null && v !== undefined)
 
     if (!allValues.length) {
       return [0, 10]

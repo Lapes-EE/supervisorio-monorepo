@@ -36,8 +36,8 @@ import type {
   DeleteMetersId401,
   DeleteMetersId404,
   GetMeters200Item,
-  GetMetersGetTelemetryIp200,
   GetTelemetry200,
+  GetTelemetryIp200,
   GetTelemetryParams,
   PostMeters201,
   PostMeters401,
@@ -266,78 +266,78 @@ export function useGetMeters<TData = Awaited<ReturnType<typeof getMeters>>, TErr
 /**
  * @summary Get raw data from external API
  */
-export const getMetersGetTelemetryIp = (
+export const getTelemetryIp = (
     ip: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetMetersGetTelemetryIp200>> => {
+ ): Promise<AxiosResponse<GetTelemetryIp200>> => {
     
     
     return axios.default.get(
-      `http://localhost:3333/meters/getTelemetry/${ip}`,options
+      `http://localhost:3333/telemetry/${ip}`,options
     );
   }
 
 
-export const getGetMetersGetTelemetryIpQueryKey = (ip: string,) => {
-    return [`http://localhost:3333/meters/getTelemetry/${ip}`] as const;
+export const getGetTelemetryIpQueryKey = (ip: string,) => {
+    return [`http://localhost:3333/telemetry/${ip}`] as const;
     }
 
     
-export const getGetMetersGetTelemetryIpQueryOptions = <TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError = AxiosError<unknown>>(ip: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getGetTelemetryIpQueryOptions = <TData = Awaited<ReturnType<typeof getTelemetryIp>>, TError = AxiosError<unknown>>(ip: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTelemetryIp>>, TError, TData>>, axios?: AxiosRequestConfig}
 ) => {
 
 const {query: queryOptions, axios: axiosOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetMetersGetTelemetryIpQueryKey(ip);
+  const queryKey =  queryOptions?.queryKey ?? getGetTelemetryIpQueryKey(ip);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>> = ({ signal }) => getMetersGetTelemetryIp(ip, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTelemetryIp>>> = ({ signal }) => getTelemetryIp(ip, { signal, ...axiosOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(ip), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(ip), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTelemetryIp>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetMetersGetTelemetryIpQueryResult = NonNullable<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>>
-export type GetMetersGetTelemetryIpQueryError = AxiosError<unknown>
+export type GetTelemetryIpQueryResult = NonNullable<Awaited<ReturnType<typeof getTelemetryIp>>>
+export type GetTelemetryIpQueryError = AxiosError<unknown>
 
 
-export function useGetMetersGetTelemetryIp<TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError = AxiosError<unknown>>(
- ip: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError, TData>> & Pick<
+export function useGetTelemetryIp<TData = Awaited<ReturnType<typeof getTelemetryIp>>, TError = AxiosError<unknown>>(
+ ip: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTelemetryIp>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
+          Awaited<ReturnType<typeof getTelemetryIp>>,
           TError,
-          Awaited<ReturnType<typeof getMetersGetTelemetryIp>>
+          Awaited<ReturnType<typeof getTelemetryIp>>
         > , 'initialData'
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetMetersGetTelemetryIp<TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError = AxiosError<unknown>>(
- ip: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError, TData>> & Pick<
+export function useGetTelemetryIp<TData = Awaited<ReturnType<typeof getTelemetryIp>>, TError = AxiosError<unknown>>(
+ ip: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTelemetryIp>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getMetersGetTelemetryIp>>,
+          Awaited<ReturnType<typeof getTelemetryIp>>,
           TError,
-          Awaited<ReturnType<typeof getMetersGetTelemetryIp>>
+          Awaited<ReturnType<typeof getTelemetryIp>>
         > , 'initialData'
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetMetersGetTelemetryIp<TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError = AxiosError<unknown>>(
- ip: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetTelemetryIp<TData = Awaited<ReturnType<typeof getTelemetryIp>>, TError = AxiosError<unknown>>(
+ ip: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTelemetryIp>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get raw data from external API
  */
 
-export function useGetMetersGetTelemetryIp<TData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError = AxiosError<unknown>>(
- ip: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMetersGetTelemetryIp>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetTelemetryIp<TData = Awaited<ReturnType<typeof getTelemetryIp>>, TError = AxiosError<unknown>>(
+ ip: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTelemetryIp>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetMetersGetTelemetryIpQueryOptions(ip,options)
+  const queryOptions = getGetTelemetryIpQueryOptions(ip,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { AlertCircleIcon } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { getMetersGetTelemetryIp } from '@/http/gen/endpoints/lapes-api.gen'
+import { getTelemetryIp } from '@/http/gen/endpoints/lapes-api.gen'
 import PhasorChart, {
   type Phasor,
 } from '@/routes/(dashboard)/telemetria/-components/phasor-chart'
@@ -33,7 +33,7 @@ export const Route = createFileRoute('/(dashboard)/telemetria/$telemetryIp')({
     </Alert>
   ),
   loader: async ({ params }) => {
-    const result = await getMetersGetTelemetryIp(params.telemetryIp)
+    const result = await getTelemetryIp(params.telemetryIp)
     return result.data
   },
 })
@@ -49,7 +49,7 @@ function Dashboard() {
     queryKey: ['Telemetry', telemetryIp],
     initialData: data,
     queryFn: async () => {
-      const result = await getMetersGetTelemetryIp(telemetryIp)
+      const result = await getTelemetryIp(telemetryIp)
       return result.data
     },
     refetchInterval: 1000 * 2, // 2 Segundos

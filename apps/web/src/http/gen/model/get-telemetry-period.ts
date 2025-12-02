@@ -12,8 +12,8 @@ export type GetTelemetryPeriod = typeof GetTelemetryPeriod[keyof typeof GetTelem
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const GetTelemetryPeriod = {
   last_5_minutes: 'last_5_minutes',
-  last_hour: 'last_hour',
   last_30_minutes: 'last_30_minutes',
+  last_hour: 'last_hour',
   last_6_hours: 'last_6_hours',
   last_12_hours: 'last_12_hours',
   last_24_hours: 'last_24_hours',

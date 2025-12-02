@@ -1,12 +1,10 @@
 import NumberFlow from '@number-flow/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { getMetersGetTelemetryIp } from '@/http/gen/endpoints/lapes-api.gen'
-
-type TelemetryData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>['data']
+import type { GetTelemetryIp200 } from '@/http/gen/model'
 
 interface FrequencyCardProps {
-  telemetryData: TelemetryData | undefined
+  telemetryData: GetTelemetryIp200 | undefined
 }
 
 export function FrequencyCard({ telemetryData }: FrequencyCardProps) {

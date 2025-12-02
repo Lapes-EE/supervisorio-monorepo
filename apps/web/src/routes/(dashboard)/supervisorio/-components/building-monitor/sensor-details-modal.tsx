@@ -1,4 +1,5 @@
 import type { QueryClient } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -80,11 +81,22 @@ export function SensorDetailsModal({
               </div>
 
               <div className="flex gap-2">
-                <Button size="sm" variant="outline">
-                  Ver Histórico Completo
+                <Button asChild size="sm" variant="outline">
+                  <Link
+                    params={{ meterId: sensor.id.toString() }}
+                    to="/gráficos/$meterId"
+                  >
+                    Visualização Estendida
+                  </Link>
                 </Button>
                 <Button size="sm" variant="outline">
-                  Configurar Alarmes
+                  <Link
+                    params={{ meterId: sensor.id.toString() }}
+                    search={{ charts: {} }}
+                    to="/settings/$meterId"
+                  >
+                    Configurar Alarmes
+                  </Link>
                 </Button>
                 <Button size="sm" variant="outline">
                   Exportar Dados

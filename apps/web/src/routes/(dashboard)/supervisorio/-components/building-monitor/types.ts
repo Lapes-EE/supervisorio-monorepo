@@ -16,9 +16,9 @@ export interface Sensor {
 
 export type PhasePoint = {
   time: string
-  phaseA: number
-  phaseB: number
-  phaseC: number
+  phaseA: number | null
+  phaseB: number | null
+  phaseC: number | null
 }
 
 export type History = {

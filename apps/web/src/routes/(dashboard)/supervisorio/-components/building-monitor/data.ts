@@ -12,30 +12,30 @@ import type { History, Meter, PhasePoint, Sensor } from './types'
 
 export const fixedPositions: Array<{ id: number; x: number; y: number }> = [
   // Primeiro andar
-  { id: 6, x: 15, y: 92 },
-  { id: 10, x: 40, y: 92 },
-  { id: 14, x: 67, y: 92 },
+  { id: 1, x: 67, y: 92 },
+  { id: 2, x: 40, y: 92 },
+  { id: 3, x: 15, y: 92 },
 
   // Segundo andar
-  { id: 8, x: 15, y: 58 },
   { id: 4, x: 40, y: 58 },
-  { id: 13, x: 67, y: 58 },
+  { id: 5, x: 15, y: 58 },
+  { id: 6, x: 67, y: 58 },
 
   // Terceiro andar
-  { id: 11, x: 15, y: 25 },
-  { id: 5, x: 40, y: 25 },
-  { id: 3, x: 67, y: 25 },
+  { id: 7, x: 40, y: 25 },
+  { id: 8, x: 15, y: 25 },
+  { id: 9, x: 67, y: 25 },
 
   // Biblioteca
   { id: 12, x: 96, y: 25 },
 
   // Auditório
-  { id: 9, x: 89, y: 55 },
-  { id: 1, x: 96, y: 55 },
+  { id: 10, x: 89, y: 55 },
+  { id: 11, x: 96, y: 55 },
 
   // Elevador e Geral
-  { id: 7, x: 88, y: 92 },
-  { id: 2, x: 96, y: 79 },
+  { id: 13, x: 88, y: 92 },
+  { id: 14, x: 96, y: 79 },
 ]
 
 async function getMetersFull(filter: ToggleSearchSchema): Promise<Meter[]> {

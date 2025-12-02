@@ -71,7 +71,7 @@ export function BuildingLayout({
 
             return (
               <div
-                className="-translate-x-1/2 -translate-y-1/2 absolute z-50"
+                className="-translate-x-1/2 -translate-y-1/2 absolute z-20"
                 key={sensor.id}
                 style={{
                   left: `${position.x}%`,

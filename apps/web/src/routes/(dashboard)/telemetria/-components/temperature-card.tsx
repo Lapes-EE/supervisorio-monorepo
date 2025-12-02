@@ -1,14 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { getMetersGetTelemetryIp } from '@/http/gen/endpoints/lapes-api.gen'
-
-type TelemetryData = Awaited<ReturnType<typeof getMetersGetTelemetryIp>>['data']
+import type { GetTelemetryIp200 } from '@/http/gen/model/get-telemetry-ip200'
 
 export function TemperatureCard({
   telemetryData,
   isLoading,
 }: {
-  telemetryData: TelemetryData | undefined
+  telemetryData: GetTelemetryIp200 | undefined
   isLoading: boolean
 }) {
   const temperature = telemetryData?.temperatura_sensor_interno ?? 0
