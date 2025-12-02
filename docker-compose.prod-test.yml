@@ -1,0 +1,54 @@
+services:
+  # Database (TimescaleDB)
+  db:
+    image: timescale/timescaledb:latest-pg17
+    container_name: supervisorio-db-test
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: supervisorio
+    ports:
+      - "5433:5432" # Mapped to 5433 to avoid conflict with local postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend Server
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: server
+      args:
+        PROJECT: server
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      API_URL: http://localhost:3333
+      # DB Connection
+      HYPER_DATABASE_URL: postgres://postgres:password@db:5432/supervisorio
+      HYPER_POSTGRES_USER: postgres
+      HYPER_POSTGRES_PASSWORD: password
+      HYPER_POSTGRES_DB: supervisorio
+      # Auth
+      JWT_SECRET: "a0a0a0a0-a0a0-a0a0-a0a0-a0a0a0a0a0a0" # UUID placeholder
+      PASSWORD: "admin"
+    ports:
+      - "3333:3000" # Mapped to 3333 because Web App has hardcoded http://localhost:3333
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Frontend Web
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+      args:
+        PROJECT: web
+    ports:
+      - "8080:80"
