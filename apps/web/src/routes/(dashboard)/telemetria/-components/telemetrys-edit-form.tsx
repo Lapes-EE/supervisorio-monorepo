@@ -25,6 +25,8 @@ import { Input } from '@/components/ui/input'
 import { usePutMetersId } from '@/http/gen/endpoints/lapes-api.gen'
 import type { GetMeters200Item } from '@/http/gen/model'
 
+const ISSO_SERIAL_REGEX = /^[A-Z0-9]{3}(?:-[A-Z0-9]{3}){3}$/
+
 const formEditMeterSchema = z.object({
   name: z.string().min(1, 'O nome do medidor é requerido'),
 
@@ -35,6 +37,12 @@ const formEditMeterSchema = z.object({
       error: 'IP inválido',
     }),
   description: z.string().optional(),
+  issoSerial: z
+    .string()
+    .min(1, 'Serial is required')
+    .refine((val) => ISSO_SERIAL_REGEX.test(val), {
+      message: 'Serial inválido. Formato esperado: 258-A17-39C-D6A',
+    }),
 })
 
 interface TelemetryEditFormProps {
@@ -143,6 +151,20 @@ export function TelemetryEditForm({ meters, meterId }: TelemetryEditFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descrição</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="issoSerial"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Serial medidor</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>

@@ -26,6 +26,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { usePostMeters } from '@/http/gen/endpoints/lapes-api.gen'
 
+const ISSO_SERIAL_REGEX = /^[A-Z0-9]{3}(?:-[A-Z0-9]{3}){3}$/
+
 const formCreatemeterSchema = z.object({
   name: z.string().min(1, 'O nome do medidor é requerido'),
   ip: z
@@ -35,6 +37,12 @@ const formCreatemeterSchema = z.object({
       error: 'IP inválido',
     }),
   description: z.string().optional(),
+  issoSerial: z
+    .string()
+    .min(1, 'Serial is required')
+    .refine((val) => ISSO_SERIAL_REGEX.test(val), {
+      message: 'Serial inválido. Formato esperado: 258-A17-39C-D6A',
+    }),
 })
 
 export function TelemetryForm() {
@@ -122,6 +130,20 @@ export function TelemetryForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descrição</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="issoSerial"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Serial medidor</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
