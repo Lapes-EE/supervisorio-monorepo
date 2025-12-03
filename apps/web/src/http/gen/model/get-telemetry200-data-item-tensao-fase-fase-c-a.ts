@@ -6,4 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetTelemetry200DataItemTensaoFaseFaseCA = number |  | null;
+export type GetTelemetry200DataItemTensaoFaseFaseCA = number | null;

@@ -6,4 +6,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetMeters200ItemDescription = string |  | null;
+export type GetMeters200ItemDescription = string | null;

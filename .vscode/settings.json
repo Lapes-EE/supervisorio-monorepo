@@ -21,10 +21,6 @@
     "**/gen/endpoints/**": true,
     "**/gen/model/**": true
   },
-  "files.readonlyInclude": {
-    "**/routeTree.gen.ts": true,
-    "**/gen/endpoints/**": true,
-    "**/gen/model/**": true
-  },
+
   "css.lint.unknownAtRules": "ignore"
 }
