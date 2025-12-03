@@ -25,7 +25,7 @@ const api = fastify({
 }).withTypeProvider<ZodTypeProvider>()
 
 api.register(fastifyCors, {
-  origin: ['http://localhost:3000', 'https://lapes.netlify.app'],
+  origin: [env.WEB_URL],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
 })
 api.register(fastifyJwt, {
