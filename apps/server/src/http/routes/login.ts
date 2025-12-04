@@ -52,7 +52,7 @@ export const login: FastifyPluginAsyncZod = async (server) => {
         },
         {
           sign: {
-            expiresIn: '7d',
+            expiresIn: '10s',
           },
         }
       )

@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import type { GetMeters200Item } from '@/http/gen/model'
+import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item.gen'
 
 export function TelemetryList({
   id,
@@ -17,6 +17,7 @@ export function TelemetryList({
   name,
   description,
   active,
+  issoSerial,
 }: GetMeters200Item) {
   const navigate = useNavigate()
 
@@ -117,6 +118,9 @@ export function TelemetryList({
           </div>
           <code className="rounded bg-muted px-2 py-1 font-mono text-xs">
             {ip}
+          </code>
+          <code className="rounded bg-muted px-2 py-1 font-mono text-xs">
+            {issoSerial}
           </code>
         </div>
       </CardContent>

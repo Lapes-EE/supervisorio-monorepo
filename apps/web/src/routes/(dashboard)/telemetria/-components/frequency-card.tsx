@@ -1,7 +1,7 @@
 import NumberFlow from '@number-flow/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { GetTelemetryIp200 } from '@/http/gen/model'
+import type { GetTelemetryIp200 } from '@/http/gen/model/get-telemetry-ip200.gen'
 
 interface FrequencyCardProps {
   telemetryData: GetTelemetryIp200 | undefined

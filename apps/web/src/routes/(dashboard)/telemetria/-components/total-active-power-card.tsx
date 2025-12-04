@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { GetMetersGetTelemetryIp200 } from '@/http/gen/model'
+import type { GetTelemetryIp200 } from '@/http/gen/model/get-telemetry-ip200.gen'
 import TelemetryItem from './telemetry-item'
 
 interface TotalActivePowerCardProps {
-  telemetryData: GetMetersGetTelemetryIp200 | undefined
+  telemetryData: GetTelemetryIp200 | undefined
   isLoading: boolean
 }
 

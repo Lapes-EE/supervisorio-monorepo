@@ -6,8 +6,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import { dayjs } from '@/lib/dayjs'
 import type { ToggleSearchSchema } from '../../-types'
-import { useSensors } from './data'
+import { getAggregationConfig, useSensors } from './data'
 import type { Sensor } from './types'
 
 interface SensorChartProps {
@@ -23,38 +24,53 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
   }, [sensors, sensor.id, sensor])
 
   const chartData = useMemo(() => {
+    const { aggregation } = getAggregationConfig(search.period)
+
     if (search.period === 'today') {
-      // Preencher intervalos de 30 em 30 minutos sem dados com valor nulo
+      // Preencher intervalos de 30 em 30 minutos de 00:00 até 23:30
       const totalIntervals = 48 // 24 horas × 2 (a cada 30 min)
-      const existingDataLength = updatedSensor.history.phases.length
+      const startOfDay = dayjs().startOf('day')
 
-      return [
-        ...updatedSensor.history.phases,
-        ...Array.from(
-          { length: totalIntervals - existingDataLength },
-          (_, i) => {
-            const totalMinutes = (existingDataLength + i) * 30
-            const hour = Math.floor(totalMinutes / 60)
-            const minute = totalMinutes % 60
+      return Array.from({ length: totalIntervals }, (_, i) => {
+        const existingData = updatedSensor.history.phases[i]
+        const timeSlot = startOfDay.add(i * 30, 'minute')
 
-            return {
-              time: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
-              value: null,
-              phaseA: null,
-              phaseB: null,
-              phaseC: null,
-            }
-          }
-        ),
-      ]
+        return {
+          time: timeSlot.format('HH:mm:ss'),
+          phaseA: existingData?.phaseA ?? null,
+          phaseB: existingData?.phaseB ?? null,
+          phaseC: existingData?.phaseC ?? null,
+        }
+      })
     }
 
-    return updatedSensor.history.phases
-  }, [
-    search.period,
-    updatedSensor.history.phases,
-    updatedSensor.history.phases.length,
-  ])
+    if (search.period === 'this_year') {
+      // Para this_year, mostrar dias ao invés de horas
+      return updatedSensor.history.phases.map((phase) => ({
+        ...phase,
+        time: dayjs(phase.time).format('DD/MM'),
+      }))
+    }
+
+    // Para outros períodos, formatar baseado na agregação
+    return updatedSensor.history.phases.map((phase) => {
+      const timestamp = dayjs(phase.time)
+
+      // Definir formato baseado na agregação
+      let format = 'HH:mm:ss'
+
+      if (aggregation === '1 day') {
+        format = 'DD/MM'
+      } else if (aggregation === '3 hours' || aggregation === '1 hour') {
+        format = 'DD/MM HH:mm:ss'
+      }
+
+      return {
+        ...phase,
+        time: timestamp.format(format),
+      }
+    })
+  }, [search.period, updatedSensor.history.phases])
 
   const chartConfig = {
     value: {

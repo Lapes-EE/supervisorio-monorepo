@@ -23,7 +23,7 @@
 	"linter": {
 		"rules": {
 			"suspicious": {
-				"noConsole": "off"
+				"noConsole": "on"
 			},
 			"style": {
 				"useFilenamingConvention": "off"

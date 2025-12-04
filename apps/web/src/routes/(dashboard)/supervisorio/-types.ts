@@ -1,5 +1,5 @@
 import z from 'zod'
-import { GetTelemetryPeriod } from '@/http/gen/model'
+import { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period.gen'
 
 export const typeOption = ['voltage', 'power', 'current', 'frequency'] as const
 

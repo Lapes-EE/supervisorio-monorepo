@@ -1,5 +1,5 @@
 import { isIP } from 'is-ip'
-import type { GetMeters200Item } from '@/http/gen/model'
+import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item.gen'
 
 const shouldBeANumber = /^\d+$/
 

@@ -10,7 +10,6 @@ export const Route = createFileRoute('/(dashboard)')({
 
 function RouteComponent() {
   const { meters } = Route.useRouteContext()
-  console.log(meters)
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   })

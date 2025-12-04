@@ -5,12 +5,14 @@
  * API for supervisory control and data acquisition
  * OpenAPI spec version: 1.0.0
  */
-import type { GetMeters200ItemDescription } from './get-meters200-item-description';
+
+import type { GetMeters200ItemDescription } from "./get-meters200-item-description.gen";
 
 export type GetMeters200Item = {
   id: number;
   name: string;
   ip: string;
   description?: GetMeters200ItemDescription;
+  issoSerial: string;
   active: boolean;
 };

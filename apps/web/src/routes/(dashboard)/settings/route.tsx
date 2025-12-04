@@ -27,7 +27,6 @@ function RouteComponent() {
   const navigate = useNavigate()
 
   function onMeterSelect(valueSelected: string) {
-    console.log('selecionado', valueSelected)
     navigate({ to: '/settings/$meterId', params: { meterId: valueSelected } })
   }
 
@@ -46,7 +45,7 @@ function RouteComponent() {
           onValueChange={(newValue) => onMeterSelect(newValue)}
           type="medidor"
         >
-          <ComboboxTrigger className="min-h-[56px] w-full" />
+          <ComboboxTrigger className="min-h-14 w-full" />
           <ComboboxContent className="w-full">
             <ComboboxInput className="h-12" placeholder="Buscar medidor..." />
             <ComboboxEmpty>Nenhum medidor encontrado.</ComboboxEmpty>
@@ -54,7 +53,7 @@ function RouteComponent() {
               <ComboboxGroup>
                 {meters.map((meter) => (
                   <ComboboxItem
-                    className="min-h-[64px] cursor-pointer py-3"
+                    className="min-h-16 cursor-pointer py-3"
                     key={meter.value}
                     value={meter.value}
                   >

@@ -5,8 +5,10 @@
  * API for supervisory control and data acquisition
  * OpenAPI spec version: 1.0.0
  */
-import type { GetTelemetry200DataItem } from './get-telemetry200-data-item';
-import type { GetTelemetry200Period } from './get-telemetry200-period';
+
+import type { GetTelemetry200DataItem } from "./get-telemetry200-data-item.gen";
+import type { GetTelemetry200Period } from "./get-telemetry200-period.gen";
+
 
 export type GetTelemetry200 = {
   data: GetTelemetry200DataItem[];

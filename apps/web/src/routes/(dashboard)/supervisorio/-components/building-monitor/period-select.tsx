@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { GetTelemetryPeriod } from '@/http/gen/model'
+import { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period.gen'
 import type { ToggleSearchSchema } from '../../-types'
 
 interface SelectPeriodProps {

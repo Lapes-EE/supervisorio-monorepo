@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { usePutMetersId } from '@/http/gen/endpoints/lapes-api.gen'
-import type { GetMeters200Item } from '@/http/gen/model'
+import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item.gen'
 
 const ISSO_SERIAL_REGEX = /^[A-Z0-9]{3}(?:-[A-Z0-9]{3}){3}$/
 
@@ -72,6 +72,7 @@ export function TelemetryEditForm({ meters, meterId }: TelemetryEditFormProps) {
       name: meter?.name ?? '',
       ip: meter?.ip ?? '',
       description: meter?.description ?? '',
+      issoSerial: meter?.issoSerial ?? '',
     },
   })
 

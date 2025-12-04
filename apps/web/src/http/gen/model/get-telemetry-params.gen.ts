@@ -5,9 +5,10 @@
  * API for supervisory control and data acquisition
  * OpenAPI spec version: 1.0.0
  */
-import type { GetTelemetryPeriod } from './get-telemetry-period';
-import type { GetTelemetryAggregation } from './get-telemetry-aggregation';
-import type { GetTelemetryFieldsAnyOfItem } from './get-telemetry-fields-any-of-item';
+
+import type { GetTelemetryAggregation } from "./get-telemetry-aggregation.gen";
+import type { GetTelemetryFieldsAnyOfItem } from "./get-telemetry-fields-any-of-item.gen";
+import type { GetTelemetryPeriod } from "./get-telemetry-period.gen";
 
 export type GetTelemetryParams = {
 /**

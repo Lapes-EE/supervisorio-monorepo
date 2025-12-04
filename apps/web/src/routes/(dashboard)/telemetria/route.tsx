@@ -6,12 +6,12 @@ export const Route = createFileRoute('/(dashboard)/telemetria')({
   component: Dashboard,
   loader: ({ context }) => {
     const response = context.meters
-    return response
+    return { data: response }
   },
 })
 
 function Dashboard() {
-  const data = Route.useLoaderData()
+  const { data } = Route.useLoaderData()
 
   const matchRoute = useMatchRoute()
 
@@ -34,6 +34,7 @@ function Dashboard() {
             description={list.description}
             id={list.id}
             ip={list.ip}
+            issoSerial={list.issoSerial}
             key={list.id}
             name={list.name}
           />

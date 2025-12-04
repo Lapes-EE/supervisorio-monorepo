@@ -6,7 +6,7 @@ import { NewAppSidebar } from '@/components/app-sidebar-new.tsx'
 import { ThemeProvider } from '@/components/theme-provider.tsx'
 import { Toaster } from '@/components/ui/sonner'
 import { getMeters } from '@/http/gen/endpoints/lapes-api.gen'
-import type { GetMeters200Item } from '@/http/gen/model'
+import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item.gen'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 interface MyRouterContext {

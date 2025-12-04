@@ -21,6 +21,7 @@ export const getMeters: FastifyPluginCallbackZod = (app) => {
                 error: 'IP inválido',
               }),
               description: z.string().nullish(),
+              issoSerial: z.string(),
               active: z.boolean(),
             })
           ),
@@ -35,6 +36,7 @@ export const getMeters: FastifyPluginCallbackZod = (app) => {
           ip: schema.meters.ip,
           description: schema.meters.description,
           active: schema.meters.active,
+          issoSerial: schema.meters.issoSerial,
         })
         .from(schema.meters)
         .orderBy(asc(schema.meters.name))

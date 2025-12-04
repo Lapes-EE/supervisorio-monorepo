@@ -56,11 +56,11 @@ export function BuildingLayout({
           <Image
             alt="Corte lateral do edifício"
             blurSrc="/anexoC_f_blur.png"
+            className="dark:invert"
             loading="lazy"
             src="/anexoC_f.svg"
           />
 
-          {/* Sensores clicáveis */}
           {/* Sensores clicáveis */}
           {sensors?.map((sensor) => {
             const position = fixedPositions.find((pos) => pos.id === sensor.id)
@@ -86,7 +86,7 @@ export function BuildingLayout({
                     title={`${sensor.name}: ${sensor.value}${sensor.unit}`}
                   >
                     <div className="flex flex-col items-center">
-                      <Label className="max-w-[6rem] whitespace-normal break-words text-center text-foreground">
+                      <Label className="wrap-break-words max-w-24 whitespace-normal text-center text-foreground">
                         {sensor.name}
                       </Label>
                       {activePhases.map(({ phase, idx, color }) => (

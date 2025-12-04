@@ -43,7 +43,7 @@ function RouteComponent() {
         },
         onError(error) {
           toast('Erro ao deletar', {
-            description: `${error.response?.data}, é necessário estar logado`,
+            description: `${error.response?.data.error}, é necessário estar logado`,
             action: {
               label: 'Login',
               onClick: () => navigate({ to: '/login' }),

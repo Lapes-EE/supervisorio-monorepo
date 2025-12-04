@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import type { GetTelemetryIp200 } from '@/http/gen/model'
+import type { GetTelemetryIp200 } from '@/http/gen/model/get-telemetry-ip200.gen'
 
 export interface Phasor {
   name: string

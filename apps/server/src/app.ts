@@ -25,7 +25,7 @@ const api = fastify({
 }).withTypeProvider<ZodTypeProvider>()
 
 api.register(fastifyCors, {
-  origin: [env.WEB_URL],
+  origin: [env.WEB_URL, 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
 })
 api.register(fastifyJwt, {

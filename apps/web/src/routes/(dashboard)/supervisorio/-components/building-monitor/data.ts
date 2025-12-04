@@ -1,11 +1,9 @@
 import { useQueries, useQuery } from '@tanstack/react-query'
 import { getMeters, getTelemetry } from '@/http/gen/endpoints/lapes-api.gen'
-import type {
-  GetTelemetry200,
-  GetTelemetry200DataItem,
-  GetTelemetryAggregation,
-  GetTelemetryPeriod,
-} from '@/http/gen/model'
+import type { GetTelemetryAggregation } from '@/http/gen/model/get-telemetry-aggregation.gen'
+import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period.gen'
+import type { GetTelemetry200 } from '@/http/gen/model/get-telemetry200.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item.gen'
 import { dayjs } from '@/lib/dayjs'
 import type { ToggleSearchSchema } from '../../-types'
 import type { History, Meter, PhasePoint, Sensor } from './types'
@@ -125,7 +123,7 @@ function getSensorHistory(
     }
 
     return {
-      time: dayjs(item.time).format('HH:mm:ss'),
+      time: item.time,
       phaseA: phaseAValue,
       phaseB: phaseBValue,
       phaseC: phaseCValue,
@@ -179,6 +177,37 @@ function calculateSensorTrend(
   return 'stable'
 }
 
+export function getAggregationConfig(period: GetTelemetryPeriod): {
+  aggregation: GetTelemetryAggregation
+  refetchInterval: number
+} {
+  switch (period) {
+    case 'last_5_minutes':
+      return { aggregation: 'raw', refetchInterval: 10_000 } // 10s
+    case 'last_30_minutes':
+      return { aggregation: '30 seconds', refetchInterval: 30_000 } // 30s
+    case 'last_hour':
+      return { aggregation: '1 minute', refetchInterval: 60_000 } // 1min
+    case 'last_6_hours':
+      return { aggregation: '5 minute', refetchInterval: 300_000 } // 5min
+    case 'last_12_hours':
+      return { aggregation: '10 minute', refetchInterval: 600_000 } // 10min
+    case 'last_24_hours':
+      return { aggregation: '20 minute', refetchInterval: 1_200_000 } // 20min
+    case 'today':
+      return { aggregation: '30 minute', refetchInterval: 1_800_000 } // 30min
+    case 'last_7_days':
+      return { aggregation: '1 hour', refetchInterval: 3_600_000 } // 1h
+    case 'this_month':
+    case 'last_30_days':
+      return { aggregation: '3 hours', refetchInterval: 10_800_000 } // 3h
+    case 'this_year':
+      return { aggregation: '1 day', refetchInterval: 86_400_000 } // 24h
+    default:
+      return { aggregation: 'raw', refetchInterval: 30_000 } // 30s
+  }
+}
+
 export function useSensors(
   filter: ToggleSearchSchema,
   period: GetTelemetryPeriod
@@ -192,48 +221,12 @@ export function useSensors(
     queryFn: () => getMetersFull(filter),
   })
 
-  const aggregation: GetTelemetryAggregation = (() => {
-    switch (period) {
-      case 'last_5_minutes':
-        return 'raw'
-
-      case 'last_30_minutes':
-        return '30 seconds'
-
-      case 'last_hour':
-        return '1 minute'
-
-      case 'last_6_hours':
-        return '5 minute'
-
-      case 'last_12_hours':
-        return '10 minute'
-
-      case 'last_24_hours':
-        return '20 minute'
-
-      case 'today':
-        return '30 minute'
-
-      case 'last_7_days':
-        return '1 hour'
-
-      case 'this_month':
-      case 'last_30_days':
-        return '3 hours'
-
-      case 'this_year':
-        return '1 day'
-
-      default:
-        return 'raw'
-    }
-  })()
+  const { aggregation, refetchInterval } = getAggregationConfig(period)
 
   const telemetryQueries = useQueries({
     queries:
       meters?.map((meter) => ({
-        refetchInterval: 1000 * 30,
+        refetchInterval,
         queryKey: ['Telemetry', meter.id, period],
         queryFn: async (): Promise<GetTelemetry200> => {
           const response = await getTelemetry({
