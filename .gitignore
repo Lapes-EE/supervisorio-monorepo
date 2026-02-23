@@ -162,4 +162,7 @@ sketch
 # Docker-compose
 .data
 
+# Git worktrees
+.worktrees
+
 # End of https://www.toptal.com/developers/gitignore/api/react,turbo,node
