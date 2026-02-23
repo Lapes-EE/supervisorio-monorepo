@@ -1,12 +1,12 @@
-import { env } from '@repo/env'
-import { defineConfig } from 'drizzle-kit'
+import { env } from "@repo/env";
+import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
-  dialect: 'postgresql',
-  casing: 'snake_case',
-  schema: './src/db/schema/**.ts',
-  out: './src/db/migrations',
+  dialect: "postgresql",
+  casing: "snake_case",
+  schema: "./src/db/schema/**.ts",
+  out: "./src/db/migrations",
   dbCredentials: {
-    url: env.HYPER_DATABASE_URL,
+    url: env.DATABASE_URL,
   },
-})
+});

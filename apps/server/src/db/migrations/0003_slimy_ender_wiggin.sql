@@ -119,8 +119,8 @@ SELECT
   COUNT(*) AS num_samples
 
 FROM measures
-GROUP BY bucket, meter_id;
-
+GROUP BY bucket, meter_id
+WITH NO DATA;
 
 -- Adiciona política de refresh automática (atualiza a cada 1 minuto)
 SELECT add_continuous_aggregate_policy('measures_1min',
