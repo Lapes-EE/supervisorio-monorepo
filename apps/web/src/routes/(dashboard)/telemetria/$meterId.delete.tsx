@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { useDeleteMetersId } from '@/http/gen/endpoints/lapes-api.gen'
+import { meterKeys } from '@/lib/query-keys'
 
 export const Route = createFileRoute('/(dashboard)/telemetria/$meterId/delete')(
   {
@@ -39,7 +40,7 @@ function RouteComponent() {
       { id: Number(meterId) },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['Meters'] })
+          queryClient.invalidateQueries({ queryKey: meterKeys.all })
         },
         onError(error) {
           toast('Erro ao deletar', {

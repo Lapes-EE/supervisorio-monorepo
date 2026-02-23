@@ -24,6 +24,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { usePutMetersId } from '@/http/gen/endpoints/lapes-api.gen'
 import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item.gen'
+import { meterKeys } from '@/lib/query-keys'
 
 const ISSO_SERIAL_REGEX = /^[A-Z0-9]{3}(?:-[A-Z0-9]{3}){3}$/
 
@@ -83,7 +84,7 @@ export function TelemetryEditForm({ meters, meterId }: TelemetryEditFormProps) {
         onSuccess: () => {
           toast('Medidor editado com sucesso')
           form.reset()
-          queryClient.invalidateQueries({ queryKey: ['Meters'] })
+          queryClient.invalidateQueries({ queryKey: meterKeys.all })
           navigate({
             to: '/telemetria',
             from: '/telemetria',

@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period.gen'
+import { sensorKeys } from '@/lib/query-keys'
 import type { ToggleSearchSchema } from '../../-types'
 
 interface SelectPeriodProps {
@@ -37,7 +38,7 @@ export function SelectPeriod({ queryClient, search }: SelectPeriodProps) {
 
   const handleChange = (value: GetTelemetryPeriod) => {
     navigate({ to: '.', search: (prev) => ({ ...prev, period: value }) })
-    queryClient.invalidateQueries({ queryKey: ['Sensors'] })
+    queryClient.invalidateQueries({ queryKey: sensorKeys.all })
   }
 
   return (

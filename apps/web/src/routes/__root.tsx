@@ -5,8 +5,8 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { NewAppSidebar } from '@/components/app-sidebar-new.tsx'
 import { ThemeProvider } from '@/components/theme-provider.tsx'
 import { Toaster } from '@/components/ui/sonner'
-import { getMeters } from '@/http/gen/endpoints/lapes-api.gen'
 import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item.gen'
+import { meterQueries } from '@/lib/query-keys'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 interface MyRouterContext {
@@ -15,11 +15,13 @@ interface MyRouterContext {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
-  beforeLoad: async () => {
-    const meters = await getMeters()
+  beforeLoad: async ({ context }) => {
+    const response = await context.queryClient.ensureQueryData(
+      meterQueries.all()
+    )
 
     return {
-      meters: meters.data,
+      meters: response.data,
     }
   },
   component: () => (

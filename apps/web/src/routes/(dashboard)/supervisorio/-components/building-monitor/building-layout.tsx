@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Image } from '@/components/ui/image'
 import { Label } from '@/components/ui/label'
 import { usePatchMeterId } from '@/http/gen/endpoints/lapes-api.gen'
+import { meterKeys } from '@/lib/query-keys'
 import { type ToggleSearchSchema, toggleSearchSchema } from '../../-types'
 import { fixedPositions, useSensors } from './data'
 import type { Sensor } from './types'
@@ -31,7 +32,9 @@ export function BuildingLayout({
       { id: sensorId },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['Meters', search.type] })
+          queryClient.invalidateQueries({
+            queryKey: meterKeys.byType(search.type),
+          })
         },
       }
     )
