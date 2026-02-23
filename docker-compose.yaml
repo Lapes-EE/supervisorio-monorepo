@@ -20,15 +20,14 @@ services:
       timeout: 5s
       retries: 5
 
-
   # ---------------------------
   # Backend (Fastify / Node)
   # ---------------------------
   supervisorio-server:
     build:
       context: .
-      dockerfile: Dockerfile          # teu Dockerfile do server
-      target: supervisorio-server     # target do server no Dockerfile
+      dockerfile: Dockerfile # teu Dockerfile do server
+      target: supervisorio-server # target do server no Dockerfile
     container_name: supervisorio-server
     environment:
       PORT: 3333
@@ -36,7 +35,7 @@ services:
       WEB_URL: http://localhost:3000
 
       # DB Connection
-      HYPER_DATABASE_URL: postgres://postgres:password@db:5432/supervisorio
+      DATABASE_URL: postgres://postgres:password@db:5432/supervisorio
 
       # Auth
       JWT_SECRET: "d43a102e-dff8-4310-9f8e-8de8188840b5"
@@ -49,14 +48,13 @@ services:
       db:
         condition: service_healthy
 
-
   # ---------------------------
   # Frontend (Vite + nginx)
   # ---------------------------
   supervisorio-web:
     build:
       context: .
-      dockerfile: Dockerfile.web      # Dockerfile especial do web
+      dockerfile: Dockerfile.web # Dockerfile especial do web
     container_name: supervisorio-web
     ports:
       - "3000:80"

@@ -4,13 +4,13 @@ services:
     container_name: supervisorio
     restart: always
     environment:
-      POSTGRES_USER: ${HYPER_POSTGRES_USER}
-      POSTGRES_PASSWORD: ${HYPER_POSTGRES_PASSWORD}
-      POSTGRES_DB: ${HYPER_POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${HYPER_POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
