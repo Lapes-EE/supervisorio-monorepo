@@ -30,6 +30,8 @@ export const telemetryKeys = {
   byIp: (ip: string) => [...telemetryKeys.all, 'ip', ip] as const,
   byParams: (params?: GetTelemetryParams) =>
     [...telemetryKeys.all, params] as const,
+  byMeterId: (meterId: number, period?: string) =>
+    [...telemetryKeys.all, 'meterId', meterId, period] as const,
 }
 
 export const telemetryQueries = {
