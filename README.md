@@ -1,108 +1,171 @@
 # Supervisório Monorepo
 
-## Descrição
+## Visão Geral
 
-Este é um projeto monorepo que consiste em um frontend em React e um backend em Fastify. O objetivo é fornecer uma interface para visualização e gerenciamento de dados de telemetria.
+Este é um **Sistema de Supervisório de Energia Elétrica** completo, desenvolvido como monorepo usando Turborepo. O sistema é responsável por coletar, armazenar e visualizar dados de telemetria de medidores elétricos, permitindo o monitoramento em tempo real da qualidade de energia em instalações industriais, comerciais ou prediais.
 
-## Estrutura do Projeto
+## O que o Sistema Faz
+
+### Coleta de Dados
+O sistema recebe dados de medidores de energia elétrica conectados via rede IP, coletando parâmetros como:
+- Tensão (fase-neutro e fase-fase)
+- Corrente (fases A, B, C e neutro)
+- Potência (ativa, reativa e aparente)
+- Fator de potência
+- Frequência
+- Temperatura
+- Distorção Harmônica Total (THD)
+
+### Monitoramento
+- **Dashboard em Tempo Real**: Visualização instantânea dos parâmetros elétricos de todos os medidores
+- **Layout de Edificação**: Representação geográfica dos medidores em planta baixa
+- **Central de Alarmes**: Monitoramento de eventos e alarmes
+
+### Análise
+- **Gráficos Temporais**: Evolução dos parâmetros ao longo do tempo
+- **Dados Históricos**: Consulta de medições passadas para análise de tendências
+- **Comparação**: Análise comparativa entre diferentes medidores
+
+### Gerenciamento
+- **CRUD de Medidores**: Cadastro, edição, listagem e exclusão de medidores
+- **Status de Ativos**: Controle de medidores ativos/inativos
+- **Autenticação**: Sistema de login para acesso seguro
+
+## Arquitetura do Projeto
 
 ```
 .
-├── apps
-│   ├── server/ (Backend Fastify)
-│   └── web/    (Frontend React)
-├── packages
-│   └── env/    (Variáveis de ambiente compartilhadas)
-└── ...
+├── apps/
+│   ├── web/          # Frontend React (Vite + TanStack)
+│   └── server/       # Backend Fastify (API REST)
+├── packages/
+│   └── env/          # Variáveis de ambiente compartilhadas
+└── turbo.json       # Configuração Turborepo
 ```
 
-## Tecnologias Utilizadas
+## Tecnologias
 
-- **Build Tool:** [Turborepo](https://turbo.build/repo)
-- **Package Manager:** [pnpm](https://pnpm.io/)
-- **Frontend:**
-  - [React](https://react.dev/)
-  - [Vite](https://vitejs.dev/)
-  - [TanStack Router](https://tanstack.com/router)
-  - [TanStack Query](https://tanstack.com/query)
-  - [Tailwind CSS](https://tailwindcss.com/)
-- **Backend:**
-  - [Fastify](https://fastify.dev/)
-  - [PostgreSQL](https://www.postgresql.org/)
-  - [Drizzle ORM](https://orm.drizzle.team/)
-- **Linguagem:** [TypeScript](https://www.typescriptlang.org/)
-- **Containerização:** [Docker](https://www.docker.com/)
+### Build & Package
+- **Turborepo**: Orquestração do monorepo
+- **pnpm**: Gerenciador de pacotes
 
-## Como Começar
+### Frontend
+- **React**: Biblioteca de interface
+- **Vite**: Build tool
+- **TanStack Router**: Roteamento (file-based)
+- **TanStack Query**: Gerenciamento de estado server
+- **Tailwind CSS**: Estilização
+- **Shadcn**: Componentes UI
+- **Recharts**: Gráficos
 
-### Pré-requisitos
+### Backend
+- **Fastify**: Framework web Node.js
+- **PostgreSQL**: Banco de dados relacional
+- **Drizzle ORM**: Mapeamento objeto-relacional
+- **Zod**: Validação de dados
 
-- [Node.js](https://nodejs.org/) (versão 20 ou superior)
-- [pnpm](https://pnpm.io/installation)
-- [Docker](https://docs.docker.com/get-docker/)
+### Infraestrutura
+- **Docker**: Containerização
+- **TypeScript**: Linguagem tipada
 
-### Instalação
+## Pré-requisitos
 
-1.  **Clone o repositório:**
+- Node.js 20+
+- pnpm 8+
+- Docker e Docker Compose
+- PostgreSQL (via Docker)
 
-    ```bash
-    git clone <URL_DO_REPOSITORIO>
-    cd supervisorio-monorepo
-    ```
-
-2.  **Instale as dependências:**
-
-    ```bash
-    pnpm install
-    ```
-
-3.  **Configure as variáveis de ambiente:**
-
-    Crie um arquivo `.env` na raiz do projeto, seguindo o exemplo do `.env.example`.
-
-    ```env
-    DATABASE_URL="postgresql://user:password@host:port/database"
-    ```
-
-4.  **Inicie o banco de dados com Docker:**
-
-    ```bash
-    docker-compose up -d
-    ```
-
-5.  **Rode as gerações do banco de dados:**
-
-    ```bash
-    pnpm db:generate
-    ```
-
-6.  **Rode as migrações do banco de dados:**
-
-    ```bash
-    pnpm db:migrate
-    ```
-
-### Rodando em Desenvolvimento
-
-Para iniciar os aplicativos `web` e `server` em modo de desenvolvimento, execute:
+## Instalação
 
 ```bash
+# Clone o repositório
+git clone <URL>
+cd supervisorio-monorepo
+
+# Instale dependências
+pnpm install
+
+# Configure as variáveis de ambiente
+cp .env.example .env
+# Edite o .env com suas configurações
+
+# Inicie o banco de dados
+docker-compose up -d
+
+# Gere as migrações do banco
+pnpm db:generate
+pnpm db:migrate
+
+# Inicie em desenvolvimento
 pnpm dev
 ```
 
-- O frontend estará disponível em `http://localhost:3000`.
-- O backend estará disponível em `http://localhost:3333`.
+## Acesso à Aplicação
 
-## Scripts Principais
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:3333
 
-- `pnpm dev`: Inicia os aplicativos em modo de desenvolvimento.
-- `pnpm build`: Gera a build de produção para todos os aplicativos.
-- `pnpm lint`: Executa o linter em todos os pacotes.
-- `pnpm db:generate`: Gera os arquivos de migração do Drizzle ORM.
-- `pnpm db:migrate`: Aplica as migrações no banco de dados.
-- `pnpm db:studio`: Abre o Drizzle Studio para visualizar e gerenciar o banco de dados.
-- `pnpm api:generate`: Executa o gerador de funções da API
+## Scripts do Projeto
+
+```bash
+# Desenvolvimento
+pnpm dev              # Inicia web e server
+
+# Build
+pnpm build            # Build de produção
+
+# Banco de dados
+pnpm db:generate      # Gera migrações
+pnpm db:migrate       # Aplica migrações
+pnpm db:studio        # Abre Drizzle Studio
+
+# Qualidade de código
+pnpm lint             # Executa linter
+
+# API
+pnpm api:generate     # Gera tipos da API
+```
+
+## Estrutura de Dados
+
+### Medidor (Meter)
+```typescript
+{
+  id: number;
+  issoSerial: string;  // Serial do dispositivo
+  name: string;        // Nome identificador
+  ip: string;          // Endereço IP
+  description?: string;
+  active: boolean;
+  createdAt: Date;
+}
+```
+
+### Medição (Measure)
+```typescript
+{
+  id: number;
+  meterId: number;
+  time: Date;
+  // Tensão
+  tensaoFaseNeutroA/B/C: number;
+  tensaoFaseFaseAB/BC/CA: number;
+  // Corrente
+  correnteA/B/C: number;
+  correnteNeutroMedido/Calculado: number;
+  // Potência
+  potenciaAtivaFundamental/Harmonica/Total: number;
+  potenciaReativa: number;
+  potenciaAparente: number;
+  // Qualidade
+  frequencia: number;
+  fpReal/Deslocamento: number;
+  thdTensao/Corrente: number;
+  // Outro
+  temperaturaSensorInterno: number;
+}
+```
 
 ## Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+MIT License - Veja o arquivo [LICENSE](LICENSE) para detalhes.
