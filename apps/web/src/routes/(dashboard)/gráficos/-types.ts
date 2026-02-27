@@ -1,36 +1,23 @@
 import { z } from 'zod'
 import { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period.gen'
 
-export const chartsSearchSchema = z.object({
-  charts: z
-    .array(
-      z.object({
-        meterId: z.string(),
-        measurement: z.union([
-          z.literal('voltage'),
-          z.literal('current'),
-          z.literal('power'),
-          z.literal('frequency'),
-          z.literal('power_factor'),
-        ]),
-        period: z.enum(GetTelemetryPeriod).default('last_5_minutes'),
-      })
-    )
-    .default([]),
+export const dashboardSearchSchema = z.object({
+  meterId: z.string().optional(),
+  period: z.enum(GetTelemetryPeriod).catch('last_hour'),
 })
 
-export type chartsSchema = {
-  id: string
-  meterId: string
-  meterName: string
-  measurementType: MeasurementKey
-  measurementLabel: string
-  color: string
-  unit: string
-  data: { time: string; value: number }[]
-} | null
+export type DashboardSearchSchema = z.infer<typeof dashboardSearchSchema>
 
-export type MeasurementKey = z.infer<
-  typeof chartsSearchSchema
->['charts'][number]['measurement']
-export type ChartsSearchSchema = z.infer<typeof chartsSearchSchema>
+export type TelemetryDataPoint = {
+  time: string
+  tensaoFaseNeutroA?: number
+  tensaoFaseNeutroB?: number
+  tensaoFaseNeutroC?: number
+  correnteA?: number
+  correnteB?: number
+  correnteC?: number
+  potenciaAtivaFundamentalHarmonicaTotal?: number
+  fpRealFaseA?: number
+  fpRealFaseB?: number
+  fpRealFaseC?: number
+}
