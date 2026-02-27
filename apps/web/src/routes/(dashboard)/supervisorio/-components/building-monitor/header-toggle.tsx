@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { toggleSearchSchema } from '../../-types'
+import { type ToggleSearchSchema, toggleSearchSchema } from '../../-types'
 
 export function HeaderToggle() {
   const { type, phase } = useSearch({ from: '/(dashboard)/supervisorio/' })
@@ -30,7 +30,13 @@ export function HeaderToggle() {
           className="px-10"
           value="voltage"
         >
-          <Link search={(prev) => ({ ...prev, type: 'voltage' })} to=".">
+          <Link
+            search={(prev: ToggleSearchSchema) => ({
+              ...prev,
+              type: 'voltage',
+            })}
+            to="."
+          >
             Tensão
           </Link>
         </ToggleGroupItem>
@@ -40,7 +46,13 @@ export function HeaderToggle() {
           className="px-10"
           value="current"
         >
-          <Link search={(prev) => ({ ...prev, type: 'current' })} to=".">
+          <Link
+            search={(prev: ToggleSearchSchema) => ({
+              ...prev,
+              type: 'current',
+            })}
+            to="."
+          >
             Corrente
           </Link>
         </ToggleGroupItem>
@@ -50,7 +62,10 @@ export function HeaderToggle() {
           className="px-10"
           value="power"
         >
-          <Link search={(prev) => ({ ...prev, type: 'power' })} to=".">
+          <Link
+            search={(prev: ToggleSearchSchema) => ({ ...prev, type: 'power' })}
+            to="."
+          >
             Potência
           </Link>
         </ToggleGroupItem>
@@ -70,7 +85,10 @@ export function HeaderToggle() {
         {phaseOptions.map((fase) => (
           <div className="flex items-center gap-2 px-4 py-2" key={fase}>
             <Link
-              search={(prev) => ({ ...prev, phase: togglePhase(fase) })}
+              search={(prev: ToggleSearchSchema) => ({
+                ...prev,
+                phase: togglePhase(fase),
+              })}
               to="."
             >
               <Checkbox
