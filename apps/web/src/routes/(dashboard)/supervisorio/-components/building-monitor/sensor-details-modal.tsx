@@ -83,8 +83,11 @@ export function SensorDetailsModal({
               <div className="flex gap-2">
                 <Button asChild size="sm" variant="outline">
                   <Link
-                    params={{ meterId: sensor.id.toString() }}
-                    to="/gráficos/$meterId"
+                    search={{
+                      meterId: sensor.id.toString(),
+                      period: 'last_24_hours',
+                    }}
+                    to="/gráficos"
                   >
                     Visualização Estendida
                   </Link>
