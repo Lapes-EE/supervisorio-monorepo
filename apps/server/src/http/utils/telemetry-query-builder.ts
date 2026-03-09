@@ -150,17 +150,9 @@ export async function fetchLastMeasurement(
   }
 
   const rawData = await db
-    .select()
+    .selectDistinctOn([measures.meterId])
     .from(measures)
-    .where(
-      sql`
-        (${measures.meterId}, ${measures.time}) IN (
-          SELECT ${measures.meterId}, MAX(${measures.time})
-          FROM ${measures}
-          GROUP BY ${measures.meterId}
-        )
-      `
-    )
+    .orderBy(measures.meterId, desc(measures.time))
 
   return {
     data: rawData,
