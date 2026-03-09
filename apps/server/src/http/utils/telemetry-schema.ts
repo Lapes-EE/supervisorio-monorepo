@@ -7,6 +7,7 @@ export const telemetryQuerySchema = z.object({
   endDate: z.iso.datetime().optional(),
   period: z
     .enum([
+      'last_measurement',
       'last_5_minutes',
       'last_30_minutes',
       'last_hour',
