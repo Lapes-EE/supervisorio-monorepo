@@ -1,11 +1,11 @@
-import { createEnv } from "@t3-oss/env-core";
-import { z } from "zod";
+import { createEnv } from '@t3-oss/env-core'
+import { z } from 'zod'
 
 export const env = createEnv({
   server: {
     PORT: z.coerce.number().default(3333),
     API_URL: z.string(),
-    NODE_ENV: z.enum(["development", "on", "test"]).default("development"),
+    NODE_ENV: z.enum(['development', 'on', 'test']).default('development'),
     DATABASE_URL: z.string(),
     JWT_SECRET: z.uuid(),
     PASSWORD: z.string(),
@@ -21,4 +21,4 @@ export const env = createEnv({
     PASSWORD: process.env.PASSWORD,
   },
   emptyStringAsUndefined: true,
-});
+})
