@@ -8,10 +8,7 @@ const RETRY_DISABLED_METERS_MINUTES = 5 // tempo em minutos para tentar reativar
 
 export function startDisabledMetersRetry() {
   api.log.info(
-    `[telemetry] Reativador agendado a cada $
-  {
-    RETRY_DISABLED_METERS_MINUTES
-  }
+    `[telemetry] Reativador agendado a cada ${RETRY_DISABLED_METERS_MINUTES}
   minutos.`
   )
 

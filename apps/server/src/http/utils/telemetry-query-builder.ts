@@ -66,25 +66,18 @@ export async function fetchRawData(
   ]
 
   if (meterId) {
-    conditions.push(sql`${measures.meterId} = ${meterId}`)
+    conditions.push(eq(measures.meterId, meterId))
   }
 
-  const [rawData, totalResult] = await Promise.all([
-    db
-      .select()
-      .from(measures)
-      .where(and(...conditions))
-      .orderBy(asc(measures.time)),
-
-    db
-      .select({ count: sql`count(*)`.mapWith(Number) })
-      .from(measures)
-      .where(and(...conditions)),
-  ])
+  const rawData = await db
+    .select()
+    .from(measures)
+    .where(and(...conditions))
+    .orderBy(asc(measures.time))
 
   return {
     data: rawData,
-    total: totalResult[0]?.count || 0,
+    total: rawData.length,
   }
 }
 
@@ -149,9 +142,12 @@ export async function fetchLastMeasurement(
     }
   }
 
+  const timeBoundary = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString()
+
   const rawData = await db
     .selectDistinctOn([measures.meterId])
     .from(measures)
+    .where(gte(measures.time, timeBoundary))
     .orderBy(measures.meterId, desc(measures.time))
 
   return {
