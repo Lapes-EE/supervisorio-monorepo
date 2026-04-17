@@ -55,7 +55,7 @@ export const deleteMeter: FastifyPluginCallbackZod = (app) => {
         return reply.status(404).send({ error: 'Medidor não encontrado  ' })
       }
 
-      return reply.status(204).send({} as Record<string, never>)
+      return reply.code(204).send(null as never)
     }
   )
 }

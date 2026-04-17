@@ -36,9 +36,9 @@ export const changeStatusMeters: FastifyPluginCallbackZod = (app) => {
           })
           .where(eq(schema.meters.id, id))
 
-        return reply.status(204).send(null)
+        return reply.code(204).send(null)
       } catch {
-        return reply.status(400).send(null)
+        return reply.code(400).send(null)
       }
     }
   )
