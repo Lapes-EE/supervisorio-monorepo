@@ -17,7 +17,7 @@ export const deleteMeter: FastifyPluginCallbackZod = (app) => {
           id: z.coerce.number(),
         }),
         response: {
-          204: z.object({}).describe('Sucesso'),
+          204: z.null().describe('Sucesso'),
           404: z
             .object({
               error: z.string(),
