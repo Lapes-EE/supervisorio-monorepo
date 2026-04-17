@@ -16,9 +16,9 @@
   "packageManager": "pnpm@9.4.0",
   "devDependencies": {
     "@biomejs/biome": "2.1.2",
-    "drizzle-kit": "^0.31.4",
+    "drizzle-kit": "^0.31.10",
     "husky": "^9.1.7",
-    "turbo": "^2.5.5",
+    "turbo": "^2.9.6",
     "ultracite": "5.0.47"
   },
   "pnpm": {
