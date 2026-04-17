@@ -24,6 +24,7 @@ test('Create a meter', async () => {
     .send({
       name: faker.lorem.words(2),
       ip: faker.internet.ipv4(),
+      issoSerial: 'ABC-123-DEF-456',
       description: faker.lorem.sentence(),
     })
 
@@ -39,6 +40,7 @@ test('Create a meter without authorization', async () => {
     .send({
       name: faker.lorem.words(2),
       ip: faker.internet.ipv4(),
+      issoSerial: 'ABC-123-DEF-456',
       description: faker.lorem.sentence(),
     })
 
