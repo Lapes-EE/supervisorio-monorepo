@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { usePostMeters } from '@/http/gen/endpoints/lapes-api.gen'
+import type { PostMeters401 } from '@/http/gen/model'
 import { meterKeys } from '@/lib/query-keys'
 
 const ISSO_SERIAL_REGEX = /^[A-Z0-9]{3}(?:-[A-Z0-9]{3}){3}$/
@@ -50,13 +51,7 @@ export function TelemetryForm() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const { queryClient } = useRouteContext({ from: '/(dashboard)/telemetria' })
-  const mutation = usePostMeters({
-    axios: {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    },
-  })
+  const mutation = usePostMeters()
   const form = useForm<z.infer<typeof formCreatemeterSchema>>({
     resolver: zodResolver(formCreatemeterSchema),
     defaultValues: {
@@ -77,7 +72,7 @@ export function TelemetryForm() {
         },
         onError: (error) => {
           toast('Erro ao adicionar medidor', {
-            description: `${error.response?.data.error}, é necessário estar logado`,
+            description: `${(error as PostMeters401)?.error ?? 'Erro desconhecido'}, é necessário estar logado`,
             action: {
               label: 'Login',
               onClick: () => navigate({ to: '/login' }),

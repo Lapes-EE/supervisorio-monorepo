@@ -34,7 +34,7 @@ export const Route = createFileRoute('/(dashboard)/telemetria/$telemetryIp')({
   ),
   loader: async ({ params }) => {
     const result = await getTelemetryIp(params.telemetryIp)
-    return result.data
+    return result
   },
 })
 
@@ -50,7 +50,7 @@ function Dashboard() {
     initialData: data,
     queryFn: async () => {
       const result = await getTelemetryIp(telemetryIp)
-      return result.data
+      return result
     },
     refetchInterval: 1000 * 2, // 2 Segundos
     retry: 0,

@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { useDeleteMetersId } from '@/http/gen/endpoints/lapes-api.gen'
+import type { DeleteMetersId401 } from '@/http/gen/model'
 import { meterKeys } from '@/lib/query-keys'
 
 export const Route = createFileRoute('/(dashboard)/telemetria/$meterId/delete')(
@@ -27,13 +28,7 @@ function RouteComponent() {
   const navigate = useNavigate()
   const { meterId } = Route.useParams()
   const { queryClient } = useRouteContext({ from: '/(dashboard)/telemetria' })
-  const mutation = useDeleteMetersId({
-    axios: {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    },
-  })
+  const mutation = useDeleteMetersId()
 
   function handleDeleteMeter() {
     mutation.mutate(
@@ -44,7 +39,7 @@ function RouteComponent() {
         },
         onError(error) {
           toast('Erro ao deletar', {
-            description: `${error.response?.data.error}, é necessário estar logado`,
+            description: `${(error as DeleteMetersId401)?.error ?? 'Erro desconhecido'}, é necessário estar logado`,
             action: {
               label: 'Login',
               onClick: () => navigate({ to: '/login' }),

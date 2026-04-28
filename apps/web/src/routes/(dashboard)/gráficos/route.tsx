@@ -19,6 +19,7 @@ import {
   ComboboxTrigger,
 } from '@/components/ui/shadcn-io/combobox'
 import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period.gen'
+import { getAggregationConfig } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/data'
 import { ChartsGrid } from './-components/charts-grid'
 import { KpiGrid } from './-components/kpi-grid'
 import { PeriodSelector } from './-components/period-selector'
@@ -42,9 +43,13 @@ function RouteComponent() {
   const { meterId, period } = Route.useSearch()
   const navigate = useNavigate({ from: Route.fullPath })
 
+  const aggregation = period
+    ? getAggregationConfig(period).aggregation
+    : undefined
   const { data: telemetryData, isLoading } = useTelemetryData(
     meterId ? Number(meterId) : undefined,
-    period
+    period,
+    aggregation
   )
 
   const handleMeterSelect = (selectedMeterId: string) => {

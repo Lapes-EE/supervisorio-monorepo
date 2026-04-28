@@ -8,7 +8,7 @@
 		"build": "vite build && tsc",
 		"serve": "vite preview",
 		"test": "vitest run",
-		"api:generate": "pnpm env:load orval",
+		"api:generate": "pnpm env:load orval && node fix-orval-nullable.js",
 		"ui": "pnpm dlx shadcn@latest add --"
 	},
     "packageManager": "pnpm@9.4.0",
@@ -64,7 +64,7 @@
 		"@vitejs/plugin-react": "^4.3.4",
 		"dotenv-cli": "^8.0.0",
 		"jsdom": "^26.0.0",
-		"orval": "^7.19.0",
+		"orval": "8.9.0",
 		"typescript": "^5.7.2",
 		"vite": "^6.1.0",
 		"vitest": "^3.0.5"

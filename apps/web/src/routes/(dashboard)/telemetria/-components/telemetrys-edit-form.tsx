@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { usePutMetersId } from '@/http/gen/endpoints/lapes-api.gen'
+import type { PutMetersId401 } from '@/http/gen/model'
 import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item.gen'
 import { meterKeys } from '@/lib/query-keys'
 
@@ -55,13 +56,7 @@ export function TelemetryEditForm({ meters, meterId }: TelemetryEditFormProps) {
   const { queryClient } = useRouteContext({
     from: '/(dashboard)/telemetria',
   })
-  const mutation = usePutMetersId({
-    axios: {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    },
-  })
+  const mutation = usePutMetersId()
   const navigate = useNavigate()
 
   const meterIndex = meters.findIndex((m) => m.id.toString() === meterId)
@@ -92,7 +87,7 @@ export function TelemetryEditForm({ meters, meterId }: TelemetryEditFormProps) {
         },
         onError: (error) => {
           toast('Erro ao editar', {
-            description: `${error.response?.data.error}, é necessário estar logado`,
+            description: `${(error as PutMetersId401)?.error ?? 'Erro desconhecido'}, é necessário estar logado`,
             action: {
               label: 'Login',
               onClick: () => navigate({ to: '/login' }),

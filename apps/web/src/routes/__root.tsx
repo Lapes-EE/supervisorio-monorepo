@@ -21,7 +21,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     )
 
     return {
-      meters: response.data,
+      meters: response,
     }
   },
   component: () => (
