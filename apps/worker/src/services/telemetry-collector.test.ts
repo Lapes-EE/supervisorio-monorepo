@@ -1,5 +1,6 @@
 import { insertMeasure } from '@repo/db'
 import { getTelemetryFromMeter } from '@repo/telemetry'
+import cron from 'node-cron'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import {
   checkMeterEnabled,
@@ -29,10 +30,12 @@ vi.mock('../db/queries', () => ({
 }))
 
 vi.mock('node-cron', () => ({
-  schedule: vi.fn((_schedule: string, callback: () => Promise<void>) => {
-    ;(globalThis as Record<string, unknown>).__cronCallback = callback
-    return { stop: vi.fn() }
-  }),
+  default: {
+    schedule: vi.fn((_schedule: string, callback: () => Promise<void>) => {
+      ;(globalThis as Record<string, unknown>).__cronCallback = callback
+      return { stop: vi.fn() }
+    }),
+  },
 }))
 
 vi.mock('pino', () => ({
@@ -81,7 +84,6 @@ describe('Telemetry Collector Integration', () => {
   })
 
   test('starts and registers cron schedule', () => {
-    const cron = require('node-cron')
     startTelemetryCollector()
     expect(cron.schedule).toHaveBeenCalled()
   })

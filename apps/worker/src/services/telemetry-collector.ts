@@ -13,6 +13,13 @@ import {
 } from '../db/queries'
 import { isMeterEligible, type MeterState } from './state-machine'
 
+class MeterDisabledError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'MeterDisabledError'
+  }
+}
+
 const logger = pino({ name: 'worker:collector' })
 const queue = new PQueue({ concurrency: 14 })
 
@@ -22,12 +29,15 @@ async function collectFromMeter(ip: string, failureCount: number) {
       async () => {
         const isEnabled = await checkMeterEnabled(ip)
         if (!isEnabled) {
-          throw new AbortError('Meter disabled during retry')
+          throw new AbortError(
+            new MeterDisabledError('Meter disabled during retry')
+          )
         }
         return await getTelemetryFromMeter(ip)
       },
       {
         retries: 5,
+        minTimeout: 0,
         onFailedAttempt: (error) => {
           logger.warn(
             `Attempt ${error.attemptNumber} failed for meter ${ip}. ${error.retriesLeft} retries left.`
@@ -40,7 +50,7 @@ async function collectFromMeter(ip: string, failureCount: number) {
     await updateMeterSuccess(ip)
     logger.info(`Successfully collected telemetry from meter ${ip}`)
   } catch (error) {
-    if (error instanceof AbortError) {
+    if (error instanceof MeterDisabledError) {
       logger.info(`Collection aborted for meter ${ip}: ${error.message}`)
       return
     }
