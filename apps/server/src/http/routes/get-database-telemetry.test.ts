@@ -325,8 +325,16 @@ describe('Telemetry API Tests', () => {
       const olderTime = new Date(Date.now() - 60 * 60 * 1000).toISOString()
       const newerTime = new Date().toISOString()
 
-      await makeTelemetry({ meterId: meter.id, time: olderTime, frequencia: 50 })
-      await makeTelemetry({ meterId: meter.id, time: newerTime, frequencia: 60 })
+      await makeTelemetry({
+        meterId: meter.id,
+        time: olderTime,
+        frequencia: 50,
+      })
+      await makeTelemetry({
+        meterId: meter.id,
+        time: newerTime,
+        frequencia: 60,
+      })
 
       const response = await request(api.server)
         .get('/telemetry')
@@ -374,8 +382,16 @@ describe('Telemetry API Tests', () => {
       const olderTime = new Date(Date.now() - 60 * 60 * 1000).toISOString()
       const newerTime = new Date().toISOString()
 
-      await makeTelemetry({ meterId: meter.id, time: olderTime, frequencia: 50 })
-      await makeTelemetry({ meterId: meter.id, time: newerTime, frequencia: 60 })
+      await makeTelemetry({
+        meterId: meter.id,
+        time: olderTime,
+        frequencia: 50,
+      })
+      await makeTelemetry({
+        meterId: meter.id,
+        time: newerTime,
+        frequencia: 60,
+      })
 
       const response = await request(api.server)
         .get('/telemetry')

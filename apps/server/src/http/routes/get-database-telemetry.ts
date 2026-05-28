@@ -81,15 +81,12 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
           })
         }
 
-        const filteredData = filterFields(lastRows as any, fields)
+        const filteredData = filterFields(lastRows, fields)
 
         const times = lastRows.map((row) => new Date(row.time).toISOString())
         const startDate =
-          times.length > 0
-            ? times[times.length - 1]
-            : new Date().toISOString()
-        const endDate =
-          times.length > 0 ? times[0] : new Date().toISOString()
+          times.length > 0 ? times[times.length - 1] : new Date().toISOString()
+        const endDate = times.length > 0 ? times[0] : new Date().toISOString()
 
         return reply.status(200).send({
           data: filteredData,
