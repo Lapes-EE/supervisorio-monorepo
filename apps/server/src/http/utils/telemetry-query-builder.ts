@@ -159,6 +159,7 @@ export async function fetchLastMeasurement(
       time,
       ${sql.join(columnAliases, sql`, `)}
     FROM measures
+    WHERE time > NOW() - INTERVAL '5 minutes'
     ORDER BY meter_id, time DESC
   `)
 
