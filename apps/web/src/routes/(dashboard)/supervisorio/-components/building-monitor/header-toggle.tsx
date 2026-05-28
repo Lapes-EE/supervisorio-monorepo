@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import {  toggleSearchSchema } from '../../-types'
+import { toggleSearchSchema } from '../../-types'
 
 export function HeaderToggle() {
   const { type, phase } = useSearch({ from: '/(dashboard)/supervisorio/' })
@@ -62,10 +62,7 @@ export function HeaderToggle() {
           className="px-10"
           value="power"
         >
-          <Link
-            search={(prev: any) => ({ ...prev, type: 'power' })}
-            to="."
-          >
+          <Link search={(prev: any) => ({ ...prev, type: 'power' })} to=".">
             Potência
           </Link>
         </ToggleGroupItem>

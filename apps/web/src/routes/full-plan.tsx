@@ -5,7 +5,6 @@ import { BuildingLayout } from '@/routes/(dashboard)/supervisorio/-components/bu
 import { SensorDetailsModal } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/sensor-details-modal'
 import type { Sensor } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/types'
 import {
-  
   toggleSearchSchema,
   typeOption,
 } from './(dashboard)/supervisorio/-types'

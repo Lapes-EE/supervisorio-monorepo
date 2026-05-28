@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/select'
 import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period'
 
-const periodLabels: Record<GetTelemetryPeriod, string> = {
+const periodLabels = {
   last_5_minutes: 'Últimos 5 minutos',
   last_30_minutes: 'Últimos 30 minutos',
   last_hour: 'Última hora',
