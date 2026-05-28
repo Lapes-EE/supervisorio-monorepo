@@ -10,7 +10,6 @@ import { filterFields, isAggregatedMeasure } from '../utils/field-utils'
 import {
   buildAggregatedQuery,
   buildDateFilters,
-  fetchLastMeasurement,
   fetchRawData,
 } from '../utils/telemetry-query-builder'
 import { telemetryQuerySchema } from '../utils/telemetry-schema'
@@ -55,7 +54,7 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
           `)
 
           if (latestIds.length > 0) {
-            const ids = latestIds.map((row) => row.id)
+            const ids = latestIds.map((row: { id: number }) => row.id)
             lastRows = await db
               .select()
               .from(measures)
@@ -110,11 +109,7 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
       let data: GetDatabase200ResponseDataSchema[]
       let total: number
 
-      if (period === 'last_measurement') {
-        const result = await fetchLastMeasurement({ meterId })
-        data = result.data
-        total = result.total
-      } else if (aggregation === 'raw') {
+      if (aggregation === 'raw') {
         const result = await fetchRawData({
           filterStartDate,
           filterEndDate,
@@ -141,9 +136,7 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
 
       // Filtrar campos na resposta se necessário (somente para raw data)
       const filteredData =
-        aggregation === 'raw' || period === 'last_measurement'
-          ? filterFields(data, fields)
-          : data
+        aggregation === 'raw' ? filterFields(data, fields) : data
 
       const nonNullableKeys: Array<keyof GetDatabase200ResponseDataSchema> = [
         'id',
@@ -176,7 +169,7 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
               : filterEndDate.toISOString(),
         },
         nullCount,
-        aggregation: period === 'last_measurement' ? 'raw' : aggregation,
+        aggregation,
       })
     }
   )
