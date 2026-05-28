@@ -12,10 +12,6 @@ export function calculateBackoff(
   if (failureCount === 0) {
     return 0
   }
-  // Formula: min(30 * 2^(failureCount-1), MAX_BACKOFF_SECONDS)
-  // failureCount 1 -> 30 * 2^0 = 30
-  // failureCount 2 -> 30 * 2^1 = 60
-  // failureCount 3 -> 30 * 2^2 = 120
   const backoff = 30 * 2 ** (failureCount - 1)
   return Math.min(backoff, maxBackoffSeconds)
 }
@@ -35,12 +31,12 @@ export function isMeterEligible(
 
   if (meter.health === 'failing') {
     return false
-  } // Should be in cooldown already
+  }
 
   if (meter.health === 'cooldown') {
     if (!meter.lastFailedAt) {
       return true
-    } // Should not happen if in cooldown
+    }
 
     const lastFailed = new Date(meter.lastFailedAt)
     const backoff = calculateBackoff(meter.failureCount, maxBackoffSeconds)

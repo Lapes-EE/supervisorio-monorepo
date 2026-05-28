@@ -35,9 +35,8 @@ function SupervisorioFullPlan() {
         }),
       })
 
-      // atualiza índice para o próximo valor
       indexRef.current = (indexRef.current + 1) % typeOption.length
-    }, 5000) // troca a cada 5 segundos (ajuste se quiser)
+    }, 5000)
 
     return () => clearInterval(interval)
   }, [navigate])

@@ -9,15 +9,12 @@ export function HeaderToggle() {
   const { type, phase } = useSearch({ from: '/(dashboard)/supervisorio/' })
   const phaseOptions = toggleSearchSchema.shape.phase.def.defaultValue
 
-  // Função para toggle da fase
   const togglePhase = (faseToToggle: 'A' | 'B' | 'C') => {
     const currentPhases = phase || []
 
     if (currentPhases.includes(faseToToggle)) {
-      // Se já está selecionada, remove
       return currentPhases.filter((f) => f !== faseToToggle)
     }
-    // Se não está selecionada, adiciona
     return [...currentPhases, faseToToggle]
   }
 

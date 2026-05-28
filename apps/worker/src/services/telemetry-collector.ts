@@ -20,7 +20,6 @@ async function collectFromMeter(ip: string, failureCount: number) {
   try {
     const telemetry = await pRetry(
       async () => {
-        // Check if still enabled before attempt
         const isEnabled = await checkMeterEnabled(ip)
         if (!isEnabled) {
           throw new AbortError('Meter disabled during retry')
@@ -87,7 +86,6 @@ export function startTelemetryCollector() {
   )
 }
 
-// Graceful shutdown
 const shutdown = async () => {
   logger.info('Shutting down worker...')
   queue.pause()
