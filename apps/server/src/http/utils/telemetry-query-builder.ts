@@ -1,5 +1,5 @@
 import { db, measures } from '@repo/db'
-import { and, asc, gte, lte, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, gte, lte, sql } from 'drizzle-orm'
 import type { GetDatabase200ResponseDataSchema } from '../types/get-database-200-response'
 import { fieldMapping } from './field-mapping'
 import type { AggregatedMeasure } from './field-utils'
@@ -123,4 +123,47 @@ export async function buildAggregatedQuery(
   `)
 
   return aggregatedData
+}
+
+interface LastMeasurementInput {
+  meterId?: number
+}
+
+export async function fetchLastMeasurement(
+  input: LastMeasurementInput
+): Promise<RawDataResult> {
+  const { meterId } = input
+
+  if (meterId) {
+    const rawDataWithId = await db
+      .select()
+      .from(measures)
+      .where(eq(measures.meterId, meterId))
+      .orderBy(desc(measures.time))
+      .limit(1)
+
+    return {
+      data: rawDataWithId,
+      total: rawDataWithId.length,
+    }
+  }
+
+  const rawData = await db
+    .select()
+    .from(measures)
+    .where(
+      sql`
+        (${measures.meterId}, ${measures.time}) IN (
+          SELECT ${measures.meterId}, MAX(${measures.time})
+          FROM ${measures}
+          GROUP BY ${measures.meterId}
+        )
+      `
+    )
+    .orderBy(desc(measures.time))
+
+  return {
+    data: rawData,
+    total: rawData.length,
+  }
 }
