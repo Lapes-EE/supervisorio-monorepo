@@ -319,6 +319,74 @@ describe('Telemetry API Tests', () => {
     })
   })
 
+  describe('Last Measurement Period Tests', () => {
+    test('Get last_measurement for specific meterId', async () => {
+      const meter = await makeMeters()
+      const olderTime = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+      const newerTime = new Date().toISOString()
+
+      await makeTelemetry({ meterId: meter.id, time: olderTime, frequencia: 50 })
+      await makeTelemetry({ meterId: meter.id, time: newerTime, frequencia: 60 })
+
+      const response = await request(api.server)
+        .get('/telemetry')
+        .query({ meterId: meter.id, period: 'last_measurement' })
+
+      expect(response.status).toBe(200)
+      expect(response.body.data).toHaveLength(1)
+      expect(response.body.data[0].meterId).toBe(meter.id)
+      expect(response.body.data[0].frequencia).toBe(60)
+      expect(response.body.total).toBe(1)
+    })
+
+    test('Get last_measurement for all meters without meterId', async () => {
+      const meter1 = await makeMeters()
+      const meter2 = await makeMeters()
+
+      await makeTelemetry({ meterId: meter1.id, frequencia: 50 })
+      await makeTelemetry({ meterId: meter2.id, frequencia: 60 })
+
+      const response = await request(api.server)
+        .get('/telemetry')
+        .query({ period: 'last_measurement' })
+
+      expect(response.status).toBe(200)
+      expect(response.body.data).toHaveLength(2)
+      expect(response.body.total).toBe(2)
+
+      const meterIds = response.body.data.map((d: any) => d.meterId)
+      expect(meterIds).toContain(meter1.id)
+      expect(meterIds).toContain(meter2.id)
+    })
+
+    test('Get last_measurement without meterId returns empty when no data', async () => {
+      const response = await request(api.server)
+        .get('/telemetry')
+        .query({ period: 'last_measurement' })
+
+      expect(response.status).toBe(200)
+      expect(response.body.data).toEqual([])
+      expect(response.body.total).toBe(0)
+    })
+
+    test('Get last_measurement returns only last row per meter', async () => {
+      const meter = await makeMeters()
+      const olderTime = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+      const newerTime = new Date().toISOString()
+
+      await makeTelemetry({ meterId: meter.id, time: olderTime, frequencia: 50 })
+      await makeTelemetry({ meterId: meter.id, time: newerTime, frequencia: 60 })
+
+      const response = await request(api.server)
+        .get('/telemetry')
+        .query({ period: 'last_measurement' })
+
+      expect(response.status).toBe(200)
+      expect(response.body.data).toHaveLength(1)
+      expect(response.body.data[0].frequencia).toBe(60)
+    })
+  })
+
   describe('Invalid Query Parameter Tests', () => {
     test('Get telemetry with invalid period returns 400', async () => {
       const meter = await makeMeters()
@@ -549,18 +617,21 @@ describe('Field Test', () => {
   test('should return only selected fields for aggregated data', async () => {
     const meter = await makeMeters()
     const now = new Date()
-    now.setMinutes(30, 0, 0) // Ensure we are in the middle of an hour
-    const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000)
+    // Set to 5 and 15 minutes of the current hour to ensure they are in the same 1h bucket
+    const fifteenMinutesPastHour = new Date(now)
+    fifteenMinutesPastHour.setMinutes(15, 0, 0)
+    const fiveMinutesPastHour = new Date(now)
+    fiveMinutesPastHour.setMinutes(5, 0, 0)
 
     await makeTelemetry({
       meterId: meter.id,
-      time: tenMinutesAgo.toISOString(),
+      time: fiveMinutesPastHour.toISOString(),
       frequencia: 50,
       tensaoFaseNeutroA: 200,
     })
     await makeTelemetry({
       meterId: meter.id,
-      time: now.toISOString(),
+      time: fifteenMinutesPastHour.toISOString(),
       frequencia: 70,
       tensaoFaseNeutroA: 240,
     })

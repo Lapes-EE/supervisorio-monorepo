@@ -10,13 +10,12 @@ import {
   validatorCompiler,
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
-import { changeStatusMeters } from './http/routes/change-meter-status'
 import { createMeters } from './http/routes/create-meters'
 import { deleteMeter } from './http/routes/delete-meters'
 import { getDatabaseTelemetry } from './http/routes/get-database-telemetry'
 import { getMeters } from './http/routes/get-meters'
-import { getTelemetryByIp } from './http/routes/get-telemetry-by-ip'
 import { login } from './http/routes/login'
+import { updateMeterStatus } from './http/routes/update-meter-status'
 import { updateMeter } from './http/routes/update-meters'
 import { auth } from './http/utils/middleware.auth'
 
@@ -69,9 +68,8 @@ api.get('/health', () => {
 api.register(login) // Ensure login route is registered early for authentication
 api.register(auth) // Register auth plugin globally
 
-api.register(changeStatusMeters)
 api.register(createMeters)
-api.register(getTelemetryByIp)
+api.register(updateMeterStatus)
 api.register(updateMeter)
 api.register(getMeters)
 api.register(deleteMeter)

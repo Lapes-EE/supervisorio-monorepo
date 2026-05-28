@@ -1,4 +1,4 @@
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 import { CurrentChart } from './charts/current-chart'
 import { PowerChart } from './charts/power-chart'
 import { PowerFactorChart } from './charts/power-factor-chart'

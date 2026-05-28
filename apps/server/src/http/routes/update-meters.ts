@@ -1,9 +1,8 @@
+import { db, schema } from '@repo/db'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import { isIP } from 'is-ip'
 import z from 'zod'
-import { db } from '@/db/connections.ts'
-import { schema } from '@/db/schema/index.ts'
 import { auth } from '../utils/middleware.auth'
 
 export const updateMeter: FastifyPluginCallbackZod = (app) => {

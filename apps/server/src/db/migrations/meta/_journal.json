@@ -50,6 +50,20 @@
       "when": 1762544405560,
       "tag": "0006_seed_user",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1779940078511,
+      "tag": "0007_lush_gateway",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1779940262844,
+      "tag": "0008_groovy_korath",
+      "breakpoints": true
     }
   ]
 }

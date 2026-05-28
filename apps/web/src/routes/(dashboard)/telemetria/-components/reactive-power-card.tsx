@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { GetTelemetryIp200 } from '@/http/gen/model/get-telemetry-ip200.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 import TelemetryItem from './telemetry-item'
 
 export function ReactivePowerCard({
   telemetryData,
   isLoading,
 }: {
-  telemetryData: GetTelemetryIp200 | undefined
+  telemetryData: GetTelemetry200DataItem | undefined
   isLoading: boolean
 }) {
   return (
@@ -19,31 +19,31 @@ export function ReactivePowerCard({
           isLoading={isLoading}
           label="Fase A"
           suffix="var"
-          value={telemetryData?.potencia_reativa_a}
+          value={telemetryData?.potenciaReativaA}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase B"
           suffix="var"
-          value={telemetryData?.potencia_reativa_b}
+          value={telemetryData?.potenciaReativaB}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase C"
           suffix="var"
-          value={telemetryData?.potencia_reativa_c}
+          value={telemetryData?.potenciaReativaC}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Soma Aritmética"
           suffix="var"
-          value={telemetryData?.potencia_reativa_total_soma_aritmetica}
+          value={telemetryData?.potenciaReativaTotalAritmetica}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Soma Vetorial"
           suffix="var"
-          value={telemetryData?.potencia_reativa_total_soma_vetorial}
+          value={telemetryData?.potenciaReativaTotalVetorial}
         />
       </CardContent>
     </Card>

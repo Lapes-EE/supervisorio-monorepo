@@ -11,9 +11,7 @@ export default defineConfig({
 			schemas: "./src/http/gen/model",
 			client: "react-query",
 			httpClient: "axios",
-			fileExtension: '.gen.ts',
-			baseUrl: backend_url,
-			// mock: true,
+			baseUrl: backend_url,			// mock: true,
 			override: {
                 // mutator: {
                 //     path: './src/http/gen/custom-instace.ts',

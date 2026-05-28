@@ -1,9 +1,9 @@
 import { useQueries, useQuery } from '@tanstack/react-query'
-import { getMeters, getTelemetry } from '@/http/gen/endpoints/lapes-api.gen'
-import type { GetTelemetryAggregation } from '@/http/gen/model/get-telemetry-aggregation.gen'
-import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period.gen'
-import type { GetTelemetry200 } from '@/http/gen/model/get-telemetry200.gen'
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item.gen'
+import { getMeters, getTelemetry } from '@/http/gen/endpoints/lapes-api'
+import type { GetTelemetryAggregation } from '@/http/gen/model/get-telemetry-aggregation'
+import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period'
+import type { GetTelemetry200 } from '@/http/gen/model/get-telemetry200'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 import { dayjs } from '@/lib/dayjs'
 import type { ToggleSearchSchema } from '../../-types'
 import type { History, Meter, PhasePoint, Sensor } from './types'
@@ -275,7 +275,8 @@ export function useSensors(
         name: meter.name,
         position: meter.position,
         unit: meter.unit,
-        active: meter.active,
+        enabled: meter.enabled,
+        health: meter.health,
         trend,
         value,
         lastUpdate: lastMeasure.time ?? dayjs().format('HH:mm'),
@@ -290,7 +291,8 @@ export function useSensors(
       name: meter.name,
       position: meter.position,
       unit: meter.unit,
-      active: meter.active,
+      enabled: meter.enabled,
+      health: meter.health,
       trend: 'stable' as const,
       value: [0, 0, 0],
       lastUpdate: dayjs().format('HH:mm'),

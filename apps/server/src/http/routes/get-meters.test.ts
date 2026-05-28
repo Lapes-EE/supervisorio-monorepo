@@ -18,6 +18,8 @@ test('Get meters', async () => {
         name: expect.any(String),
         ip: expect.any(String),
         description: expect.any(String),
+        enabled: expect.any(Boolean),
+        health: expect.stringMatching(/healthy|failing|cooldown/),
       }),
     ])
   )

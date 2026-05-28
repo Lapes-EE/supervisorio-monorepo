@@ -1,7 +1,6 @@
+import { db, schema, sql } from '@repo/db'
 import { hash } from 'argon2'
 import { beforeEach } from 'vitest'
-import { db, sql } from '@/db/connections'
-import { schema } from '@/db/schema'
 
 beforeEach(async () => {
   await sql`TRUNCATE TABLE meters, measures, "user" RESTART IDENTITY CASCADE`

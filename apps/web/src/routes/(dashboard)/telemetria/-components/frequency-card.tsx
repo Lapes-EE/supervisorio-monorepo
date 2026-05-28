@@ -1,10 +1,10 @@
 import NumberFlow from '@number-flow/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { GetTelemetryIp200 } from '@/http/gen/model/get-telemetry-ip200.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 
 interface FrequencyCardProps {
-  telemetryData: GetTelemetryIp200 | undefined
+  telemetryData: GetTelemetry200DataItem | undefined
 }
 
 export function FrequencyCard({ telemetryData }: FrequencyCardProps) {
@@ -19,7 +19,7 @@ export function FrequencyCard({ telemetryData }: FrequencyCardProps) {
             className="font-bold text-2xl"
             format={{ minimumFractionDigits: 2 }}
             suffix="Hz"
-            value={telemetryData?.frequencia}
+            value={telemetryData?.frequencia ?? 0}
           />
         ) : (
           <Skeleton className="h-5 w-10" />

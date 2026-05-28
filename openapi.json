@@ -1,0 +1,884 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "LAPES - API",
+    "description": "API for supervisory control and data acquisition",
+    "version": "1.0.0"
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {}
+  },
+  "paths": {
+    "/sessions/password": {
+      "post": {
+        "summary": "Authenticate with e-mail & password",
+        "tags": ["Auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "type": "string" },
+                  "password": { "type": "string", "minLength": 6 }
+                },
+                "required": ["username", "password"]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Login realizado, token JWT enviado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Login realizado, token JWT enviado",
+                  "type": "object",
+                  "properties": { "token": { "type": "string" } },
+                  "required": ["token"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Credenciais inválidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Credenciais inválidas",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/meters": {
+      "post": {
+        "summary": "Register a new meter",
+        "tags": ["Meters"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "minLength": 1 },
+                  "ip": { "type": "string", "minLength": 1 },
+                  "issoSerial": { "type": "string", "minLength": 1 },
+                  "description": { "type": "string" }
+                },
+                "required": ["name", "ip", "issoSerial"]
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "201": {
+            "description": "Criação de medidor bem sucedida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Criação de medidor bem sucedida",
+                  "type": "object",
+                  "properties": {
+                    "createdAt": { "type": "string", "format": "date-time" }
+                  },
+                  "required": ["createdAt"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado, necessita de login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Não autorizado, necessita de login",
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all meters",
+        "tags": ["Meters"],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "number" },
+                      "name": { "type": "string" },
+                      "ip": { "type": "string" },
+                      "description": {
+                        "anyOf": [
+                          { "type": "string" },
+                          { "nullable": true, "enum": [null] }
+                        ]
+                      },
+                      "issoSerial": { "type": "string" },
+                      "enabled": { "type": "boolean" },
+                      "health": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": ["healthy", "failing", "cooldown"]
+                          },
+                          { "nullable": true, "enum": [null] }
+                        ]
+                      }
+                    },
+                    "required": ["id", "name", "ip", "issoSerial", "enabled"],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/meter/{id}": {
+      "patch": {
+        "summary": "Update meter enabled status",
+        "tags": ["Meters"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "enabled": { "type": "boolean" } },
+                "required": ["enabled"]
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "schema": { "type": "number" },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "204": { "description": "Estado do medidor atualizado" },
+          "400": { "description": "Falha ao atualizar estado do medidor" },
+          "401": {
+            "description": "Não autorizado, necessita de login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Não autorizado, necessita de login",
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/meters/{id}": {
+      "put": {
+        "summary": "Update an existing meter",
+        "tags": ["Meters"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "minLength": 1 },
+                  "ip": { "type": "string", "minLength": 1 },
+                  "description": { "type": "string" }
+                },
+                "required": ["name", "ip"]
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "schema": { "type": "number" },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Sucesso",
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado, necessita de login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Não autorizado, necessita de login",
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Medidor não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Medidor não encontrado",
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a meter",
+        "tags": ["Meters"],
+        "parameters": [
+          {
+            "schema": { "type": "number" },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "204": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Sucesso",
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado, necessita de login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Não autorizado, necessita de login",
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Medidor não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Medidor não encontrado",
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/telemetry": {
+      "get": {
+        "summary": "Obtain time telemetry data",
+        "tags": ["Telemetry"],
+        "description": "Search for measurements with temporal filters",
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": true,
+              "maximum": 9007199254740991,
+              "minimum": 0
+            },
+            "in": "query",
+            "name": "meterId",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+            },
+            "in": "query",
+            "name": "startDate",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+            },
+            "in": "query",
+            "name": "endDate",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "last_5_minutes",
+                "last_30_minutes",
+                "last_hour",
+                "last_6_hours",
+                "last_12_hours",
+                "last_24_hours",
+                "today",
+                "last_7_days",
+                "this_month",
+                "last_30_days",
+                "this_year",
+                "last_measurement"
+              ]
+            },
+            "in": "query",
+            "name": "period",
+            "required": false
+          },
+          {
+            "schema": {
+              "default": "raw",
+              "type": "string",
+              "enum": [
+                "raw",
+                "30 seconds",
+                "1 minute",
+                "2 minute",
+                "5 minute",
+                "10 minute",
+                "20 minute",
+                "30 minute",
+                "1 hour",
+                "3 hours",
+                "1 day"
+              ]
+            },
+            "in": "query",
+            "name": "aggregation",
+            "required": false
+          },
+          {
+            "schema": {
+              "anyOf": [
+                { "type": "string" },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "tensaoFaseNeutroA",
+                      "tensaoFaseNeutroB",
+                      "tensaoFaseNeutroC",
+                      "tensaoFaseFaseAB",
+                      "tensaoFaseFaseBC",
+                      "tensaoFaseFaseCA",
+                      "frequencia",
+                      "correnteA",
+                      "correnteB",
+                      "correnteC",
+                      "correnteNeutroMedido",
+                      "correnteNeutroCalculado",
+                      "potenciaAparenteA",
+                      "potenciaAparenteB",
+                      "potenciaAparenteC",
+                      "potenciaAparenteTotalAritmetica",
+                      "potenciaAparenteTotalVetorial",
+                      "potenciaAtivaFundamentalA",
+                      "potenciaAtivaHarmonicaA",
+                      "potenciaAtivaFundamentalHarmonicaA",
+                      "potenciaAtivaFundamentalB",
+                      "potenciaAtivaHarmonicaB",
+                      "potenciaAtivaFundamentalHarmonicaB",
+                      "potenciaAtivaFundamentalC",
+                      "potenciaAtivaHarmonicaC",
+                      "potenciaAtivaFundamentalHarmonicaC",
+                      "potenciaAtivaFundamentalTotal",
+                      "potenciaAtivaHarmonicaTotal",
+                      "potenciaAtivaFundamentalHarmonicaTotal",
+                      "potenciaReativaA",
+                      "potenciaReativaB",
+                      "potenciaReativaC",
+                      "potenciaReativaTotalAritmetica",
+                      "potenciaReativaTotalVetorial",
+                      "anguloFaseA",
+                      "anguloFaseB",
+                      "anguloFaseC",
+                      "phiFaseA",
+                      "phiFaseB",
+                      "phiFaseC",
+                      "fpRealFaseA",
+                      "fpRealFaseB",
+                      "fpRealFaseC",
+                      "fpRealTotalAritmetica",
+                      "fpRealTotalVetorial",
+                      "fpDeslocamentoFaseA",
+                      "fpDeslocamentoFaseB",
+                      "fpDeslocamentoFaseC",
+                      "fpDeslocamentoTotal",
+                      "thdTensaoA",
+                      "thdTensaoB",
+                      "thdTensaoC",
+                      "thdCorrenteA",
+                      "thdCorrenteB",
+                      "thdCorrenteC",
+                      "temperaturaSensorInterno"
+                    ]
+                  }
+                }
+              ]
+            },
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "description": "Campos específicos para retornar. Se não informado, retorna todos."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "number" },
+                          "meterId": { "type": "number" },
+                          "time": { "type": "string" },
+                          "tensaoFaseNeutroA": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "tensaoFaseNeutroB": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "tensaoFaseNeutroC": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "tensaoFaseFaseAB": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "tensaoFaseFaseBC": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "tensaoFaseFaseCA": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "frequencia": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "correnteA": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "correnteB": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "correnteC": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "correnteNeutroMedido": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "correnteNeutroCalculado": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAparenteA": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAparenteB": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAparenteC": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAparenteTotalAritmetica": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAparenteTotalVetorial": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAtivaFundamentalA": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAtivaHarmonicaA": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAtivaFundamentalHarmonicaA": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAtivaFundamentalB": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAtivaHarmonicaB": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAtivaFundamentalHarmonicaB": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAtivaFundamentalC": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAtivaHarmonicaC": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAtivaFundamentalHarmonicaC": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAtivaFundamentalTotal": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAtivaHarmonicaTotal": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaAtivaFundamentalHarmonicaTotal": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaReativaA": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaReativaB": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaReativaC": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaReativaTotalAritmetica": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "potenciaReativaTotalVetorial": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "anguloFaseA": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "anguloFaseB": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "anguloFaseC": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "phiFaseA": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "phiFaseB": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "phiFaseC": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "fpRealFaseA": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "fpRealFaseB": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "fpRealFaseC": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "fpRealTotalAritmetica": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "fpRealTotalVetorial": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "fpDeslocamentoFaseA": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "fpDeslocamentoFaseB": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "fpDeslocamentoFaseC": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "fpDeslocamentoTotal": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "thdTensaoA": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "thdTensaoB": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "thdTensaoC": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "thdCorrenteA": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "thdCorrenteB": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "thdCorrenteC": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          },
+                          "temperaturaSensorInterno": {
+                            "anyOf": [
+                              { "type": "number" },
+                              { "nullable": true, "enum": [null] }
+                            ]
+                          }
+                        },
+                        "required": ["meterId", "time"],
+                        "additionalProperties": false
+                      }
+                    },
+                    "total": { "type": "number" },
+                    "period": {
+                      "type": "object",
+                      "properties": {
+                        "startDate": { "type": "string" },
+                        "endDate": { "type": "string" }
+                      },
+                      "required": ["startDate", "endDate"],
+                      "additionalProperties": false
+                    },
+                    "nullCount": { "type": "number" },
+                    "aggregation": { "type": "string" }
+                  },
+                  "required": [
+                    "data",
+                    "total",
+                    "period",
+                    "nullCount",
+                    "aggregation"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

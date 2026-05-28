@@ -5,7 +5,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { NewAppSidebar } from '@/components/app-sidebar-new.tsx'
 import { ThemeProvider } from '@/components/theme-provider.tsx'
 import { Toaster } from '@/components/ui/sonner'
-import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item.gen'
+import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item'
 import { meterQueries } from '@/lib/query-keys'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 

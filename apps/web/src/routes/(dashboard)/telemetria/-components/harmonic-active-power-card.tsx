@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { GetTelemetryIp200 } from '@/http/gen/model/get-telemetry-ip200.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 import TelemetryItem from './telemetry-item'
 
 interface HarmonicActivePowerCardProps {
-  telemetryData: GetTelemetryIp200 | undefined
+  telemetryData: GetTelemetry200DataItem | undefined
   isLoading: boolean
 }
 
@@ -21,25 +21,25 @@ export function HarmonicActivePowerCard({
           isLoading={isLoading}
           label="Fase A"
           suffix="W"
-          value={telemetryData?.potencia_ativa_harmonica_a}
+          value={telemetryData?.potenciaAtivaHarmonicaA}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase B"
           suffix="W"
-          value={telemetryData?.potencia_ativa_harmonica_b}
+          value={telemetryData?.potenciaAtivaHarmonicaB}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase C"
           suffix="W"
-          value={telemetryData?.potencia_ativa_harmonica_c}
+          value={telemetryData?.potenciaAtivaHarmonicaC}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Total"
           suffix="W"
-          value={telemetryData?.potencia_ativa_harmonica_total}
+          value={telemetryData?.potenciaAtivaHarmonicaTotal}
         />
       </CardContent>
     </Card>

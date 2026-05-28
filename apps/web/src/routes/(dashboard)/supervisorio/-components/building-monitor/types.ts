@@ -6,7 +6,8 @@ export interface Sensor {
   value: number[]
   unit: string
   // status: string
-  active: boolean
+  enabled: boolean
+  health?: string | null
   position: { x: number; y: number } // Posição em porcentagem
   lastUpdate: string
   // limits: { min: number; max: number }
@@ -40,7 +41,8 @@ export interface Meter {
   id: number
   name: string
   ip: string
-  active: boolean
+  enabled: boolean
+  health?: string | null
   description?: string | null
   unit: string
   position: Position

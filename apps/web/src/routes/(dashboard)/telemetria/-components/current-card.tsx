@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { GetTelemetryIp200 } from '@/http/gen/model/get-telemetry-ip200.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 import TelemetryItem from './telemetry-item'
 
 interface CurrentCardProps {
-  telemetryData: GetTelemetryIp200 | undefined
+  telemetryData: GetTelemetry200DataItem | undefined
   isLoading: boolean
 }
 
@@ -18,25 +18,25 @@ export function CurrentCard({ telemetryData, isLoading }: CurrentCardProps) {
           isLoading={isLoading}
           label="Fase A"
           suffix="A"
-          value={telemetryData?.corrente_a}
+          value={telemetryData?.correnteA}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase B"
           suffix="A"
-          value={telemetryData?.corrente_b}
+          value={telemetryData?.correnteB}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase C"
           suffix="A"
-          value={telemetryData?.corrente_c}
+          value={telemetryData?.correnteC}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Neutro Calculado"
           suffix="A"
-          value={telemetryData?.corrente_de_neutro_calculado}
+          value={telemetryData?.correnteNeutroCalculado}
         />
       </CardContent>
     </Card>

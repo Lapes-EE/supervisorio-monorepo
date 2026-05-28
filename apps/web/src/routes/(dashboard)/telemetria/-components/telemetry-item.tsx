@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 type ItemProps = {
   label: string
-  value: number | undefined
+  value: number | null | undefined
   isLoading?: boolean
   suffix?: string
   className?: string

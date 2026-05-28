@@ -1,3 +1,5 @@
+import { db, measures } from '@repo/db'
+import { desc, eq, sql } from 'drizzle-orm'
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import {
   type GetDatabase200ResponseDataSchema,
@@ -29,6 +31,77 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
     async (request, reply) => {
       const { meterId, startDate, endDate, period, aggregation, fields } =
         request.query
+
+      if (period === 'last_measurement') {
+        let lastRows: (typeof measures.$inferSelect)[] = []
+
+        if (meterId) {
+          const [row] = await db
+            .select()
+            .from(measures)
+            .where(eq(measures.meterId, meterId))
+            .orderBy(desc(measures.time))
+            .limit(1)
+
+          if (row) {
+            lastRows = [row]
+          }
+        } else {
+          const latestIds = await db.execute<{ id: number }>(sql`
+            SELECT DISTINCT ON (meter_id) id
+            FROM measures
+            ORDER BY meter_id, time DESC
+          `)
+
+          if (latestIds.length > 0) {
+            const ids = latestIds.map((row) => row.id)
+            lastRows = await db
+              .select()
+              .from(measures)
+              .where(
+                sql`${measures.id} IN (${sql.join(
+                  ids.map((id) => sql`${id}`),
+                  sql`, `
+                )})`
+              )
+              .orderBy(desc(measures.time))
+          }
+        }
+
+        if (lastRows.length === 0) {
+          return reply.status(200).send({
+            data: [],
+            total: 0,
+            period: {
+              startDate: new Date().toISOString(),
+              endDate: new Date().toISOString(),
+            },
+            nullCount: 0,
+            aggregation: 'raw',
+          })
+        }
+
+        const filteredData = filterFields(lastRows as any, fields)
+
+        const times = lastRows.map((row) => new Date(row.time).toISOString())
+        const startDate =
+          times.length > 0
+            ? times[times.length - 1]
+            : new Date().toISOString()
+        const endDate =
+          times.length > 0 ? times[0] : new Date().toISOString()
+
+        return reply.status(200).send({
+          data: filteredData,
+          total: lastRows.length,
+          period: {
+            startDate,
+            endDate,
+          },
+          nullCount: 0,
+          aggregation: 'raw',
+        })
+      }
 
       const { filterStartDate, filterEndDate } = buildDateFilters({
         period,

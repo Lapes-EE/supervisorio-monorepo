@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { type ChartConfig, ChartContainer } from '@/components/ui/chart'
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 import { formatTime } from '../../-utils/format-time'
 
 interface CurrentChartProps {

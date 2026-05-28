@@ -22,8 +22,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { usePutMetersId } from '@/http/gen/endpoints/lapes-api.gen'
-import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item.gen'
+import { usePutMetersId } from '@/http/gen/endpoints/lapes-api'
+import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item'
 import { meterKeys } from '@/lib/query-keys'
 
 const ISSO_SERIAL_REGEX = /^[A-Z0-9]{3}(?:-[A-Z0-9]{3}){3}$/

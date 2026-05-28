@@ -1,9 +1,8 @@
+import { db, schema } from '@repo/db'
 import { verify } from 'argon2'
 import { eq } from 'drizzle-orm'
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import z from 'zod'
-import { db } from '@/db/connections'
-import { schema } from '@/db/schema'
 
 export const login: FastifyPluginAsyncZod = async (server) => {
   await server.post(
@@ -37,13 +36,13 @@ export const login: FastifyPluginAsyncZod = async (server) => {
         .where(eq(schema.user.username, username))
 
       if (!user) {
-        reply.status(400).send('Credenciais inválidas')
+        return reply.status(400).send('Credenciais inválidas')
       }
 
       const doesPasswordMatch = await verify(user.password, password)
 
       if (!doesPasswordMatch) {
-        reply.status(400).send('Credenciais inválidas')
+        return reply.status(400).send('Credenciais inválidas')
       }
 
       const token = await reply.jwtSign(

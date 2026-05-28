@@ -19,7 +19,7 @@ import { Route as dashboardSettingsRouteRouteImport } from './routes/(dashboard)
 import { Route as dashboardGrChar225ficosRouteRouteImport } from './routes/(dashboard)/gráficos/route'
 import { Route as dashboardTelemetriaIndexRouteImport } from './routes/(dashboard)/telemetria/index'
 import { Route as dashboardSupervisorioIndexRouteImport } from './routes/(dashboard)/supervisorio/index'
-import { Route as dashboardTelemetriaTelemetryIpRouteImport } from './routes/(dashboard)/telemetria/$telemetryIp'
+import { Route as dashboardTelemetriaMeterIdRouteImport } from './routes/(dashboard)/telemetria/$meterId'
 import { Route as dashboardSettingsMeterIdRouteImport } from './routes/(dashboard)/settings/$meterId'
 import { Route as dashboardTelemetriaMeterIdEditRouteImport } from './routes/(dashboard)/telemetria/$meterId.edit'
 import { Route as dashboardTelemetriaMeterIdDeleteRouteImport } from './routes/(dashboard)/telemetria/$meterId.delete'
@@ -78,10 +78,10 @@ const dashboardSupervisorioIndexRoute =
     path: '/',
     getParentRoute: () => dashboardSupervisorioRouteRoute,
   } as any)
-const dashboardTelemetriaTelemetryIpRoute =
-  dashboardTelemetriaTelemetryIpRouteImport.update({
-    id: '/$telemetryIp',
-    path: '/$telemetryIp',
+const dashboardTelemetriaMeterIdRoute =
+  dashboardTelemetriaMeterIdRouteImport.update({
+    id: '/$meterId',
+    path: '/$meterId',
     getParentRoute: () => dashboardTelemetriaRouteRoute,
   } as any)
 const dashboardSettingsMeterIdRoute =
@@ -92,15 +92,15 @@ const dashboardSettingsMeterIdRoute =
   } as any)
 const dashboardTelemetriaMeterIdEditRoute =
   dashboardTelemetriaMeterIdEditRouteImport.update({
-    id: '/$meterId/edit',
-    path: '/$meterId/edit',
-    getParentRoute: () => dashboardTelemetriaRouteRoute,
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => dashboardTelemetriaMeterIdRoute,
   } as any)
 const dashboardTelemetriaMeterIdDeleteRoute =
   dashboardTelemetriaMeterIdDeleteRouteImport.update({
-    id: '/$meterId/delete',
-    path: '/$meterId/delete',
-    getParentRoute: () => dashboardTelemetriaRouteRoute,
+    id: '/delete',
+    path: '/delete',
+    getParentRoute: () => dashboardTelemetriaMeterIdRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -112,7 +112,7 @@ export interface FileRoutesByFullPath {
   '/telemetria': typeof dashboardTelemetriaRouteRouteWithChildren
   '/login': typeof LoginIndexRoute
   '/settings/$meterId': typeof dashboardSettingsMeterIdRoute
-  '/telemetria/$telemetryIp': typeof dashboardTelemetriaTelemetryIpRoute
+  '/telemetria/$meterId': typeof dashboardTelemetriaMeterIdRouteWithChildren
   '/supervisorio/': typeof dashboardSupervisorioIndexRoute
   '/telemetria/': typeof dashboardTelemetriaIndexRoute
   '/telemetria/$meterId/delete': typeof dashboardTelemetriaMeterIdDeleteRoute
@@ -125,7 +125,7 @@ export interface FileRoutesByTo {
   '/settings': typeof dashboardSettingsRouteRouteWithChildren
   '/login': typeof LoginIndexRoute
   '/settings/$meterId': typeof dashboardSettingsMeterIdRoute
-  '/telemetria/$telemetryIp': typeof dashboardTelemetriaTelemetryIpRoute
+  '/telemetria/$meterId': typeof dashboardTelemetriaMeterIdRouteWithChildren
   '/supervisorio': typeof dashboardSupervisorioIndexRoute
   '/telemetria': typeof dashboardTelemetriaIndexRoute
   '/telemetria/$meterId/delete': typeof dashboardTelemetriaMeterIdDeleteRoute
@@ -142,7 +142,7 @@ export interface FileRoutesById {
   '/(dashboard)/telemetria': typeof dashboardTelemetriaRouteRouteWithChildren
   '/login/': typeof LoginIndexRoute
   '/(dashboard)/settings/$meterId': typeof dashboardSettingsMeterIdRoute
-  '/(dashboard)/telemetria/$telemetryIp': typeof dashboardTelemetriaTelemetryIpRoute
+  '/(dashboard)/telemetria/$meterId': typeof dashboardTelemetriaMeterIdRouteWithChildren
   '/(dashboard)/supervisorio/': typeof dashboardSupervisorioIndexRoute
   '/(dashboard)/telemetria/': typeof dashboardTelemetriaIndexRoute
   '/(dashboard)/telemetria/$meterId/delete': typeof dashboardTelemetriaMeterIdDeleteRoute
@@ -159,7 +159,7 @@ export interface FileRouteTypes {
     | '/telemetria'
     | '/login'
     | '/settings/$meterId'
-    | '/telemetria/$telemetryIp'
+    | '/telemetria/$meterId'
     | '/supervisorio/'
     | '/telemetria/'
     | '/telemetria/$meterId/delete'
@@ -172,7 +172,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/login'
     | '/settings/$meterId'
-    | '/telemetria/$telemetryIp'
+    | '/telemetria/$meterId'
     | '/supervisorio'
     | '/telemetria'
     | '/telemetria/$meterId/delete'
@@ -188,7 +188,7 @@ export interface FileRouteTypes {
     | '/(dashboard)/telemetria'
     | '/login/'
     | '/(dashboard)/settings/$meterId'
-    | '/(dashboard)/telemetria/$telemetryIp'
+    | '/(dashboard)/telemetria/$meterId'
     | '/(dashboard)/supervisorio/'
     | '/(dashboard)/telemetria/'
     | '/(dashboard)/telemetria/$meterId/delete'
@@ -274,11 +274,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardSupervisorioIndexRouteImport
       parentRoute: typeof dashboardSupervisorioRouteRoute
     }
-    '/(dashboard)/telemetria/$telemetryIp': {
-      id: '/(dashboard)/telemetria/$telemetryIp'
-      path: '/$telemetryIp'
-      fullPath: '/telemetria/$telemetryIp'
-      preLoaderRoute: typeof dashboardTelemetriaTelemetryIpRouteImport
+    '/(dashboard)/telemetria/$meterId': {
+      id: '/(dashboard)/telemetria/$meterId'
+      path: '/$meterId'
+      fullPath: '/telemetria/$meterId'
+      preLoaderRoute: typeof dashboardTelemetriaMeterIdRouteImport
       parentRoute: typeof dashboardTelemetriaRouteRoute
     }
     '/(dashboard)/settings/$meterId': {
@@ -290,17 +290,17 @@ declare module '@tanstack/react-router' {
     }
     '/(dashboard)/telemetria/$meterId/edit': {
       id: '/(dashboard)/telemetria/$meterId/edit'
-      path: '/$meterId/edit'
+      path: '/edit'
       fullPath: '/telemetria/$meterId/edit'
       preLoaderRoute: typeof dashboardTelemetriaMeterIdEditRouteImport
-      parentRoute: typeof dashboardTelemetriaRouteRoute
+      parentRoute: typeof dashboardTelemetriaMeterIdRoute
     }
     '/(dashboard)/telemetria/$meterId/delete': {
       id: '/(dashboard)/telemetria/$meterId/delete'
-      path: '/$meterId/delete'
+      path: '/delete'
       fullPath: '/telemetria/$meterId/delete'
       preLoaderRoute: typeof dashboardTelemetriaMeterIdDeleteRouteImport
-      parentRoute: typeof dashboardTelemetriaRouteRoute
+      parentRoute: typeof dashboardTelemetriaMeterIdRoute
     }
   }
 }
@@ -333,20 +333,33 @@ const dashboardSupervisorioRouteRouteWithChildren =
     dashboardSupervisorioRouteRouteChildren,
   )
 
-interface dashboardTelemetriaRouteRouteChildren {
-  dashboardTelemetriaTelemetryIpRoute: typeof dashboardTelemetriaTelemetryIpRoute
-  dashboardTelemetriaIndexRoute: typeof dashboardTelemetriaIndexRoute
+interface dashboardTelemetriaMeterIdRouteChildren {
   dashboardTelemetriaMeterIdDeleteRoute: typeof dashboardTelemetriaMeterIdDeleteRoute
   dashboardTelemetriaMeterIdEditRoute: typeof dashboardTelemetriaMeterIdEditRoute
 }
 
-const dashboardTelemetriaRouteRouteChildren: dashboardTelemetriaRouteRouteChildren =
+const dashboardTelemetriaMeterIdRouteChildren: dashboardTelemetriaMeterIdRouteChildren =
   {
-    dashboardTelemetriaTelemetryIpRoute: dashboardTelemetriaTelemetryIpRoute,
-    dashboardTelemetriaIndexRoute: dashboardTelemetriaIndexRoute,
     dashboardTelemetriaMeterIdDeleteRoute:
       dashboardTelemetriaMeterIdDeleteRoute,
     dashboardTelemetriaMeterIdEditRoute: dashboardTelemetriaMeterIdEditRoute,
+  }
+
+const dashboardTelemetriaMeterIdRouteWithChildren =
+  dashboardTelemetriaMeterIdRoute._addFileChildren(
+    dashboardTelemetriaMeterIdRouteChildren,
+  )
+
+interface dashboardTelemetriaRouteRouteChildren {
+  dashboardTelemetriaMeterIdRoute: typeof dashboardTelemetriaMeterIdRouteWithChildren
+  dashboardTelemetriaIndexRoute: typeof dashboardTelemetriaIndexRoute
+}
+
+const dashboardTelemetriaRouteRouteChildren: dashboardTelemetriaRouteRouteChildren =
+  {
+    dashboardTelemetriaMeterIdRoute:
+      dashboardTelemetriaMeterIdRouteWithChildren,
+    dashboardTelemetriaIndexRoute: dashboardTelemetriaIndexRoute,
   }
 
 const dashboardTelemetriaRouteRouteWithChildren =

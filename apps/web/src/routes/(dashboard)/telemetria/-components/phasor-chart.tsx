@@ -5,19 +5,19 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import type { GetTelemetryIp200 } from '@/http/gen/model/get-telemetry-ip200.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 
 export interface Phasor {
   name: string
-  angle: number | undefined
+  angle: number | null | undefined
   magnitude: number
   color: string
-  label: string | undefined
+  label: string | null | undefined
 }
 
 interface PhasorChartProps {
   phasors: Phasor[]
-  telemetryData: GetTelemetryIp200 | undefined
+  telemetryData: GetTelemetry200DataItem | undefined
 }
 
 export default function PhasorChart({
@@ -45,20 +45,20 @@ export default function PhasorChart({
     {
       name: 'Fase A',
       color: 'var(--chart-1)',
-      angle: telemetryData?.angulo_fase_a,
-      phi: telemetryData?.phi_fase_a,
+      angle: telemetryData?.anguloFaseA,
+      phi: telemetryData?.phiFaseA,
     },
     {
       name: 'Fase B',
       color: 'var(--chart-2)',
-      angle: telemetryData?.angulo_fase_b,
-      phi: telemetryData?.phi_fase_b,
+      angle: telemetryData?.anguloFaseB,
+      phi: telemetryData?.phiFaseB,
     },
     {
       name: 'Fase C',
       color: 'var(--chart-3)',
-      angle: telemetryData?.angulo_fase_c,
-      phi: telemetryData?.phi_fase_c,
+      angle: telemetryData?.anguloFaseC,
+      phi: telemetryData?.phiFaseC,
     },
   ]
 
@@ -110,7 +110,7 @@ export default function PhasorChart({
             </text>
             {phasors.map((phasor) => {
               const endPoint = polarToCartesian(
-                phasor.angle,
+                phasor.angle ?? undefined,
                 maxRadius * phasor.magnitude,
                 center,
                 center

@@ -1,6 +1,5 @@
+import { db, measures } from '@repo/db'
 import { and, asc, gte, lte, sql } from 'drizzle-orm'
-import { db } from '@/db/connections'
-import { measures } from '@/db/schema/measures'
 import type { GetDatabase200ResponseDataSchema } from '../types/get-database-200-response'
 import { fieldMapping } from './field-mapping'
 import type { AggregatedMeasure } from './field-utils'

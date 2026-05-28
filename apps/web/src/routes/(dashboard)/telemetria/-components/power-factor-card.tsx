@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { GetTelemetryIp200 } from '@/http/gen/model/get-telemetry-ip200.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 import TelemetryItem from './telemetry-item'
 
 export function PowerFactorCard({
   telemetryData,
   isLoading,
 }: {
-  telemetryData: GetTelemetryIp200 | undefined
+  telemetryData: GetTelemetry200DataItem | undefined
   isLoading: boolean
 }) {
   return (
@@ -18,27 +18,27 @@ export function PowerFactorCard({
         <TelemetryItem
           isLoading={isLoading}
           label="Fase A"
-          value={telemetryData?.fp_real_fase_a}
+          value={telemetryData?.fpRealFaseA}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase B"
-          value={telemetryData?.fp_deslocamento_fase_b}
+          value={telemetryData?.fpDeslocamentoFaseB}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase C"
-          value={telemetryData?.fp_deslocamento_fase_c}
+          value={telemetryData?.fpDeslocamentoFaseC}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Soma Aritmética"
-          value={telemetryData?.fp_real_total_soma_aritmetica}
+          value={telemetryData?.fpRealTotalAritmetica}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Soma Vetorial"
-          value={telemetryData?.fp_real_total_soma_vetorial}
+          value={telemetryData?.fpRealTotalVetorial}
         />
       </CardContent>
     </Card>

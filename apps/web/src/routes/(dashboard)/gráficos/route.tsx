@@ -18,7 +18,7 @@ import {
   ComboboxList,
   ComboboxTrigger,
 } from '@/components/ui/shadcn-io/combobox'
-import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period.gen'
+import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period'
 import { ChartsGrid } from './-components/charts-grid'
 import { KpiGrid } from './-components/kpi-grid'
 import { PeriodSelector } from './-components/period-selector'

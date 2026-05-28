@@ -1,15 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { GetTelemetryIp200 } from '@/http/gen/model/get-telemetry-ip200.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 
 export function TemperatureCard({
   telemetryData,
   isLoading,
 }: {
-  telemetryData: GetTelemetryIp200 | undefined
+  telemetryData: GetTelemetry200DataItem | undefined
   isLoading: boolean
 }) {
-  const temperature = telemetryData?.temperatura_sensor_interno ?? 0
+  const temperature = telemetryData?.temperaturaSensorInterno ?? 0
   const fillHeight = Math.min(Math.max(temperature, 0), 100)
 
   return (

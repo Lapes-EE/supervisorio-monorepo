@@ -24,7 +24,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { usePostMeters } from '@/http/gen/endpoints/lapes-api.gen'
+import { usePostMeters } from '@/http/gen/endpoints/lapes-api'
 import { meterKeys } from '@/lib/query-keys'
 
 const ISSO_SERIAL_REGEX = /^[A-Z0-9]{3}(?:-[A-Z0-9]{3}){3}$/

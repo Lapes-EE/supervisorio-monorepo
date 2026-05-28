@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Image } from '@/components/ui/image'
 import { Label } from '@/components/ui/label'
-import { usePatchMeterId } from '@/http/gen/endpoints/lapes-api.gen'
+import { usePatchMeterId } from '@/http/gen/endpoints/lapes-api'
 import { meterKeys } from '@/lib/query-keys'
 import { type ToggleSearchSchema, toggleSearchSchema } from '../../-types'
 import { fixedPositions, useSensors } from './data'
@@ -29,7 +29,7 @@ export function BuildingLayout({
 
   function handleRefresh(sensorId: number) {
     mutation.mutate(
-      { id: sensorId },
+      { id: sensorId, data: { enabled: true } },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({
@@ -81,10 +81,10 @@ export function BuildingLayout({
                   top: `${position.y}%`,
                 }}
               >
-                {sensor.active ? (
+                {sensor.enabled && sensor.health === 'healthy' ? (
                   <Button
                     className="relative h-28 w-24 transform border-2 bg-background shadow-lg transition-all duration-200 hover:scale-110 hover:bg-primary-foreground/85"
-                    data-active={sensor.active}
+                    data-active={sensor.enabled}
                     onClick={() => onSensorClick(sensor)}
                     title={`${sensor.name}: ${sensor.value}${sensor.unit}`}
                   >
@@ -120,7 +120,11 @@ export function BuildingLayout({
                   >
                     <AlertTitle>{sensor.name}</AlertTitle>
                     <AlertDescription className="flex items-center justify-center font-light text-sm">
-                      <p>Está com alguma falha</p>
+                      <p>
+                        {sensor.enabled
+                          ? 'Está com alguma falha'
+                          : 'Desativado'}
+                      </p>
                       <Button
                         onClick={() => handleRefresh(sensor.id)}
                         size="icon"

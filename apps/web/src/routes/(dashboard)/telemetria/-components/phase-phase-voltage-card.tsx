@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { GetTelemetryIp200 } from '@/http/gen/model/get-telemetry-ip200.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 import TelemetryItem from './telemetry-item'
 
 interface PhasePhaseVoltageCardProps {
-  telemetryData: GetTelemetryIp200 | undefined
+  telemetryData: GetTelemetry200DataItem | undefined
   isLoading: boolean
 }
 
@@ -21,19 +21,19 @@ export function PhasePhaseVoltageCard({
           isLoading={isLoading}
           label="Fase A-B"
           suffix="V"
-          value={telemetryData?.tensao_fase_fase_ab}
+          value={telemetryData?.tensaoFaseFaseAB}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase B-C"
           suffix="V"
-          value={telemetryData?.tensao_fase_fase_bc}
+          value={telemetryData?.tensaoFaseFaseBC}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase C-A"
           suffix="V"
-          value={telemetryData?.tensao_fase_fase_ca}
+          value={telemetryData?.tensaoFaseFaseCA}
         />
       </CardContent>
     </Card>

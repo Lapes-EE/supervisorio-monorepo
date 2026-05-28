@@ -1,8 +1,8 @@
 import { queryOptions, useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { getTelemetry } from '@/http/gen/endpoints/lapes-api.gen'
-import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period.gen'
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item.gen'
+import { getTelemetry } from '@/http/gen/endpoints/lapes-api'
+import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 import { telemetryKeys } from '@/lib/query-keys'
 
 export const telemetryQueries = {

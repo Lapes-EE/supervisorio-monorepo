@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { usePostSessionsPassword } from '@/http/gen/endpoints/lapes-api.gen'
+import { usePostSessionsPassword } from '@/http/gen/endpoints/lapes-api'
 
 export const Route = createFileRoute('/login/')({
   component: LoginComponent,

@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { db } from '@/db/connections.ts'
-import { schema } from '@/db/schema'
+import { db, schema } from '@repo/db'
 
 function generateIssoSerial() {
   const part1 = faker.string.numeric(3) // 258

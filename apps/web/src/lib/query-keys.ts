@@ -1,10 +1,6 @@
 import { queryOptions } from '@tanstack/react-query'
-import {
-  getMeters,
-  getTelemetry,
-  getTelemetryIp,
-} from '@/http/gen/endpoints/lapes-api.gen'
-import type { GetTelemetryParams } from '@/http/gen/model/get-telemetry-params.gen'
+import { getMeters, getTelemetry } from '@/http/gen/endpoints/lapes-api'
+import type { GetTelemetryParams } from '@/http/gen/model/get-telemetry-params'
 
 export const meterKeys = {
   all: ['meters'] as const,
@@ -27,7 +23,6 @@ export const meterQueries = {
 
 export const telemetryKeys = {
   all: ['telemetry'] as const,
-  byIp: (ip: string) => [...telemetryKeys.all, 'ip', ip] as const,
   byParams: (params?: GetTelemetryParams) =>
     [...telemetryKeys.all, params] as const,
   byMeterId: (meterId: number, period?: string) =>
@@ -35,13 +30,6 @@ export const telemetryKeys = {
 }
 
 export const telemetryQueries = {
-  byIp: (ip: string) =>
-    queryOptions({
-      queryKey: telemetryKeys.byIp(ip),
-      queryFn: () => getTelemetryIp(ip),
-      enabled: !!ip,
-      staleTime: 30 * 1000,
-    }),
   byParams: (params?: GetTelemetryParams) =>
     queryOptions({
       queryKey: telemetryKeys.byParams(params),

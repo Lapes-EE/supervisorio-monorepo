@@ -1,4 +1,4 @@
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 
 export interface KpiValues {
   activePowerTotal: number

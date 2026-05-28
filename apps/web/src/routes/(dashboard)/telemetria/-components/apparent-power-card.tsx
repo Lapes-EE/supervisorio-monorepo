@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { GetTelemetryIp200 } from '@/http/gen/model/get-telemetry-ip200.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 import TelemetryItem from './telemetry-item'
 
 export function ApparentPowerCard({
   telemetryData,
   isLoading,
 }: {
-  telemetryData: GetTelemetryIp200 | undefined
+  telemetryData: GetTelemetry200DataItem | undefined
   isLoading: boolean
 }) {
   return (
@@ -19,31 +19,31 @@ export function ApparentPowerCard({
           isLoading={isLoading}
           label="Fase A"
           suffix="VA"
-          value={telemetryData?.potencia_aparente_a}
+          value={telemetryData?.potenciaAparenteA}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase B"
           suffix="VA"
-          value={telemetryData?.potencia_aparente_b}
+          value={telemetryData?.potenciaAparenteB}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase C"
           suffix="VA"
-          value={telemetryData?.potencia_aparente_c}
+          value={telemetryData?.potenciaAparenteC}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Soma Aritmética"
           suffix="VA"
-          value={telemetryData?.potencia_aparente_total_soma_aritmetica}
+          value={telemetryData?.potenciaAparenteTotalAritmetica}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Soma Vetorial"
           suffix="VA"
-          value={telemetryData?.potencia_aparente_total_soma_vetorial}
+          value={telemetryData?.potenciaAparenteTotalVetorial}
         />
       </CardContent>
     </Card>

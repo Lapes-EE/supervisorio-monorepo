@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period.gen'
+import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period'
 
 const periodLabels: Record<GetTelemetryPeriod, string> = {
   last_5_minutes: 'Últimos 5 minutos',

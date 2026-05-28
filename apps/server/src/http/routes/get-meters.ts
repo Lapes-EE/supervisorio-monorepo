@@ -1,9 +1,8 @@
+import { db, schema } from '@repo/db'
 import { asc } from 'drizzle-orm'
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import { isIP } from 'is-ip'
 import { z } from 'zod/v4'
-import { db } from '@/db/connections'
-import { schema } from '@/db/schema'
 
 export const getMeters: FastifyPluginCallbackZod = (app) => {
   app.get(
@@ -22,7 +21,8 @@ export const getMeters: FastifyPluginCallbackZod = (app) => {
               }),
               description: z.string().nullish(),
               issoSerial: z.string(),
-              active: z.boolean(),
+              enabled: z.boolean(),
+              health: z.enum(['healthy', 'failing', 'cooldown']).nullish(),
             })
           ),
         },
@@ -35,7 +35,8 @@ export const getMeters: FastifyPluginCallbackZod = (app) => {
           name: schema.meters.name,
           ip: schema.meters.ip,
           description: schema.meters.description,
-          active: schema.meters.active,
+          enabled: schema.meters.enabled,
+          health: schema.meters.health,
           issoSerial: schema.meters.issoSerial,
         })
         .from(schema.meters)

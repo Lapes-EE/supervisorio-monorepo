@@ -1,15 +1,10 @@
 import { env } from '@repo/env'
 import { api } from './app'
-import { startDisabledMetersRetry } from './services/start-disabled-meters-retry'
-import { startTelemetryCollector } from './services/telemetry-collector'
 
 api
   .listen({ port: env.PORT, host: '0.0.0.0' })
   .then(() => {
-    if (process.env.NODE_ENV !== 'on') {
-      startTelemetryCollector()
-      startDisabledMetersRetry()
-    }
+    api.log.info('Server is running')
   })
   .catch((err) => {
     api.log.error(err)

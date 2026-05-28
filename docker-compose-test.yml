@@ -1,7 +1,7 @@
 services:
   hyper:
     image: timescale/timescaledb:latest-pg17
-    container_name: supervisorio-test
+    container_name: supervisoriotest
     restart: always
     environment:
       POSTGRES_USER: hyper

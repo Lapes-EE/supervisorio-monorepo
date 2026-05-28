@@ -1,8 +1,7 @@
 import { faker } from '@faker-js/faker'
+import type { measures } from '@repo/db'
+import { db, schema } from '@repo/db'
 import type { InferInsertModel } from 'drizzle-orm'
-import { db } from '@/db/connections.ts'
-import { schema } from '@/db/schema'
-import type { measures } from '@/db/schema/measures'
 
 export async function makeTelemetry(
   overrides: Partial<InferInsertModel<typeof measures>> & {

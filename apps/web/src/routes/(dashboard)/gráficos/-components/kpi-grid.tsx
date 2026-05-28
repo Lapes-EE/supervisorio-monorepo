@@ -1,5 +1,5 @@
 import { Activity, Gauge, TrendingUp, Zap } from 'lucide-react'
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 import { calculateKpis, type KpiValues } from '../-utils/kpi-calculations'
 import { KpiCard } from './kpi-card'
 

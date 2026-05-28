@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period.gen'
+import { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period'
 import { sensorKeys } from '@/lib/query-keys'
 import type { ToggleSearchSchema } from '../../-types'
 
@@ -39,7 +39,7 @@ export function SelectPeriod({ queryClient, search }: SelectPeriodProps) {
   const handleChange = (value: GetTelemetryPeriod) => {
     navigate({
       to: '.',
-      search: (prev: ToggleSearchSchema) => ({ ...prev, period: value }),
+      search: (prev: any) => ({ ...prev, period: value }),
     })
     queryClient.invalidateQueries({ queryKey: sensorKeys.all })
   }
@@ -52,11 +52,13 @@ export function SelectPeriod({ queryClient, search }: SelectPeriodProps) {
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Períodos</SelectLabel>
-          {Object.values(GetTelemetryPeriod).map((periodKey) => (
-            <SelectItem key={periodKey} value={periodKey}>
-              {periodLabels[periodKey] ?? periodKey}
-            </SelectItem>
-          ))}
+          {Object.values(GetTelemetryPeriod)
+            .filter((periodKey) => periodKey !== 'last_measurement')
+            .map((periodKey) => (
+              <SelectItem key={periodKey} value={periodKey}>
+                {periodLabels[periodKey] ?? periodKey}
+              </SelectItem>
+            ))}
         </SelectGroup>
       </SelectContent>
     </Select>

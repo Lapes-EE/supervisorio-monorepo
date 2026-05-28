@@ -1,8 +1,7 @@
+import { db, schema } from '@repo/db'
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import { isIP } from 'is-ip'
 import z from 'zod/v4'
-import { db } from '@/db/connections.ts'
-import { schema } from '@/db/schema/index.ts'
 import { auth } from '../utils/middleware.auth'
 
 const ISSO_SERIAL_REGEX = /^[A-Z0-9]{3}(?:-[A-Z0-9]{3}){3}$/
@@ -34,7 +33,7 @@ export const createMeters: FastifyPluginCallbackZod = (app) => {
         response: {
           201: z
             .object({
-              createdAt: z.date(),
+              createdAt: z.coerce.date(),
             })
             .describe('Criação de medidor bem sucedida'),
           401: z

@@ -9,14 +9,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item.gen'
+import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item'
 
 export function TelemetryList({
   id,
   ip,
   name,
   description,
-  active,
+  enabled,
+  health,
   issoSerial,
 }: GetMeters200Item) {
   const navigate = useNavigate()
@@ -27,15 +28,17 @@ export function TelemetryList({
       return
     }
     navigate({
-      to: '/telemetria/$telemetryIp',
-      params: { telemetryIp: ip },
+      to: '/telemetria/$meterId',
+      params: { meterId: id.toString() },
     })
   }
+
+  const isOnline = enabled && health === 'healthy'
 
   return (
     <Card
       className={`group hover:-translate-y-1 relative cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-xl ${
-        active
+        enabled
           ? 'border-l-3 border-l-green-500/30 hover:border-l-green-600'
           : 'border-l-3 border-l-red-500/30 opacity-75 hover:border-l-red-600'
       }`}
@@ -44,7 +47,7 @@ export function TelemetryList({
         <CardTitle className="flex items-center gap-3 truncate text-xl transition-colors group-hover:text-primary">
           <div
             className={`rounded-lg p-2 ${
-              active
+              enabled
                 ? 'bg-green-100 text-green-600'
                 : 'bg-gray-100 text-gray-400'
             }`}
@@ -99,12 +102,12 @@ export function TelemetryList({
         <div className="flex items-center gap-3">
           <div
             className={`flex items-center gap-2 rounded-full px-3 py-1 font-medium text-xs backdrop-blur-sm ${
-              active
+              isOnline
                 ? 'border border-green-500/30 bg-green-500/20 text-green-700'
                 : 'border border-red-500/30 bg-red-500/20 text-red-700'
             }`}
           >
-            {active ? (
+            {isOnline ? (
               <>
                 <Wifi className="h-3 w-3" />
                 <span>Online</span>
@@ -112,7 +115,7 @@ export function TelemetryList({
             ) : (
               <>
                 <WifiOff className="h-3 w-3" />
-                <span>Offline</span>
+                <span>{enabled ? 'Failing' : 'Disabled'}</span>
               </>
             )}
           </div>

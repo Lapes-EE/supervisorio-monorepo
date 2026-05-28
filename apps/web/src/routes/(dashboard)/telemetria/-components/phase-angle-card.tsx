@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { GetTelemetryIp200 } from '@/http/gen/model/get-telemetry-ip200.gen'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
 import TelemetryItem from './telemetry-item'
 
 interface PhaseAngleCardProps {
-  telemetryData: GetTelemetryIp200 | undefined
+  telemetryData: GetTelemetry200DataItem | undefined
   isLoading: boolean
 }
 
@@ -20,38 +20,41 @@ export function PhaseAngleCard({
         <div>
           <TelemetryItem
             isLoading={isLoading}
-            label="A"
+            label="Ângulo Fase A"
             suffix="°"
-            value={telemetryData?.angulo_fase_a}
+            value={telemetryData?.anguloFaseA}
           />
           <TelemetryItem
             isLoading={isLoading}
-            label="B"
+            label="Ângulo Fase B"
             suffix="°"
-            value={telemetryData?.angulo_fase_b}
+            value={telemetryData?.anguloFaseB}
           />
           <TelemetryItem
             isLoading={isLoading}
-            label="C"
+            label="Ângulo Fase C"
             suffix="°"
-            value={telemetryData?.angulo_fase_c}
+            value={telemetryData?.anguloFaseC}
           />
         </div>
         <div>
           <TelemetryItem
             isLoading={isLoading}
-            label="A"
-            value={telemetryData?.phi_fase_a}
+            label="Phi Fase A"
+            suffix="°"
+            value={telemetryData?.phiFaseA}
           />
           <TelemetryItem
             isLoading={isLoading}
-            label="B"
-            value={telemetryData?.phi_fase_b}
+            label="Phi Fase B"
+            suffix="°"
+            value={telemetryData?.phiFaseB}
           />
           <TelemetryItem
             isLoading={isLoading}
-            label="C"
-            value={telemetryData?.phi_fase_c}
+            label="Phi Fase C"
+            suffix="°"
+            value={telemetryData?.phiFaseC}
           />
         </div>
       </CardContent>

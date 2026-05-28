@@ -18,6 +18,7 @@ export const telemetryQuerySchema = z.object({
       'this_month',
       'last_30_days',
       'this_year',
+      'last_measurement',
     ])
     .optional(),
   aggregation: z

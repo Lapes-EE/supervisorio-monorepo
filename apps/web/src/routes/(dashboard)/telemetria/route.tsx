@@ -15,12 +15,12 @@ function Dashboard() {
 
   const matchRoute = useMatchRoute()
 
-  const isTelemetryIpRoute = matchRoute({
-    to: '/telemetria/$telemetryIp',
+  const isMeterIdRoute = matchRoute({
+    to: '/telemetria/$meterId',
     fuzzy: false,
   })
 
-  if (isTelemetryIpRoute) {
+  if (isMeterIdRoute) {
     return <Outlet />
   }
 
@@ -30,8 +30,9 @@ function Dashboard() {
         <TelemetryForm />
         {data?.map((list) => (
           <TelemetryList
-            active={list.active}
             description={list.description}
+            enabled={list.enabled}
+            health={list.health}
             id={list.id}
             ip={list.ip}
             issoSerial={list.issoSerial}

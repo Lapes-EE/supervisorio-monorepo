@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { type ToggleSearchSchema, toggleSearchSchema } from '../../-types'
+import {  toggleSearchSchema } from '../../-types'
 
 export function HeaderToggle() {
   const { type, phase } = useSearch({ from: '/(dashboard)/supervisorio/' })
@@ -31,7 +31,7 @@ export function HeaderToggle() {
           value="voltage"
         >
           <Link
-            search={(prev: ToggleSearchSchema) => ({
+            search={(prev: any) => ({
               ...prev,
               type: 'voltage',
             })}
@@ -47,7 +47,7 @@ export function HeaderToggle() {
           value="current"
         >
           <Link
-            search={(prev: ToggleSearchSchema) => ({
+            search={(prev: any) => ({
               ...prev,
               type: 'current',
             })}
@@ -63,7 +63,7 @@ export function HeaderToggle() {
           value="power"
         >
           <Link
-            search={(prev: ToggleSearchSchema) => ({ ...prev, type: 'power' })}
+            search={(prev: any) => ({ ...prev, type: 'power' })}
             to="."
           >
             Potência
@@ -85,7 +85,7 @@ export function HeaderToggle() {
         {phaseOptions.map((fase) => (
           <div className="flex items-center gap-2 px-4 py-2" key={fase}>
             <Link
-              search={(prev: ToggleSearchSchema) => ({
+              search={(prev: any) => ({
                 ...prev,
                 phase: togglePhase(fase),
               })}

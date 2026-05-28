@@ -5,7 +5,7 @@ import { BuildingLayout } from '@/routes/(dashboard)/supervisorio/-components/bu
 import { SensorDetailsModal } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/sensor-details-modal'
 import type { Sensor } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/types'
 import {
-  type ToggleSearchSchema,
+  
   toggleSearchSchema,
   typeOption,
 } from './(dashboard)/supervisorio/-types'
@@ -30,7 +30,7 @@ function SupervisorioFullPlan() {
 
       navigate({
         to: '.',
-        search: (prev: ToggleSearchSchema) => ({
+        search: (prev: any) => ({
           ...prev,
           type: nextType,
         }),
