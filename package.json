@@ -11,7 +11,9 @@
     "db:studio": "turbo run db:studio",
     "api:generate": "turbo run api:generate",
     "ui": "turbo -F @repo/web ui --",
-    "test": "turbo -F @repo/server test"
+    "test": "turbo -F @repo/server test -F @repo/worker test",
+    "test:server": "turbo -F @repo/server test",
+    "test:worker": "turbo -F @repo/worker test"
   },
   "packageManager": "pnpm@9.4.0",
   "devDependencies": {
