@@ -148,19 +148,19 @@ export async function fetchLastMeasurement(
     }
   }
 
-  const rawData = await db
-    .select()
-    .from(measures)
-    .where(
-      sql`
-        (${measures.meterId}, ${measures.time}) IN (
-          SELECT ${measures.meterId}, MAX(${measures.time})
-          FROM ${measures}
-          GROUP BY ${measures.meterId}
-        )
-      `
-    )
-    .orderBy(desc(measures.time))
+  const columnAliases = Object.entries(fieldMapping).map(
+    ([camelCase, snakeCase]) => sql.raw(`${snakeCase} as "${camelCase}"`)
+  )
+
+  const rawData = await db.execute<GetDatabase200ResponseDataSchema>(sql`
+    SELECT DISTINCT ON (meter_id)
+      id,
+      meter_id as "meterId",
+      time,
+      ${sql.join(columnAliases, sql`, `)}
+    FROM measures
+    ORDER BY meter_id, time DESC
+  `)
 
   return {
     data: rawData,
