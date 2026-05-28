@@ -8,7 +8,7 @@
 		"build": "vite build && tsc",
 		"serve": "vite preview",
 		"test": "vitest run",
-		"api:generate": "pnpm env:load orval",
+		"api:generate": "pnpm env:load orval && node fix-orval-nullable.js",
 		"ui": "pnpm dlx shadcn@latest add --"
 	},
     "packageManager": "pnpm@9.4.0",
@@ -38,7 +38,7 @@
 		"@tanstack/react-router-devtools": "^1.121.2",
 		"@tanstack/router-plugin": "^1.121.2",
 		"@tanstack/zod-adapter": "^1.131.5",
-		"axios": "^1.11.0",
+		"axios": "^1.15.0",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"cmdk": "^1.1.1",
@@ -64,7 +64,7 @@
 		"@vitejs/plugin-react": "^4.3.4",
 		"dotenv-cli": "^8.0.0",
 		"jsdom": "^26.0.0",
-		"orval": "^7.10.0",
+		"orval": "8.9.0",
 		"typescript": "^5.7.2",
 		"vite": "^6.1.0",
 		"vitest": "^3.0.5"

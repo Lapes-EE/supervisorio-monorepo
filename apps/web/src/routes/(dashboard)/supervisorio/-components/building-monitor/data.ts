@@ -37,8 +37,7 @@ export const fixedPositions: Array<{ id: number; x: number; y: number }> = [
 ]
 
 async function getMetersFull(filter: ToggleSearchSchema): Promise<Meter[]> {
-  const response = await getMeters()
-  const data = response.data
+  const data = await getMeters()
 
   return fixedPositions.map((position, index) => {
     const meter = data[index]
@@ -234,7 +233,7 @@ export function useSensors(
             meterId: meter.id,
             aggregation,
           })
-          return response.data
+          return response
         },
         enabled: !!meters,
       })) ?? [],

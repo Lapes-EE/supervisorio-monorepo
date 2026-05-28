@@ -55,6 +55,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.web # Dockerfile especial do web
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3333}
     container_name: supervisorio-web
     ports:
       - "3000:80"

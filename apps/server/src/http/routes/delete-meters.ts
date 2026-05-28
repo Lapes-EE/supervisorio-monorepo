@@ -16,7 +16,7 @@ export const deleteMeter: FastifyPluginCallbackZod = (app) => {
           id: z.coerce.number(),
         }),
         response: {
-          204: z.object({}).describe('Sucesso'),
+          204: z.null().describe('Sucesso'),
           404: z
             .object({
               error: z.string(),
@@ -54,7 +54,7 @@ export const deleteMeter: FastifyPluginCallbackZod = (app) => {
         return reply.status(404).send({ error: 'Medidor não encontrado  ' })
       }
 
-      return reply.status(204).send()
+      return reply.code(204).send(null as never)
     }
   )
 }

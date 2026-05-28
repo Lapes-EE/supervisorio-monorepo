@@ -22,6 +22,11 @@ export function getPeriodDates(period: PeriodType): PeriodDates {
   const startOfYear = new Date(now.getFullYear(), 0, 1)
 
   switch (period) {
+    case 'last_measurement':
+      return {
+        startDate: new Date(0),
+        endDate: now,
+      }
     case 'last_5_minutes':
       return {
         startDate: new Date(now.getTime() - 5 * 60 * 1000),

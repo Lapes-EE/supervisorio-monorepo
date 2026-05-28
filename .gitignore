@@ -165,4 +165,11 @@ sketch
 # Git worktrees
 .worktrees
 
+# Prometheus / Sisyphus planning artifacts
+.sisyphus/
+CONTEXT.md
+
+# AI agent knowledge base files
+AGENTS.md
+
 # End of https://www.toptal.com/developers/gitignore/api/react,turbo,node

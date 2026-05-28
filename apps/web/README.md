@@ -63,4 +63,4 @@ pnpm test       # Executa testes com Vitest
 
 ## Variáveis de Ambiente
 
-O frontend se conecta à API em `http://localhost:3333` por padrão. Configure através do arquivo `.env` na raiz do projeto.
+O frontend se conecta à API usando a variável `VITE_API_URL` definida no arquivo `.env` na raiz do projeto. O valor padrão é `http://localhost:3333`.

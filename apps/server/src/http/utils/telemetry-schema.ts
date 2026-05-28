@@ -7,6 +7,7 @@ export const telemetryQuerySchema = z.object({
   endDate: z.iso.datetime().optional(),
   period: z
     .enum([
+      'last_measurement',
       'last_5_minutes',
       'last_30_minutes',
       'last_hour',
@@ -37,13 +38,23 @@ export const telemetryQuerySchema = z.object({
     ])
     .default('raw'),
   fields: z
-    .union([z.string(), z.array(z.enum(availableFields))])
-    .transform((val) => (typeof val === 'string' ? [val] : val))
-    .pipe(z.array(z.enum(availableFields)))
+    .string()
+    .regex(
+      /^\[.*\]$/,
+      'Formato inválido. Use array JSON, ex: ["campo1","campo2"]'
+    )
     .optional()
     .describe(
-      'Campos específicos para retornar. Se não informado, retorna todos.'
-    ),
+      'Campos específicos para retornar (ex: ["correnteA","correnteB"])'
+    )
+    .transform((val) => {
+      if (!val) {
+        return
+      }
+      return JSON.parse(val)
+    })
+    .pipe(z.array(z.enum(availableFields)))
+    .optional(),
 })
 
 export type TelemetryQuerySchema = z.infer<typeof telemetryQuerySchema>
