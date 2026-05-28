@@ -22,5 +22,4 @@ export const GetTelemetryPeriod = {
   this_month: 'this_month',
   last_30_days: 'last_30_days',
   this_year: 'this_year',
-  last_measurement: 'last_measurement',
 } as const;
