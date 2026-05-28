@@ -1,6 +1,6 @@
 import { defineConfig } from "orval";
 
-const backend_url = "http://localhost:3333"; // Change this to your backend URL
+const backend_url = "http://192.168.128.197:3333"; // Change this to your backend URL
 
 export default defineConfig({
 	backend: {

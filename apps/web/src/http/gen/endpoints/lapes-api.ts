@@ -60,7 +60,7 @@ export const postSessionsPassword = (
     
     
     return axios.default.post(
-      `http://localhost:3333/sessions/password`,
+      `http://192.168.128.197:3333/sessions/password`,
       postSessionsPasswordBody,options
     );
   }
@@ -122,7 +122,7 @@ export const postMeters = (
     
     
     return axios.default.post(
-      `http://localhost:3333/meters`,
+      `http://192.168.128.197:3333/meters`,
       postMetersBody,options
     );
   }
@@ -184,7 +184,7 @@ export const getMeters = (
     
     
     return axios.default.get(
-      `http://localhost:3333/meters`,options
+      `http://192.168.128.197:3333/meters`,options
     );
   }
 
@@ -193,7 +193,7 @@ export const getMeters = (
 
 export const getGetMetersQueryKey = () => {
     return [
-    `http://localhost:3333/meters`
+    `http://192.168.128.197:3333/meters`
     ] as const;
     }
 
@@ -276,7 +276,7 @@ export const patchMeterId = (
     
     
     return axios.default.patch(
-      `http://localhost:3333/meter/${id}`,
+      `http://192.168.128.197:3333/meter/${id}`,
       patchMeterIdBody,options
     );
   }
@@ -339,7 +339,7 @@ export const putMetersId = (
     
     
     return axios.default.put(
-      `http://localhost:3333/meters/${id}`,
+      `http://192.168.128.197:3333/meters/${id}`,
       putMetersIdBody,options
     );
   }
@@ -401,7 +401,7 @@ export const deleteMetersId = (
     
     
     return axios.default.delete(
-      `http://localhost:3333/meters/${id}`,options
+      `http://192.168.128.197:3333/meters/${id}`,options
     );
   }
 
@@ -463,7 +463,7 @@ export const getTelemetry = (
     
     
     return axios.default.get(
-      `http://localhost:3333/telemetry`,{
+      `http://192.168.128.197:3333/telemetry`,{
     ...options,
         params: {...params, ...options?.params},}
     );
@@ -474,7 +474,7 @@ export const getTelemetry = (
 
 export const getGetTelemetryQueryKey = (params?: GetTelemetryParams,) => {
     return [
-    `http://localhost:3333/telemetry`, ...(params ? [params]: [])
+    `http://192.168.128.197:3333/telemetry`, ...(params ? [params]: [])
     ] as const;
     }
 
