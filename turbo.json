@@ -38,6 +38,14 @@
     },
     "lint": {
       "cache": true
+    },
+    "worker#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "worker#start": {
+      "cache": true,
+      "persistent": true
     }
   }
 }

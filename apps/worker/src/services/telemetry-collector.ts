@@ -3,7 +3,7 @@ import { workerEnv } from '@repo/env/worker'
 import { getTelemetryFromMeter } from '@repo/telemetry'
 import cron from 'node-cron'
 import PQueue from 'p-queue'
-import pRetry from 'p-retry'
+import pRetry, { AbortError } from 'p-retry'
 import pino from 'pino'
 import {
   checkMeterEnabled,
@@ -23,7 +23,7 @@ async function collectFromMeter(ip: string, failureCount: number) {
         // Check if still enabled before attempt
         const isEnabled = await checkMeterEnabled(ip)
         if (!isEnabled) {
-          throw new pRetry.AbortError('Meter disabled during retry')
+          throw new AbortError('Meter disabled during retry')
         }
         return await getTelemetryFromMeter(ip)
       },
@@ -41,7 +41,7 @@ async function collectFromMeter(ip: string, failureCount: number) {
     await updateMeterSuccess(ip)
     logger.info(`Successfully collected telemetry from meter ${ip}`)
   } catch (error: any) {
-    if (error instanceof pRetry.AbortError) {
+    if (error instanceof AbortError) {
       logger.info(`Collection aborted for meter ${ip}: ${error.message}`)
       return
     }

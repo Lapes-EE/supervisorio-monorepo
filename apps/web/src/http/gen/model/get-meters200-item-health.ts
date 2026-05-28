@@ -7,9 +7,8 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetMeters200ItemHealth = {  healthy: 'healthy',
+export const GetMeters200ItemHealth = {
+  healthy: 'healthy',
   failing: 'failing',
   cooldown: 'cooldown',
-  '': ,
-  null: null,
 } as const
