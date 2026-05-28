@@ -370,8 +370,8 @@ importers:
         specifier: workspace:*
         version: link:../telemetry
       drizzle-orm:
-        specifier: ^0.44.3
-        version: 0.44.7(postgres@3.4.7)
+        specifier: ^0.45.2
+        version: 0.45.2(postgres@3.4.7)
       postgres:
         specifier: ^3.4.4
         version: 3.4.7
