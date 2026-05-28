@@ -11,7 +11,7 @@ import {
   updateMeterFailure,
   updateMeterSuccess,
 } from '../db/queries'
-import { isMeterEligible } from './state-machine'
+import { isMeterEligible, type MeterState } from './state-machine'
 
 const logger = pino({ name: 'worker:collector' })
 const queue = new PQueue({ concurrency: 14 })
@@ -40,7 +40,7 @@ async function collectFromMeter(ip: string, failureCount: number) {
     await insertMeasure(telemetry, ip)
     await updateMeterSuccess(ip)
     logger.info(`Successfully collected telemetry from meter ${ip}`)
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof AbortError) {
       logger.info(`Collection aborted for meter ${ip}: ${error.message}`)
       return
@@ -65,7 +65,7 @@ export function startTelemetryCollector() {
       const now = new Date()
 
       const eligibleMeters = allEnabledMeters.filter((meter) =>
-        isMeterEligible(meter as any, now, workerEnv.MAX_BACKOFF_SECONDS)
+        isMeterEligible(meter as MeterState, now, workerEnv.MAX_BACKOFF_SECONDS)
       )
 
       if (eligibleMeters.length === 0) {

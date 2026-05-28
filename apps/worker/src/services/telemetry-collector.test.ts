@@ -1,6 +1,13 @@
-import { describe, expect, test, vi, beforeEach } from 'vitest'
+import { insertMeasure } from '@repo/db'
+import { getTelemetryFromMeter } from '@repo/telemetry'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
+import {
+  checkMeterEnabled,
+  getEligibleMeters,
+  updateMeterFailure,
+  updateMeterSuccess,
+} from '../db/queries'
 import { startTelemetryCollector } from './telemetry-collector'
-import * as queries from '../db/queries'
 
 vi.mock('@repo/db', async () => {
   const actual = await vi.importActual<typeof import('@repo/db')>('@repo/db')
@@ -14,9 +21,16 @@ vi.mock('@repo/telemetry', () => ({
   getTelemetryFromMeter: vi.fn(),
 }))
 
+vi.mock('../db/queries', () => ({
+  getEligibleMeters: vi.fn(),
+  checkMeterEnabled: vi.fn(),
+  updateMeterSuccess: vi.fn(),
+  updateMeterFailure: vi.fn(),
+}))
+
 vi.mock('node-cron', () => ({
-  schedule: vi.fn((schedule: string, callback: Function) => {
-    ;(globalThis as any).__cronCallback = callback
+  schedule: vi.fn((_schedule: string, callback: () => Promise<void>) => {
+    ;(globalThis as Record<string, unknown>).__cronCallback = callback
     return { stop: vi.fn() }
   }),
 }))
@@ -30,7 +44,21 @@ vi.mock('pino', () => ({
   }),
 }))
 
-function createMockMeter(overrides: Record<string, any> = {}) {
+type MockMeter = {
+  id: number
+  issoSerial: string
+  name: string
+  ip: string
+  description: null
+  active: boolean
+  enabled: boolean
+  health: 'healthy' | 'failing' | 'cooldown'
+  failureCount: number
+  lastFailedAt: string | null
+  createdAt: string
+}
+
+function createMockMeter(overrides: Partial<MockMeter> = {}) {
   return {
     id: 1,
     issoSerial: 'TEST-001',
@@ -59,67 +87,67 @@ describe('Telemetry Collector Integration', () => {
   })
 
   test('collects from eligible healthy meters', async () => {
-    const { getTelemetryFromMeter } = await import('@repo/telemetry')
-    const { insertMeasure } = await import('@repo/db')
-
     const mockMeter = createMockMeter({ ip: '192.168.1.1' })
 
-    vi.spyOn(queries, 'getEligibleMeters').mockResolvedValue([mockMeter] as any)
-    vi.spyOn(queries, 'checkMeterEnabled').mockResolvedValue(true)
-    vi.spyOn(queries, 'updateMeterSuccess').mockResolvedValue(undefined as any)
-    ;(getTelemetryFromMeter as any).mockResolvedValue({
+    vi.mocked(getEligibleMeters).mockResolvedValue([mockMeter])
+    vi.mocked(checkMeterEnabled).mockResolvedValue(true)
+    vi.mocked(updateMeterSuccess).mockResolvedValue(undefined)
+    vi.mocked(getTelemetryFromMeter).mockResolvedValue({
       potenciaAtivaFundamentalHarmonicaTotal: 100,
     })
 
     startTelemetryCollector()
 
-    const callback = (globalThis as any).__cronCallback
+    const callback = (globalThis as Record<string, unknown>)
+      .__cronCallback as () => Promise<void>
     await callback()
     await new Promise((resolve) => setTimeout(resolve, 100))
 
-    expect(queries.getEligibleMeters).toHaveBeenCalled()
+    expect(getEligibleMeters).toHaveBeenCalled()
     expect(getTelemetryFromMeter).toHaveBeenCalledWith('192.168.1.1')
     expect(insertMeasure).toHaveBeenCalled()
-    expect(queries.updateMeterSuccess).toHaveBeenCalledWith('192.168.1.1')
+    expect(updateMeterSuccess).toHaveBeenCalledWith('192.168.1.1')
   })
 
   test('skips disabled meters during retry', async () => {
-    const { getTelemetryFromMeter } = await import('@repo/telemetry')
-
     const mockMeter = createMockMeter({ ip: '192.168.1.2' })
 
-    vi.spyOn(queries, 'getEligibleMeters').mockResolvedValue([mockMeter] as any)
-    vi.spyOn(queries, 'checkMeterEnabled').mockResolvedValue(false)
-    vi.spyOn(queries, 'updateMeterFailure').mockResolvedValue(undefined as any)
-    ;(getTelemetryFromMeter as any).mockRejectedValue(new Error('Connection refused'))
+    vi.mocked(getEligibleMeters).mockResolvedValue([mockMeter])
+    vi.mocked(checkMeterEnabled).mockResolvedValue(false)
+    vi.mocked(updateMeterFailure).mockResolvedValue(undefined)
+    vi.mocked(getTelemetryFromMeter).mockRejectedValue(
+      new Error('Connection refused')
+    )
 
     startTelemetryCollector()
 
-    const callback = (globalThis as any).__cronCallback
+    const callback = (globalThis as Record<string, unknown>)
+      .__cronCallback as () => Promise<void>
     await callback()
     await new Promise((resolve) => setTimeout(resolve, 100))
 
-    expect(queries.checkMeterEnabled).toHaveBeenCalledWith('192.168.1.2')
-    expect(queries.updateMeterFailure).not.toHaveBeenCalled()
+    expect(checkMeterEnabled).toHaveBeenCalledWith('192.168.1.2')
+    expect(updateMeterFailure).not.toHaveBeenCalled()
   })
 
   test('marks meter as failing after all retries exhausted', async () => {
-    const { getTelemetryFromMeter } = await import('@repo/telemetry')
-
     const mockMeter = createMockMeter({ ip: '192.168.1.3', failureCount: 2 })
 
-    vi.spyOn(queries, 'getEligibleMeters').mockResolvedValue([mockMeter] as any)
-    vi.spyOn(queries, 'checkMeterEnabled').mockResolvedValue(true)
-    vi.spyOn(queries, 'updateMeterFailure').mockResolvedValue(undefined as any)
-    ;(getTelemetryFromMeter as any).mockRejectedValue(new Error('Connection refused'))
+    vi.mocked(getEligibleMeters).mockResolvedValue([mockMeter])
+    vi.mocked(checkMeterEnabled).mockResolvedValue(true)
+    vi.mocked(updateMeterFailure).mockResolvedValue(undefined)
+    vi.mocked(getTelemetryFromMeter).mockRejectedValue(
+      new Error('Connection refused')
+    )
 
     startTelemetryCollector()
 
-    const callback = (globalThis as any).__cronCallback
+    const callback = (globalThis as Record<string, unknown>)
+      .__cronCallback as () => Promise<void>
     await callback()
     await new Promise((resolve) => setTimeout(resolve, 200))
 
-    expect(queries.updateMeterFailure).toHaveBeenCalledWith('192.168.1.3', 3)
+    expect(updateMeterFailure).toHaveBeenCalledWith('192.168.1.3', 3)
   })
 
   test('skips meters in cooldown that have not expired', async () => {
@@ -130,15 +158,15 @@ describe('Telemetry Collector Integration', () => {
       lastFailedAt: new Date(Date.now() - 1000).toISOString(),
     })
 
-    vi.spyOn(queries, 'getEligibleMeters').mockResolvedValue([mockMeter] as any)
+    vi.mocked(getEligibleMeters).mockResolvedValue([mockMeter])
 
     startTelemetryCollector()
 
-    const callback = (globalThis as any).__cronCallback
+    const callback = (globalThis as Record<string, unknown>)
+      .__cronCallback as () => Promise<void>
     await callback()
     await new Promise((resolve) => setTimeout(resolve, 100))
 
-    const { getTelemetryFromMeter } = await import('@repo/telemetry')
     expect(getTelemetryFromMeter).not.toHaveBeenCalledWith('192.168.1.4')
   })
 })

@@ -1,13 +1,13 @@
 import { db, schema } from '@repo/db'
-import { and, eq, isNull, or, sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 
-export async function getEligibleMeters() {
+export function getEligibleMeters() {
   // Simple version: get all enabled meters, then filter in memory with state-machine logic
   // Alternatively, we could do complex SQL, but for now in-memory is fine given the small number of meters.
   return db.select().from(schema.meters).where(eq(schema.meters.enabled, true))
 }
 
-export async function updateMeterSuccess(ip: string) {
+export function updateMeterSuccess(ip: string) {
   return db
     .update(schema.meters)
     .set({
@@ -19,7 +19,7 @@ export async function updateMeterSuccess(ip: string) {
     .execute()
 }
 
-export async function updateMeterFailure(ip: string, failureCount: number) {
+export function updateMeterFailure(ip: string, failureCount: number) {
   return db
     .update(schema.meters)
     .set({
