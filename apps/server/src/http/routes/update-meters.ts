@@ -5,6 +5,8 @@ import { isIP } from 'is-ip'
 import z from 'zod'
 import { auth } from '../utils/middleware.auth'
 
+const ISSO_SERIAL_REGEX = /^[A-Z0-9]{3}(?:-[A-Z0-9]{3}){3}$/
+
 export const updateMeter: FastifyPluginCallbackZod = (app) => {
   app.register(auth).put(
     '/meters/:id',
@@ -25,6 +27,13 @@ export const updateMeter: FastifyPluginCallbackZod = (app) => {
               error: 'IP inválido',
             }),
           description: z.string().optional(),
+          issoSerial: z
+            .string()
+            .min(1, 'Serial is required')
+            .refine((val) => ISSO_SERIAL_REGEX.test(val), {
+              message: 'Invalid Serial. Expected format: 258-A17-39C-D6A',
+            })
+            .optional(),
         }),
         response: {
           200: z.object({}).describe('Sucesso'),
@@ -54,11 +63,11 @@ export const updateMeter: FastifyPluginCallbackZod = (app) => {
     },
     async (request, reply) => {
       const { id } = request.params
-      const { name, ip, description } = request.body
+      const { name, ip, description, issoSerial } = request.body
 
       const result = await db
         .update(schema.meters)
-        .set({ name, ip, description })
+        .set({ name, ip, description, issoSerial })
         .where(eq(schema.meters.id, id))
         .returning()
 

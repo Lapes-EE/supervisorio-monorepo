@@ -39,7 +39,7 @@ export function SelectPeriod({ queryClient, search }: SelectPeriodProps) {
   const handleChange = (value: GetTelemetryPeriod) => {
     navigate({
       to: '.',
-      search: (prev: any) => ({ ...prev, period: value }),
+      search: (prev) => ({ ...prev, period: value }),
     })
     queryClient.invalidateQueries({ queryKey: sensorKeys.all })
   }

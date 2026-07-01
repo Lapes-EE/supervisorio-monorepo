@@ -36,6 +36,11 @@ const items: SidebarItem[] = [
     url: { to: '/settings' },
     icon: Settings,
   },
+  {
+    title: 'Estimador',
+    url: { to: '/estimador' },
+    icon: ChartArea,
+  },
 ]
 
 export function NewAppSidebar() {

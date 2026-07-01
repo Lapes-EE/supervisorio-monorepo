@@ -19,6 +19,7 @@ import { Route as dashboardSettingsRouteRouteImport } from './routes/(dashboard)
 import { Route as dashboardGrChar225ficosRouteRouteImport } from './routes/(dashboard)/gráficos/route'
 import { Route as dashboardTelemetriaIndexRouteImport } from './routes/(dashboard)/telemetria/index'
 import { Route as dashboardSupervisorioIndexRouteImport } from './routes/(dashboard)/supervisorio/index'
+import { Route as dashboardEstimadorIndexRouteImport } from './routes/(dashboard)/estimador/index'
 import { Route as dashboardTelemetriaMeterIdRouteImport } from './routes/(dashboard)/telemetria/$meterId'
 import { Route as dashboardSettingsMeterIdRouteImport } from './routes/(dashboard)/settings/$meterId'
 import { Route as dashboardTelemetriaMeterIdEditRouteImport } from './routes/(dashboard)/telemetria/$meterId.edit'
@@ -78,6 +79,11 @@ const dashboardSupervisorioIndexRoute =
     path: '/',
     getParentRoute: () => dashboardSupervisorioRouteRoute,
   } as any)
+const dashboardEstimadorIndexRoute = dashboardEstimadorIndexRouteImport.update({
+  id: '/estimador/',
+  path: '/estimador/',
+  getParentRoute: () => dashboardRouteRoute,
+} as any)
 const dashboardTelemetriaMeterIdRoute =
   dashboardTelemetriaMeterIdRouteImport.update({
     id: '/$meterId',
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginIndexRoute
   '/settings/$meterId': typeof dashboardSettingsMeterIdRoute
   '/telemetria/$meterId': typeof dashboardTelemetriaMeterIdRouteWithChildren
+  '/estimador': typeof dashboardEstimadorIndexRoute
   '/supervisorio/': typeof dashboardSupervisorioIndexRoute
   '/telemetria/': typeof dashboardTelemetriaIndexRoute
   '/telemetria/$meterId/delete': typeof dashboardTelemetriaMeterIdDeleteRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginIndexRoute
   '/settings/$meterId': typeof dashboardSettingsMeterIdRoute
   '/telemetria/$meterId': typeof dashboardTelemetriaMeterIdRouteWithChildren
+  '/estimador': typeof dashboardEstimadorIndexRoute
   '/supervisorio': typeof dashboardSupervisorioIndexRoute
   '/telemetria': typeof dashboardTelemetriaIndexRoute
   '/telemetria/$meterId/delete': typeof dashboardTelemetriaMeterIdDeleteRoute
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/login/': typeof LoginIndexRoute
   '/(dashboard)/settings/$meterId': typeof dashboardSettingsMeterIdRoute
   '/(dashboard)/telemetria/$meterId': typeof dashboardTelemetriaMeterIdRouteWithChildren
+  '/(dashboard)/estimador/': typeof dashboardEstimadorIndexRoute
   '/(dashboard)/supervisorio/': typeof dashboardSupervisorioIndexRoute
   '/(dashboard)/telemetria/': typeof dashboardTelemetriaIndexRoute
   '/(dashboard)/telemetria/$meterId/delete': typeof dashboardTelemetriaMeterIdDeleteRoute
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/settings/$meterId'
     | '/telemetria/$meterId'
+    | '/estimador'
     | '/supervisorio/'
     | '/telemetria/'
     | '/telemetria/$meterId/delete'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/settings/$meterId'
     | '/telemetria/$meterId'
+    | '/estimador'
     | '/supervisorio'
     | '/telemetria'
     | '/telemetria/$meterId/delete'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/login/'
     | '/(dashboard)/settings/$meterId'
     | '/(dashboard)/telemetria/$meterId'
+    | '/(dashboard)/estimador/'
     | '/(dashboard)/supervisorio/'
     | '/(dashboard)/telemetria/'
     | '/(dashboard)/telemetria/$meterId/delete'
@@ -273,6 +285,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/supervisorio/'
       preLoaderRoute: typeof dashboardSupervisorioIndexRouteImport
       parentRoute: typeof dashboardSupervisorioRouteRoute
+    }
+    '/(dashboard)/estimador/': {
+      id: '/(dashboard)/estimador/'
+      path: '/estimador'
+      fullPath: '/estimador'
+      preLoaderRoute: typeof dashboardEstimadorIndexRouteImport
+      parentRoute: typeof dashboardRouteRoute
     }
     '/(dashboard)/telemetria/$meterId': {
       id: '/(dashboard)/telemetria/$meterId'
@@ -372,6 +391,7 @@ interface dashboardRouteRouteChildren {
   dashboardSettingsRouteRoute: typeof dashboardSettingsRouteRouteWithChildren
   dashboardSupervisorioRouteRoute: typeof dashboardSupervisorioRouteRouteWithChildren
   dashboardTelemetriaRouteRoute: typeof dashboardTelemetriaRouteRouteWithChildren
+  dashboardEstimadorIndexRoute: typeof dashboardEstimadorIndexRoute
 }
 
 const dashboardRouteRouteChildren: dashboardRouteRouteChildren = {
@@ -379,6 +399,7 @@ const dashboardRouteRouteChildren: dashboardRouteRouteChildren = {
   dashboardSettingsRouteRoute: dashboardSettingsRouteRouteWithChildren,
   dashboardSupervisorioRouteRoute: dashboardSupervisorioRouteRouteWithChildren,
   dashboardTelemetriaRouteRoute: dashboardTelemetriaRouteRouteWithChildren,
+  dashboardEstimadorIndexRoute: dashboardEstimadorIndexRoute,
 }
 
 const dashboardRouteRouteWithChildren = dashboardRouteRoute._addFileChildren(

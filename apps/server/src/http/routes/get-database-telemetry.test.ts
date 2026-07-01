@@ -607,6 +607,7 @@ describe('getPeriodDates', () => {
 
 describe('Field Test', () => {
   test('should return only selected fields for raw aggregation', async () => {
+    await api.ready()
     const meter = await makeMeters()
     await makeTelemetry({
       meterId: meter.id,
