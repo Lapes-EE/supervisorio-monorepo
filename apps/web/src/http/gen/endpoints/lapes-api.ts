@@ -57,10 +57,10 @@ import type {
 export const postSessionsPassword = (
     postSessionsPasswordBody: PostSessionsPasswordBody, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<PostSessionsPassword201>> => {
-    
-    
+
+
     return axios.default.post(
-      `http://192.168.128.197:3333/sessions/password`,
+      `http://192.168.129.171:3333/sessions/password`,
       postSessionsPasswordBody,options
     );
   }
@@ -78,7 +78,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, axios: undefined};
 
-      
+
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof postSessionsPassword>>, {data: PostSessionsPasswordBody}> = (props) => {
@@ -87,7 +87,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
           return  postSessionsPassword(data,axiosOptions)
         }
 
-        
+
 
 
   return  { mutationFn, ...mutationOptions }}
@@ -112,17 +112,17 @@ export const usePostSessionsPassword = <TError = AxiosError<string>,
 
       return useMutation(mutationOptions, queryClient);
     }
-    
+
 /**
  * @summary Register a new meter
  */
 export const postMeters = (
     postMetersBody: PostMetersBody, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<PostMeters201>> => {
-    
-    
+
+
     return axios.default.post(
-      `http://192.168.128.197:3333/meters`,
+      `http://192.168.129.171:3333/meters`,
       postMetersBody,options
     );
   }
@@ -140,7 +140,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, axios: undefined};
 
-      
+
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof postMeters>>, {data: PostMetersBody}> = (props) => {
@@ -149,7 +149,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
           return  postMeters(data,axiosOptions)
         }
 
-        
+
 
 
   return  { mutationFn, ...mutationOptions }}
@@ -174,17 +174,17 @@ export const usePostMeters = <TError = AxiosError<PostMeters401>,
 
       return useMutation(mutationOptions, queryClient);
     }
-    
+
 /**
  * @summary Get all meters
  */
 export const getMeters = (
      options?: AxiosRequestConfig
  ): Promise<AxiosResponse<GetMeters200Item[]>> => {
-    
-    
+
+
     return axios.default.get(
-      `http://192.168.128.197:3333/meters`,options
+      `http://192.168.129.171:3333/meters`,options
     );
   }
 
@@ -193,11 +193,11 @@ export const getMeters = (
 
 export const getGetMetersQueryKey = () => {
     return [
-    `http://192.168.128.197:3333/meters`
+    `http://192.168.129.171:3333/meters`
     ] as const;
     }
 
-    
+
 export const getGetMetersQueryOptions = <TData = Awaited<ReturnType<typeof getMeters>>, TError = AxiosError<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>>, axios?: AxiosRequestConfig}
 ) => {
 
@@ -205,13 +205,13 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getGetMetersQueryKey();
 
-  
+
 
     const queryFn: QueryFunction<Awaited<ReturnType<typeof getMeters>>> = ({ signal }) => getMeters({ signal, ...axiosOptions });
 
-      
 
-      
+
+
 
    return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
@@ -250,7 +250,7 @@ export function useGetMeters<TData = Awaited<ReturnType<typeof getMeters>>, TErr
 
 export function useGetMeters<TData = Awaited<ReturnType<typeof getMeters>>, TError = AxiosError<unknown>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>>, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient 
+ , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getGetMetersQueryOptions(options)
@@ -273,10 +273,10 @@ export const patchMeterId = (
     id: number,
     patchMeterIdBody: PatchMeterIdBody, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<void>> => {
-    
-    
+
+
     return axios.default.patch(
-      `http://192.168.128.197:3333/meter/${id}`,
+      `http://192.168.129.171:3333/meter/${id}`,
       patchMeterIdBody,options
     );
   }
@@ -294,7 +294,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, axios: undefined};
 
-      
+
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchMeterId>>, {id: number;data: PatchMeterIdBody}> = (props) => {
@@ -303,7 +303,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
           return  patchMeterId(id,data,axiosOptions)
         }
 
-        
+
 
 
   return  { mutationFn, ...mutationOptions }}
@@ -328,7 +328,7 @@ export const usePatchMeterId = <TError = AxiosError<void | PatchMeterId401>,
 
       return useMutation(mutationOptions, queryClient);
     }
-    
+
 /**
  * @summary Update an existing meter
  */
@@ -336,10 +336,10 @@ export const putMetersId = (
     id: number,
     putMetersIdBody: PutMetersIdBody, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<PutMetersId200>> => {
-    
-    
+
+
     return axios.default.put(
-      `http://192.168.128.197:3333/meters/${id}`,
+      `http://192.168.129.171:3333/meters/${id}`,
       putMetersIdBody,options
     );
   }
@@ -357,7 +357,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, axios: undefined};
 
-      
+
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof putMetersId>>, {id: number;data: PutMetersIdBody}> = (props) => {
@@ -366,7 +366,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
           return  putMetersId(id,data,axiosOptions)
         }
 
-        
+
 
 
   return  { mutationFn, ...mutationOptions }}
@@ -391,17 +391,17 @@ export const usePutMetersId = <TError = AxiosError<PutMetersId401 | PutMetersId4
 
       return useMutation(mutationOptions, queryClient);
     }
-    
+
 /**
  * @summary Delete a meter
  */
 export const deleteMetersId = (
     id: number, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<DeleteMetersId204>> => {
-    
-    
+
+
     return axios.default.delete(
-      `http://192.168.128.197:3333/meters/${id}`,options
+      `http://192.168.129.171:3333/meters/${id}`,options
     );
   }
 
@@ -418,7 +418,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, axios: undefined};
 
-      
+
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteMetersId>>, {id: number}> = (props) => {
@@ -427,13 +427,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
           return  deleteMetersId(id,axiosOptions)
         }
 
-        
+
 
 
   return  { mutationFn, ...mutationOptions }}
 
     export type DeleteMetersIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteMetersId>>>
-    
+
     export type DeleteMetersIdMutationError = AxiosError<DeleteMetersId401 | DeleteMetersId404>
 
     /**
@@ -452,7 +452,7 @@ export const useDeleteMetersId = <TError = AxiosError<DeleteMetersId401 | Delete
 
       return useMutation(mutationOptions, queryClient);
     }
-    
+
 /**
  * Search for measurements with temporal filters
  * @summary Obtain time telemetry data
@@ -460,10 +460,10 @@ export const useDeleteMetersId = <TError = AxiosError<DeleteMetersId401 | Delete
 export const getTelemetry = (
     params?: GetTelemetryParams, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<GetTelemetry200>> => {
-    
-    
+
+
     return axios.default.get(
-      `http://192.168.128.197:3333/telemetry`,{
+      `http://192.168.129.171:3333/telemetry`,{
     ...options,
         params: {...params, ...options?.params},}
     );
@@ -474,11 +474,11 @@ export const getTelemetry = (
 
 export const getGetTelemetryQueryKey = (params?: GetTelemetryParams,) => {
     return [
-    `http://192.168.128.197:3333/telemetry`, ...(params ? [params]: [])
+    `http://192.168.129.171:3333/telemetry`, ...(params ? [params]: [])
     ] as const;
     }
 
-    
+
 export const getGetTelemetryQueryOptions = <TData = Awaited<ReturnType<typeof getTelemetry>>, TError = AxiosError<unknown>>(params?: GetTelemetryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTelemetry>>, TError, TData>>, axios?: AxiosRequestConfig}
 ) => {
 
@@ -486,13 +486,13 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getGetTelemetryQueryKey(params);
 
-  
+
 
     const queryFn: QueryFunction<Awaited<ReturnType<typeof getTelemetry>>> = ({ signal }) => getTelemetry(params, { signal, ...axiosOptions });
 
-      
 
-      
+
+
 
    return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTelemetry>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
@@ -531,7 +531,7 @@ export function useGetTelemetry<TData = Awaited<ReturnType<typeof getTelemetry>>
 
 export function useGetTelemetry<TData = Awaited<ReturnType<typeof getTelemetry>>, TError = AxiosError<unknown>>(
  params?: GetTelemetryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTelemetry>>, TError, TData>>, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient 
+ , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getGetTelemetryQueryOptions(params,options)
