@@ -57,6 +57,16 @@ async function collectFromMeter(ip: string, failureCount: number) {
 
     const newFailureCount = failureCount + 1
     await updateMeterFailure(ip, newFailureCount)
+
+    try {
+      await insertMeasure({}, ip)
+    } catch (insertError) {
+      logger.warn(
+        { insertError },
+        `Failed to insert empty measure for meter ${ip}`
+      )
+    }
+
     logger.error(
       `All retries failed for meter ${ip}. New failure count: ${newFailureCount}`
     )

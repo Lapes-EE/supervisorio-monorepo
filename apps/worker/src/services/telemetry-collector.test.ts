@@ -152,6 +152,28 @@ describe('Telemetry Collector Integration', () => {
     expect(updateMeterFailure).toHaveBeenCalledWith('192.168.1.3', 3)
   })
 
+  test('inserts empty measure after all retries exhausted', async () => {
+    const mockMeter = createMockMeter({ ip: '192.168.1.5', failureCount: 0 })
+
+    vi.mocked(getEligibleMeters).mockResolvedValue([mockMeter])
+    vi.mocked(checkMeterEnabled).mockResolvedValue(true)
+    vi.mocked(updateMeterFailure).mockResolvedValue(undefined)
+    vi.mocked(insertMeasure).mockResolvedValue(undefined)
+    vi.mocked(getTelemetryFromMeter).mockRejectedValue(
+      new Error('Connection refused')
+    )
+
+    startTelemetryCollector()
+
+    const callback = (globalThis as Record<string, unknown>)
+      .__cronCallback as () => Promise<void>
+    await callback()
+    await new Promise((resolve) => setTimeout(resolve, 200))
+
+    expect(insertMeasure).toHaveBeenCalledWith({}, '192.168.1.5')
+    expect(updateMeterFailure).toHaveBeenCalledWith('192.168.1.5', 1)
+  })
+
   test('skips meters in cooldown that have not expired', async () => {
     const mockMeter = createMockMeter({
       ip: '192.168.1.4',
