@@ -30,7 +30,8 @@ const chartConfig = {
 export function PowerChart({ data, isLoading }: PowerChartProps) {
   const chartData = data?.map((item) => ({
     time: formatTime(item.time),
-    activePower: (item.measurements?.potenciaAtivaFundamentalHarmonicaTotal ?? 0) / 1000,
+    activePower:
+      (item.measurements?.potenciaAtivaFundamentalHarmonicaTotal ?? 0) / 1000,
   }))
 
   return (

@@ -30,10 +30,7 @@ export function useTelemetryData(
   const query = useQuery({
     ...telemetryQueries.byParams(params),
     enabled: !!meterId && !!period,
-    select: useMemo(
-      () => (data: GetTelemetry200) => data?.data ?? [],
-      []
-    ),
+    select: useMemo(() => (data: GetTelemetry200) => data?.data ?? [], []),
   })
 
   return query

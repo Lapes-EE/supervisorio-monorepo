@@ -26,19 +26,25 @@ export function TotalActivePowerCard({
           isLoading={isLoading}
           label="Fase A"
           suffix="W"
-          value={telemetryData?.measurements?.potenciaAtivaFundamentalHarmonicaA}
+          value={
+            telemetryData?.measurements?.potenciaAtivaFundamentalHarmonicaA
+          }
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase B"
           suffix="W"
-          value={telemetryData?.measurements?.potenciaAtivaFundamentalHarmonicaB}
+          value={
+            telemetryData?.measurements?.potenciaAtivaFundamentalHarmonicaB
+          }
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase C"
           suffix="W"
-          value={telemetryData?.measurements?.potenciaAtivaFundamentalHarmonicaC}
+          value={
+            telemetryData?.measurements?.potenciaAtivaFundamentalHarmonicaC
+          }
         />
         <TelemetryItem
           isLoading={isLoading}

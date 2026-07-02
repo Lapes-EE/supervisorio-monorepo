@@ -48,7 +48,9 @@ export function calculateKpis(
     3
 
   const maxDemand = Math.max(
-    ...data.map((d) => d.measurements?.potenciaAtivaFundamentalHarmonicaTotal ?? 0)
+    ...data.map(
+      (d) => d.measurements?.potenciaAtivaFundamentalHarmonicaTotal ?? 0
+    )
   )
 
   return {
