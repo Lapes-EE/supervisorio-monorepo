@@ -82,7 +82,7 @@ async function getMetersFull(filter: ToggleSearchSchema): Promise<Meter[]> {
   })
 }
 
-function getSensorHistory(
+export function getSensorHistory(
   telemetryData: GetTelemetry200DataItem[],
   filter: ToggleSearchSchema
 ): History {
