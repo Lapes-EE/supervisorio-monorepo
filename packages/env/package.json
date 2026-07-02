@@ -6,7 +6,9 @@
   "types": "index.ts",
   "exports": {
     ".": "./index.ts",
+    "./db": "./db.ts",
     "./server": "./server.ts",
+    "./web": "./web.ts",
     "./worker": "./worker.ts"
   },
   "devDependencies": {

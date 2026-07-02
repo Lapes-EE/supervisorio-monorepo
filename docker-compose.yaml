@@ -39,7 +39,6 @@ services:
 
       # Auth
       JWT_SECRET: "d43a102e-dff8-4310-9f8e-8de8188840b5"
-      PASSWORD: "$argon2id$v=19$m=65536,t=3,p=4$wSq5mPIYnkzaGwqR5PPlPA$hvuEkrCSf1XD4ybsw+/EpdxgufYBrwXPHesWxq0fhJA"
 
     ports:
       - "3333:3333"

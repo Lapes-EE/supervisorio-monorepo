@@ -5,10 +5,8 @@ export const env = createEnv({
   server: {
     PORT: z.coerce.number().default(3333),
     API_URL: z.string(),
-    NODE_ENV: z.enum(['development', 'on', 'test']).default('development'),
-    DATABASE_URL: z.string(),
+    NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     JWT_SECRET: z.uuid(),
-    PASSWORD: z.string(),
     WEB_URL: z.string(),
   },
   runtimeEnv: {
@@ -16,9 +14,7 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     API_URL: process.env.API_URL,
     WEB_URL: process.env.WEB_URL,
-    DATABASE_URL: process.env.DATABASE_URL,
     JWT_SECRET: process.env.JWT_SECRET,
-    PASSWORD: process.env.PASSWORD,
   },
   emptyStringAsUndefined: true,
 })
