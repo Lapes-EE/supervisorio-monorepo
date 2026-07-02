@@ -1,4 +1,4 @@
-import { insertMeasure } from '@repo/db'
+import { insertMeasure, notifyTelemetryChange } from '@repo/db'
 import { getTelemetryFromMeter } from '@repo/telemetry'
 import cron from 'node-cron'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
@@ -14,7 +14,8 @@ vi.mock('@repo/db', async () => {
   const actual = await vi.importActual<typeof import('@repo/db')>('@repo/db')
   return {
     ...actual,
-    insertMeasure: vi.fn(),
+    insertMeasure: vi.fn().mockResolvedValue({ meterId: 1 }),
+    notifyTelemetryChange: vi.fn().mockResolvedValue(undefined),
   }
 })
 
@@ -158,7 +159,7 @@ describe('Telemetry Collector Integration', () => {
     vi.mocked(getEligibleMeters).mockResolvedValue([mockMeter])
     vi.mocked(checkMeterEnabled).mockResolvedValue(true)
     vi.mocked(updateMeterFailure).mockResolvedValue(undefined)
-    vi.mocked(insertMeasure).mockResolvedValue(undefined)
+    vi.mocked(insertMeasure).mockResolvedValue({ meterId: 1 })
     vi.mocked(getTelemetryFromMeter).mockRejectedValue(
       new Error('Connection refused')
     )
@@ -192,5 +193,45 @@ describe('Telemetry Collector Integration', () => {
     await new Promise((resolve) => setTimeout(resolve, 100))
 
     expect(getTelemetryFromMeter).not.toHaveBeenCalledWith('192.168.1.4')
+  })
+
+  test('calls notifyTelemetryChange on successful collection', async () => {
+    const mockMeter = createMockMeter({ ip: '192.168.1.6' })
+
+    vi.mocked(getEligibleMeters).mockResolvedValue([mockMeter])
+    vi.mocked(checkMeterEnabled).mockResolvedValue(true)
+    vi.mocked(updateMeterSuccess).mockResolvedValue(undefined)
+    vi.mocked(getTelemetryFromMeter).mockResolvedValue({
+      potenciaAtivaFundamentalHarmonicaTotal: 100,
+    })
+
+    startTelemetryCollector()
+
+    const callback = (globalThis as Record<string, unknown>)
+      .__cronCallback as () => Promise<void>
+    await callback()
+    await new Promise((resolve) => setTimeout(resolve, 100))
+
+    expect(notifyTelemetryChange).toHaveBeenCalledWith(1)
+  })
+
+  test('calls notifyTelemetryChange on failed collection (empty measure)', async () => {
+    const mockMeter = createMockMeter({ ip: '192.168.1.7', failureCount: 0 })
+
+    vi.mocked(getEligibleMeters).mockResolvedValue([mockMeter])
+    vi.mocked(checkMeterEnabled).mockResolvedValue(true)
+    vi.mocked(updateMeterFailure).mockResolvedValue(undefined)
+    vi.mocked(getTelemetryFromMeter).mockRejectedValue(
+      new Error('Connection refused')
+    )
+
+    startTelemetryCollector()
+
+    const callback = (globalThis as Record<string, unknown>)
+      .__cronCallback as () => Promise<void>
+    await callback()
+    await new Promise((resolve) => setTimeout(resolve, 200))
+
+    expect(notifyTelemetryChange).toHaveBeenCalledWith(1)
   })
 })
