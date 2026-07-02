@@ -4,6 +4,9 @@
   "private": true,
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "scripts": {
+    "test": "dotenv -e ../../.env.test.local vitest run"
+  },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
     "postgres": "^3.4.4",
@@ -12,6 +15,8 @@
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "@types/node": "^24.0.15"
+    "@types/node": "^24.0.15",
+    "dotenv-cli": "^8.0.0",
+    "vitest": "^3.0.5"
   }
 }
