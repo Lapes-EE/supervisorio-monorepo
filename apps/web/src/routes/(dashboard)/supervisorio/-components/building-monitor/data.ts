@@ -100,14 +100,22 @@ export function getSensorHistory(
         break
 
       case 'power':
-        phaseAValue = Number(((item.measurements?.potenciaAparenteA ?? 0) / 1000).toFixed(2))
-        phaseBValue = Number(((item.measurements?.potenciaAparenteB ?? 0) / 1000).toFixed(2))
-        phaseCValue = Number(((item.measurements?.potenciaAparenteC ?? 0) / 1000).toFixed(2))
+        phaseAValue = Number(
+          ((item.measurements?.potenciaAparenteA ?? 0) / 1000).toFixed(2)
+        )
+        phaseBValue = Number(
+          ((item.measurements?.potenciaAparenteB ?? 0) / 1000).toFixed(2)
+        )
+        phaseCValue = Number(
+          ((item.measurements?.potenciaAparenteC ?? 0) / 1000).toFixed(2)
+        )
         break
 
       case 'frequency': {
         // Para frequência, replica o mesmo valor nas três fases
-        const frequencyValue = Number((item.measurements?.frequencia ?? 0).toFixed(2))
+        const frequencyValue = Number(
+          (item.measurements?.frequencia ?? 0).toFixed(2)
+        )
         phaseAValue = frequencyValue
         phaseBValue = frequencyValue
         phaseCValue = frequencyValue
@@ -115,9 +123,15 @@ export function getSensorHistory(
       }
 
       default:
-        phaseAValue = Number((item.measurements?.tensaoFaseNeutroA ?? 0).toFixed(2))
-        phaseBValue = Number((item.measurements?.tensaoFaseNeutroB ?? 0).toFixed(2))
-        phaseCValue = Number((item.measurements?.tensaoFaseNeutroC ?? 0).toFixed(2))
+        phaseAValue = Number(
+          (item.measurements?.tensaoFaseNeutroA ?? 0).toFixed(2)
+        )
+        phaseBValue = Number(
+          (item.measurements?.tensaoFaseNeutroB ?? 0).toFixed(2)
+        )
+        phaseCValue = Number(
+          (item.measurements?.tensaoFaseNeutroC ?? 0).toFixed(2)
+        )
         break
     }
 
@@ -178,9 +192,11 @@ function calculateSensorTrend(
 
 export function getAggregationConfig(period: GetTelemetryPeriod): {
   aggregation: GetTelemetryAggregation
-  refetchInterval: number
+  refetchInterval: number | false
 } {
   switch (period) {
+    case 'last_measurement':
+      return { aggregation: 'raw', refetchInterval: false }
     case 'last_5_minutes':
       return { aggregation: 'raw', refetchInterval: 10_000 } // 10s
     case 'last_30_minutes':
