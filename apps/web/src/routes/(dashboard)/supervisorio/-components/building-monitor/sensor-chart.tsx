@@ -8,7 +8,8 @@ import {
 } from '@/components/ui/chart'
 import { dayjs } from '@/lib/dayjs'
 import type { ToggleSearchSchema } from '../../-types'
-import { getAggregationConfig, useSensors } from './data'
+import { getAggregationConfig } from './data'
+import { useSensorChart } from './sensor-chart-data'
 import type { Sensor } from './types'
 
 interface SensorChartProps {
@@ -17,11 +18,11 @@ interface SensorChartProps {
 }
 
 export function SensorChart({ sensor, search }: SensorChartProps) {
-  const { data: sensors } = useSensors(search, search.period)
+  const { history } = useSensorChart(sensor.id, search.period, search)
 
-  const updatedSensor = useMemo(() => {
-    return sensors?.find((s) => s.id === sensor.id) || sensor
-  }, [sensors, sensor.id, sensor])
+  const sensorPhases = useMemo(() => {
+    return history?.phases ?? sensor.history?.phases ?? []
+  }, [history, sensor.history])
 
   const chartData = useMemo(() => {
     const { aggregation } = getAggregationConfig(search.period)
@@ -32,7 +33,7 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
       const startOfDay = dayjs().startOf('day')
 
       return Array.from({ length: totalIntervals }, (_, i) => {
-        const existingData = updatedSensor.history.phases[i]
+        const existingData = sensorPhases[i]
         const timeSlot = startOfDay.add(i * 30, 'minute')
 
         return {
@@ -46,14 +47,14 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
 
     if (search.period === 'this_year') {
       // Para this_year, mostrar dias ao invés de horas
-      return updatedSensor.history.phases.map((phase) => ({
+      return sensorPhases.map((phase) => ({
         ...phase,
         time: dayjs(phase.time).format('DD/MM'),
       }))
     }
 
     // Para outros períodos, formatar baseado na agregação
-    return updatedSensor.history.phases.map((phase) => {
+    return sensorPhases.map((phase) => {
       const timestamp = dayjs(phase.time)
 
       // Definir formato baseado na agregação
@@ -70,7 +71,7 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
         time: timestamp.format(format),
       }
     })
-  }, [search.period, updatedSensor.history.phases])
+  }, [search.period, sensorPhases])
 
   const chartConfig = {
     value: {
@@ -120,7 +121,7 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
                   <div className="ml-auto flex items-baseline gap-0.5 font-medium font-mono text-foreground tabular-nums">
                     {value}
                     <span className="font-normal text-muted-foreground">
-                      {updatedSensor.unit}
+                      {sensor.unit}
                     </span>
                   </div>
                 </>
