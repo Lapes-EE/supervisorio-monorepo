@@ -370,7 +370,9 @@ describe('Telemetry API Tests', () => {
       expect(response.body.data).toHaveLength(2)
       expect(response.body.total).toBe(2)
 
-      const meterIds = response.body.data.map((d: { meterId: number }) => d.meterId)
+      const meterIds = response.body.data.map(
+        (d: { meterId: number }) => d.meterId
+      )
       expect(meterIds).toContain(meter1.id)
       expect(meterIds).toContain(meter2.id)
     })
