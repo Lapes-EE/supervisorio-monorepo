@@ -1,7 +1,8 @@
+import { webEnv } from '@repo/env/web'
 import Axios, { type AxiosRequestConfig } from 'axios'
 
 export const AXIOS_INSTANCE = Axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: webEnv.VITE_API_URL,
 })
 
 AXIOS_INSTANCE.interceptors.request.use((config) => {

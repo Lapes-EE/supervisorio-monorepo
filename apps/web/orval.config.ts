@@ -11,7 +11,8 @@ export default defineConfig({
 			schemas: "./src/http/gen/model",
 			client: "react-query",
 			httpClient: "axios",
-			baseUrl: backend_url,			// mock: true,
+			// baseUrl intentionally omitted — generated endpoints use relative paths
+			// and rely on the axios instance baseURL from custom-instance.ts
 			override: {
                 // mutator: {
                 //     path: './src/http/gen/custom-instace.ts',
