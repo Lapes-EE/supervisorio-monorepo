@@ -5,6 +5,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { NewAppSidebar } from '@/components/app-sidebar-new.tsx'
 import { ThemeProvider } from '@/components/theme-provider.tsx'
 import { Toaster } from '@/components/ui/sonner'
+import { useEventSource } from '@/hooks/use-event-source'
 import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item'
 import { meterQueries } from '@/lib/query-keys'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
@@ -24,7 +25,13 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       meters: response,
     }
   },
-  component: () => (
+  component: RootComponent,
+})
+
+function RootComponent() {
+  useEventSource()
+
+  return (
     <>
       <ThemeProvider
         attribute="class"
@@ -53,5 +60,5 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         ]}
       />
     </>
-  ),
-})
+  )
+}
