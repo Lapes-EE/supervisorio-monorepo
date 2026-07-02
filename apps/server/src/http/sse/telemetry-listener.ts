@@ -45,7 +45,7 @@ export async function startTelemetryListener() {
 	const onlisten = async () => {
 		try {
 			// Initial sync on startup/reconnect to broadcast latest readings
-			const result = await fetchLastMeasurement();
+			const result = await fetchLastMeasurement({});
 			const flatData = result.data;
 			const total = result.total;
 			const nestedData = flatData.map(transformToNested);
