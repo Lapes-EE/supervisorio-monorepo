@@ -14,7 +14,7 @@ import {
 } from '../utils/telemetry-query-builder'
 import { telemetryQuerySchema } from '../utils/telemetry-schema'
 
-function normalizeTime(value: unknown): string {
+export function normalizeTime(value: unknown): string {
   if (value instanceof Date) {
     return value.toISOString()
   }
@@ -27,7 +27,7 @@ function normalizeTime(value: unknown): string {
   return String(value)
 }
 
-function transformToNested(
+export function transformToNested(
   flatRow: Record<string, unknown>
 ): TelemetryItemSchema {
   const measurements = {} as TelemetryMeasurementsSchema
