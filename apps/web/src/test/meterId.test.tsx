@@ -56,6 +56,7 @@ describe('Meter Detail Page', () => {
 
     const telemetryQuery = queries.find((q) => q.queryKey.includes('Telemetry'))
     expect(telemetryQuery).toBeDefined()
-    expect(telemetryQuery?.options.refetchInterval).toBeFalsy() // Verify polling is disabled
+    // biome-ignore lint/suspicious/noExplicitAny: Options can be any type
+    expect((telemetryQuery?.options as any).refetchInterval).toBeFalsy() // Verify polling is disabled
   })
 })
