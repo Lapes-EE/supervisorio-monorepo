@@ -22,19 +22,19 @@ export function PhaseAngleCard({
             isLoading={isLoading}
             label="Ângulo Fase A"
             suffix="°"
-            value={telemetryData?.anguloFaseA}
+            value={telemetryData?.measurements?.anguloFaseA}
           />
           <TelemetryItem
             isLoading={isLoading}
             label="Ângulo Fase B"
             suffix="°"
-            value={telemetryData?.anguloFaseB}
+            value={telemetryData?.measurements?.anguloFaseB}
           />
           <TelemetryItem
             isLoading={isLoading}
             label="Ângulo Fase C"
             suffix="°"
-            value={telemetryData?.anguloFaseC}
+            value={telemetryData?.measurements?.anguloFaseC}
           />
         </div>
         <div>
@@ -42,19 +42,19 @@ export function PhaseAngleCard({
             isLoading={isLoading}
             label="Phi Fase A"
             suffix="°"
-            value={telemetryData?.phiFaseA}
+            value={telemetryData?.measurements?.phiFaseA}
           />
           <TelemetryItem
             isLoading={isLoading}
             label="Phi Fase B"
             suffix="°"
-            value={telemetryData?.phiFaseB}
+            value={telemetryData?.measurements?.phiFaseB}
           />
           <TelemetryItem
             isLoading={isLoading}
             label="Phi Fase C"
             suffix="°"
-            value={telemetryData?.phiFaseC}
+            value={telemetryData?.measurements?.phiFaseC}
           />
         </div>
       </CardContent>

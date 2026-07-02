@@ -41,9 +41,9 @@ const chartConfig = {
 export function VoltageChart({ data, isLoading }: VoltageChartProps) {
   const chartData = data?.map((item) => ({
     time: formatTime(item.time),
-    voltageA: item.tensaoFaseNeutroA,
-    voltageB: item.tensaoFaseNeutroB,
-    voltageC: item.tensaoFaseNeutroC,
+    voltageA: item.measurements?.tensaoFaseNeutroA,
+    voltageB: item.measurements?.tensaoFaseNeutroB,
+    voltageC: item.measurements?.tensaoFaseNeutroC,
   }))
 
   return (

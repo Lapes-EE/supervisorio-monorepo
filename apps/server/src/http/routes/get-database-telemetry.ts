@@ -1,6 +1,7 @@
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import {
-  type GetDatabase200ResponseDataSchema,
+  type TelemetryItemSchema,
+  type TelemetryMeasurementsSchema,
   getDatabase200ResponseSchema,
 } from '../types/get-database-200-response'
 import { availableFields } from '../utils/field-mapping'
@@ -12,6 +13,38 @@ import {
   fetchRawData,
 } from '../utils/telemetry-query-builder'
 import { telemetryQuerySchema } from '../utils/telemetry-schema'
+
+const METADATA_KEYS = new Set(['id', 'meterId', 'time'])
+
+function transformToNested(
+  flatRow: Record<string, unknown>
+): TelemetryItemSchema {
+  const measurements = {} as TelemetryMeasurementsSchema
+
+  for (const field of availableFields) {
+    const value = flatRow[field]
+    ;(measurements as Record<string, number>)[field] =
+      value !== undefined && value !== null ? Number(value) : 0
+  }
+
+  const allMeasurementsNull = availableFields.every(
+    (field) => flatRow[field] === null || flatRow[field] === undefined
+  )
+
+  return {
+    id: flatRow.id !== undefined ? Number(flatRow.id) : undefined,
+    meterId: Number(flatRow.meterId),
+    time:
+      flatRow.time instanceof Date
+        ? flatRow.time.toISOString()
+        : String(flatRow.time),
+    status: allMeasurementsNull ? 'error' : 'success',
+    message: allMeasurementsNull
+      ? 'Timeout na comunicação com o medidor'
+      : null,
+    measurements: allMeasurementsNull ? null : measurements,
+  }
+}
 
 export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
   app.get(
@@ -37,12 +70,12 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
         endDate,
       })
 
-      let data: GetDatabase200ResponseDataSchema[]
+      let flatData: Record<string, unknown>[]
       let total: number
 
       if (period === 'last_measurement') {
         const result = await fetchLastMeasurement({ meterId })
-        data = result.data
+        flatData = result.data
         total = result.total
       } else if (aggregation === 'raw') {
         const result = await fetchRawData({
@@ -50,7 +83,7 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
           filterEndDate,
           meterId,
         })
-        data = result.data
+        flatData = result.data
         total = result.total
       } else {
         const aggregatedData = await buildAggregatedQuery({
@@ -61,36 +94,26 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
           fields: fields && fields.length > 0 ? fields : availableFields,
         })
 
-        data = aggregatedData.filter(isAggregatedMeasure).map((row) => ({
-          ...row,
-          time: new Date(row.time).toISOString(),
-        }))
+        flatData = aggregatedData
+          .filter(isAggregatedMeasure)
+          .map((row) => ({
+            ...row,
+            time: new Date(row.time).toISOString(),
+          }))
 
-        total = data.length
+        total = flatData.length
       }
 
-      // Filtrar campos na resposta se necessário (somente para raw data)
+      let nestedData = flatData.map(transformToNested)
+
       const filteredData =
         aggregation === 'raw' || period === 'last_measurement'
-          ? filterFields(data, fields)
-          : data
+          ? filterFields(nestedData, fields)
+          : nestedData
 
-      const nonNullableKeys: Array<keyof GetDatabase200ResponseDataSchema> = [
-        'id',
-        'meterId',
-        'time',
-      ]
-
-      // Calcula registros com todos os dados nulos
-      const nullCount = filteredData.filter((row) => {
-        return Object.entries(row).every(([key, value]) => {
-          return (
-            nonNullableKeys.includes(
-              key as keyof GetDatabase200ResponseDataSchema
-            ) || value === null
-          )
-        })
-      }).length
+      const nullCount = filteredData.filter(
+        (row) => row.status === 'error'
+      ).length
 
       reply.status(200).send({
         data: filteredData,

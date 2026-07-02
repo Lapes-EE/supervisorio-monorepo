@@ -55,13 +55,7 @@ export function TelemetryEditForm({ meters, meterId }: TelemetryEditFormProps) {
   const { queryClient } = useRouteContext({
     from: '/(dashboard)/telemetria',
   })
-  const mutation = usePutMetersId({
-    axios: {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    },
-  })
+  const mutation = usePutMetersId()
   const navigate = useNavigate()
 
   const meterIndex = meters.findIndex((m) => m.id.toString() === meterId)
@@ -92,7 +86,7 @@ export function TelemetryEditForm({ meters, meterId }: TelemetryEditFormProps) {
         },
         onError: (error) => {
           toast('Erro ao editar', {
-            description: `${error.response?.data.error}, é necessário estar logado`,
+            description: `${error}, é necessário estar logado`,
             action: {
               label: 'Login',
               onClick: () => navigate({ to: '/login' }),

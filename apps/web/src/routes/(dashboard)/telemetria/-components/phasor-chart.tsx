@@ -45,20 +45,20 @@ export default function PhasorChart({
     {
       name: 'Fase A',
       color: 'var(--chart-1)',
-      angle: telemetryData?.anguloFaseA,
-      phi: telemetryData?.phiFaseA,
+      angle: telemetryData?.measurements?.anguloFaseA,
+      phi: telemetryData?.measurements?.phiFaseA,
     },
     {
       name: 'Fase B',
       color: 'var(--chart-2)',
-      angle: telemetryData?.anguloFaseB,
-      phi: telemetryData?.phiFaseB,
+      angle: telemetryData?.measurements?.anguloFaseB,
+      phi: telemetryData?.measurements?.phiFaseB,
     },
     {
       name: 'Fase C',
       color: 'var(--chart-3)',
-      angle: telemetryData?.anguloFaseC,
-      phi: telemetryData?.phiFaseC,
+      angle: telemetryData?.measurements?.anguloFaseC,
+      phi: telemetryData?.measurements?.phiFaseC,
     },
   ]
 

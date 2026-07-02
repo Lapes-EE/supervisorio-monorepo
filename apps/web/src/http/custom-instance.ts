@@ -1,6 +1,10 @@
 import { webEnv } from '@repo/env/web'
 import Axios, { type AxiosRequestConfig } from 'axios'
 
+// Workaround: generated orval code uses axios.default (global instance) instead of
+// a custom instance. Mutating global defaults ensures relative URLs hit the API.
+Axios.defaults.baseURL = webEnv.VITE_API_URL
+
 export const AXIOS_INSTANCE = Axios.create({
   baseURL: webEnv.VITE_API_URL,
 })

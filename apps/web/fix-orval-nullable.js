@@ -27,7 +27,7 @@ function walk(dir) {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
       walk(fullPath);
-    } else if (entry.name.endsWith('.gen.ts')) {
+    } else if (entry.name.endsWith('.ts')) {
       const content = readFileSync(fullPath, 'utf8');
       // Match `|  | null` (double pipe with empty type between) or `| | null`
       const fixed = content.replace(/\|\s+\|\s+null/g, '| null');

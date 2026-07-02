@@ -19,31 +19,31 @@ export function ApparentPowerCard({
           isLoading={isLoading}
           label="Fase A"
           suffix="VA"
-          value={telemetryData?.potenciaAparenteA}
+          value={telemetryData?.measurements?.potenciaAparenteA}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase B"
           suffix="VA"
-          value={telemetryData?.potenciaAparenteB}
+          value={telemetryData?.measurements?.potenciaAparenteB}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase C"
           suffix="VA"
-          value={telemetryData?.potenciaAparenteC}
+          value={telemetryData?.measurements?.potenciaAparenteC}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Soma Aritmética"
           suffix="VA"
-          value={telemetryData?.potenciaAparenteTotalAritmetica}
+          value={telemetryData?.measurements?.potenciaAparenteTotalAritmetica}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Soma Vetorial"
           suffix="VA"
-          value={telemetryData?.potenciaAparenteTotalVetorial}
+          value={telemetryData?.measurements?.potenciaAparenteTotalVetorial}
         />
       </CardContent>
     </Card>

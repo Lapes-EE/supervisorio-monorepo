@@ -44,7 +44,7 @@ function LoginComponent() {
       { data },
       {
         onSuccess: (response) => {
-          const token = response.data.token
+          const token = response.token
           localStorage.setItem('token', token)
           toast('Login bem-sucedido!')
           navigate({ to: '/telemetria' })

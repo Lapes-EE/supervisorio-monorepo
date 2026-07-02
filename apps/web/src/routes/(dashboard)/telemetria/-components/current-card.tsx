@@ -18,25 +18,25 @@ export function CurrentCard({ telemetryData, isLoading }: CurrentCardProps) {
           isLoading={isLoading}
           label="Fase A"
           suffix="A"
-          value={telemetryData?.correnteA}
+          value={telemetryData?.measurements?.correnteA}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase B"
           suffix="A"
-          value={telemetryData?.correnteB}
+          value={telemetryData?.measurements?.correnteB}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase C"
           suffix="A"
-          value={telemetryData?.correnteC}
+          value={telemetryData?.measurements?.correnteC}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Neutro Calculado"
           suffix="A"
-          value={telemetryData?.correnteNeutroCalculado}
+          value={telemetryData?.measurements?.correnteNeutroCalculado}
         />
       </CardContent>
     </Card>

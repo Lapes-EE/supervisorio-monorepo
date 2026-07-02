@@ -34,11 +34,10 @@ export const Route = createFileRoute('/(dashboard)/telemetria/$meterId')({
     </Alert>
   ),
   loader: async ({ params }) => {
-    const result = await getTelemetry({
+    return await getTelemetry({
       meterId: Number(params.meterId),
       period: 'last_measurement' as any,
     })
-    return result.data
   },
 })
 
@@ -53,11 +52,10 @@ function Dashboard() {
     queryKey: ['Telemetry', meterId, 'last_measurement'],
     initialData: data,
     queryFn: async () => {
-      const result = await getTelemetry({
+      return await getTelemetry({
         meterId: Number(meterId),
         period: 'last_measurement' as any,
       })
-      return result.data
     },
     refetchInterval: 1000 * 2, // 2 Segundos
     retry: 0,
@@ -71,54 +69,56 @@ function Dashboard() {
     | GetTelemetry200DataItem
     | undefined
 
+  const measurements = telemetryData?.measurements
+
   const phasors: Phasor[] = [
     {
       name: 'Tensão - Fase A',
-      angle: telemetryData?.anguloFaseA,
+      angle: measurements?.anguloFaseA,
       magnitude: 1,
       color: 'var(--chart-1)',
-      label: `${telemetryData?.anguloFaseA?.toFixed(0)}°`,
+      label: `${measurements?.anguloFaseA?.toFixed(0)}°`,
     },
     {
       name: 'Tensão - Fase B',
-      angle: telemetryData?.anguloFaseB,
+      angle: measurements?.anguloFaseB,
       magnitude: 1,
       color: 'var(--chart-2)',
-      label: `${telemetryData?.anguloFaseB?.toFixed(0)}°`,
+      label: `${measurements?.anguloFaseB?.toFixed(0)}°`,
     },
     {
       name: 'Tensão - Fase C',
-      angle: telemetryData?.anguloFaseC,
+      angle: measurements?.anguloFaseC,
       magnitude: 1,
       color: 'var(--chart-3)',
-      label: `${telemetryData?.anguloFaseC?.toFixed(0)}°`,
+      label: `${measurements?.anguloFaseC?.toFixed(0)}°`,
     },
     {
       name: 'Corrente - Fase A',
       angle:
-        telemetryData &&
-        (telemetryData?.anguloFaseA ?? 0) + (telemetryData?.phiFaseA ?? 0),
+        measurements &&
+        (measurements?.anguloFaseA ?? 0) + (measurements?.phiFaseA ?? 0),
       magnitude: 0.5,
       color: 'var(--chart-4)',
-      label: `${telemetryData && ((telemetryData?.anguloFaseA ?? 0) + (telemetryData?.phiFaseA ?? 0)).toFixed(0)}°`,
+      label: `${measurements && ((measurements?.anguloFaseA ?? 0) + (measurements?.phiFaseA ?? 0)).toFixed(0)}°`,
     },
     {
       name: 'Corrente - Fase B',
       angle:
-        telemetryData &&
-        (telemetryData?.anguloFaseB ?? 0) + (telemetryData?.phiFaseB ?? 0),
+        measurements &&
+        (measurements?.anguloFaseB ?? 0) + (measurements?.phiFaseB ?? 0),
       magnitude: 0.5,
       color: 'var(--chart-5)',
-      label: `${telemetryData && ((telemetryData?.anguloFaseB ?? 0) + (telemetryData?.phiFaseB ?? 0)).toFixed(0)}°`,
+      label: `${measurements && ((measurements?.anguloFaseB ?? 0) + (measurements?.phiFaseB ?? 0)).toFixed(0)}°`,
     },
     {
       name: 'Corrente - Fase C',
       angle:
-        telemetryData &&
-        (telemetryData?.anguloFaseC ?? 0) + (telemetryData?.phiFaseC ?? 0),
+        measurements &&
+        (measurements?.anguloFaseC ?? 0) + (measurements?.phiFaseC ?? 0),
       magnitude: 0.5,
       color: 'var(--chart-6)',
-      label: `${telemetryData && ((telemetryData?.anguloFaseC ?? 0) + (telemetryData?.phiFaseC ?? 0)).toFixed(0)}°`,
+      label: `${measurements && ((measurements?.anguloFaseC ?? 0) + (measurements?.phiFaseC ?? 0)).toFixed(0)}°`,
     },
   ]
 

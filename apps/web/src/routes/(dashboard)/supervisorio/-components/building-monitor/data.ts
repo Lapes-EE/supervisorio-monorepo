@@ -37,7 +37,7 @@ export const fixedPositions: Array<{ id: number; x: number; y: number }> = [
 ]
 
 async function getMetersFull(filter: ToggleSearchSchema): Promise<Meter[]> {
-  const data = (await getMeters()).data
+  const data = await getMeters()
 
   return fixedPositions.map((position, index) => {
     const meter = data[index]
@@ -94,20 +94,20 @@ function getSensorHistory(
 
     switch (filter.type) {
       case 'current':
-        phaseAValue = Number((item.correnteA ?? 0).toFixed(2))
-        phaseBValue = Number((item.correnteB ?? 0).toFixed(2))
-        phaseCValue = Number((item.correnteC ?? 0).toFixed(2))
+        phaseAValue = Number((item.measurements?.correnteA ?? 0).toFixed(2))
+        phaseBValue = Number((item.measurements?.correnteB ?? 0).toFixed(2))
+        phaseCValue = Number((item.measurements?.correnteC ?? 0).toFixed(2))
         break
 
       case 'power':
-        phaseAValue = Number(((item.potenciaAparenteA ?? 0) / 1000).toFixed(2))
-        phaseBValue = Number(((item.potenciaAparenteB ?? 0) / 1000).toFixed(2))
-        phaseCValue = Number(((item.potenciaAparenteC ?? 0) / 1000).toFixed(2))
+        phaseAValue = Number(((item.measurements?.potenciaAparenteA ?? 0) / 1000).toFixed(2))
+        phaseBValue = Number(((item.measurements?.potenciaAparenteB ?? 0) / 1000).toFixed(2))
+        phaseCValue = Number(((item.measurements?.potenciaAparenteC ?? 0) / 1000).toFixed(2))
         break
 
       case 'frequency': {
         // Para frequência, replica o mesmo valor nas três fases
-        const frequencyValue = Number((item.frequencia ?? 0).toFixed(2))
+        const frequencyValue = Number((item.measurements?.frequencia ?? 0).toFixed(2))
         phaseAValue = frequencyValue
         phaseBValue = frequencyValue
         phaseCValue = frequencyValue
@@ -115,9 +115,9 @@ function getSensorHistory(
       }
 
       default:
-        phaseAValue = Number((item.tensaoFaseNeutroA ?? 0).toFixed(2))
-        phaseBValue = Number((item.tensaoFaseNeutroB ?? 0).toFixed(2))
-        phaseCValue = Number((item.tensaoFaseNeutroC ?? 0).toFixed(2))
+        phaseAValue = Number((item.measurements?.tensaoFaseNeutroA ?? 0).toFixed(2))
+        phaseBValue = Number((item.measurements?.tensaoFaseNeutroB ?? 0).toFixed(2))
+        phaseCValue = Number((item.measurements?.tensaoFaseNeutroC ?? 0).toFixed(2))
         break
     }
 
@@ -228,12 +228,11 @@ export function useSensors(
         refetchInterval,
         queryKey: ['Telemetry', meter.id, period],
         queryFn: async (): Promise<GetTelemetry200> => {
-          const response = await getTelemetry({
+          return await getTelemetry({
             period,
             meterId: meter.id,
             aggregation,
           })
-          return response.data
         },
         enabled: !!meters,
       })) ?? [],

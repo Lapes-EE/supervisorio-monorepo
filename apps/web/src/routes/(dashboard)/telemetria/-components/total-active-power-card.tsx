@@ -12,9 +12,9 @@ export function TotalActivePowerCard({
   isLoading,
 }: TotalActivePowerCardProps) {
   const total =
-    (telemetryData?.potenciaAtivaFundamentalHarmonicaA ?? 0) +
-    (telemetryData?.potenciaAtivaFundamentalHarmonicaB ?? 0) +
-    (telemetryData?.potenciaAtivaFundamentalHarmonicaC ?? 0)
+    (telemetryData?.measurements?.potenciaAtivaFundamentalHarmonicaA ?? 0) +
+    (telemetryData?.measurements?.potenciaAtivaFundamentalHarmonicaB ?? 0) +
+    (telemetryData?.measurements?.potenciaAtivaFundamentalHarmonicaC ?? 0)
 
   return (
     <Card>
@@ -26,19 +26,19 @@ export function TotalActivePowerCard({
           isLoading={isLoading}
           label="Fase A"
           suffix="W"
-          value={telemetryData?.potenciaAtivaFundamentalHarmonicaA}
+          value={telemetryData?.measurements?.potenciaAtivaFundamentalHarmonicaA}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase B"
           suffix="W"
-          value={telemetryData?.potenciaAtivaFundamentalHarmonicaB}
+          value={telemetryData?.measurements?.potenciaAtivaFundamentalHarmonicaB}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase C"
           suffix="W"
-          value={telemetryData?.potenciaAtivaFundamentalHarmonicaC}
+          value={telemetryData?.measurements?.potenciaAtivaFundamentalHarmonicaC}
         />
         <TelemetryItem
           isLoading={isLoading}

@@ -18,27 +18,27 @@ export function PowerFactorCard({
         <TelemetryItem
           isLoading={isLoading}
           label="Fase A"
-          value={telemetryData?.fpRealFaseA}
+          value={telemetryData?.measurements?.fpRealFaseA}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase B"
-          value={telemetryData?.fpDeslocamentoFaseB}
+          value={telemetryData?.measurements?.fpDeslocamentoFaseB}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase C"
-          value={telemetryData?.fpDeslocamentoFaseC}
+          value={telemetryData?.measurements?.fpDeslocamentoFaseC}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Soma Aritmética"
-          value={telemetryData?.fpRealTotalAritmetica}
+          value={telemetryData?.measurements?.fpRealTotalAritmetica}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Soma Vetorial"
-          value={telemetryData?.fpRealTotalVetorial}
+          value={telemetryData?.measurements?.fpRealTotalVetorial}
         />
       </CardContent>
     </Card>

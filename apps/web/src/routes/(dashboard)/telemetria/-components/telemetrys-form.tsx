@@ -50,13 +50,7 @@ export function TelemetryForm() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const { queryClient } = useRouteContext({ from: '/(dashboard)/telemetria' })
-  const mutation = usePostMeters({
-    axios: {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    },
-  })
+  const mutation = usePostMeters()
   const form = useForm<z.infer<typeof formCreatemeterSchema>>({
     resolver: zodResolver(formCreatemeterSchema),
     defaultValues: {
@@ -77,7 +71,7 @@ export function TelemetryForm() {
         },
         onError: (error) => {
           toast('Erro ao adicionar medidor', {
-            description: `${error.response?.data.error}, é necessário estar logado`,
+            description: `${error}, é necessário estar logado`,
             action: {
               label: 'Login',
               onClick: () => navigate({ to: '/login' }),

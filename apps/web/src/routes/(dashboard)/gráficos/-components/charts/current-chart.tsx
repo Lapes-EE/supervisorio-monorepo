@@ -32,9 +32,9 @@ const chartConfig = {
 export function CurrentChart({ data, isLoading }: CurrentChartProps) {
   const chartData = data?.map((item) => ({
     time: formatTime(item.time),
-    currentA: item.correnteA,
-    currentB: item.correnteB,
-    currentC: item.correnteC,
+    currentA: item.measurements?.correnteA,
+    currentB: item.measurements?.correnteB,
+    currentC: item.measurements?.correnteC,
   }))
 
   return (

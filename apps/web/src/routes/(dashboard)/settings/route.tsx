@@ -9,12 +9,13 @@ import {
   ComboboxList,
   ComboboxTrigger,
 } from '@/components/ui/shadcn-io/combobox'
+import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item'
 
 export const Route = createFileRoute('/(dashboard)/settings')({
   component: RouteComponent,
   loader: ({ context }) => {
     const response = context.meters
-    const metersOptions = response.map((meter) => ({
+    const metersOptions = response.map((meter: GetMeters200Item) => ({
       value: meter.id.toString(),
       label: meter.description ?? `Medidor ${meter.ip} sem descrição`,
     }))

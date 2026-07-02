@@ -18,6 +18,7 @@ import {
   ComboboxList,
   ComboboxTrigger,
 } from '@/components/ui/shadcn-io/combobox'
+import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item'
 import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period'
 import { ChartsGrid } from './-components/charts-grid'
 import { KpiGrid } from './-components/kpi-grid'
@@ -29,7 +30,7 @@ export const Route = createFileRoute('/(dashboard)/gráficos')({
   component: RouteComponent,
   validateSearch: dashboardSearchSchema,
   loader: ({ context }) => {
-    const metersOptions = context.meters.map((meter) => ({
+    const metersOptions = context.meters.map((meter: GetMeters200Item) => ({
       value: meter.id.toString(),
       label: meter.description ?? `Medidor ${meter.ip}`,
     }))

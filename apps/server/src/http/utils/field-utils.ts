@@ -1,10 +1,11 @@
-import type { GetDatabase200ResponseDataSchema } from '../types/get-database-200-response'
+import type { TelemetryItemSchema } from '../types/get-database-200-response'
 
 import type { TelemetryRecord } from '../types/telemetry-record'
 
-export type AggregatedMeasure = Omit<GetDatabase200ResponseDataSchema, 'id'> & {
+export type AggregatedMeasure = {
   time: Date
-}
+  meterId: number
+} & TelemetryRecord
 
 export function isAggregatedMeasure(data: unknown): data is AggregatedMeasure {
   return (
@@ -15,27 +16,31 @@ export function isAggregatedMeasure(data: unknown): data is AggregatedMeasure {
   )
 }
 
-export function filterFields<T extends TelemetryRecord>(
-  data: T[],
+export function filterFields(
+  data: TelemetryItemSchema[],
   fields?: string[]
-): T[] {
+): TelemetryItemSchema[] {
   if (!fields || fields.length === 0) {
     return data
   }
 
-  // Sempre incluir campos obrigatórios
-  const requiredFields = ['id', 'meterId', 'time']
-  const fieldsToInclude = new Set([...requiredFields, ...fields])
-
   return data.map((row) => {
-    const filtered = {} as T
+    if (!row.measurements) {
+      return row
+    }
 
-    for (const [key, value] of Object.entries(row)) {
-      if (fieldsToInclude.has(key)) {
-        filtered[key as keyof T] = value as T[keyof T]
+    const filteredMeasurements: Partial<typeof row.measurements> = {}
+
+    for (const field of fields) {
+      if (field in row.measurements) {
+        filteredMeasurements[field as keyof typeof row.measurements] =
+          row.measurements[field as keyof typeof row.measurements]
       }
     }
 
-    return filtered
+    return {
+      ...row,
+      measurements: filteredMeasurements as typeof row.measurements,
+    }
   })
 }

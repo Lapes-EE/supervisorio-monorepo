@@ -1,10 +1,16 @@
 import { db, measures } from '@repo/db'
 import { and, asc, desc, eq, gte, lte, sql } from 'drizzle-orm'
-import type { GetDatabase200ResponseDataSchema } from '../types/get-database-200-response'
 import { fieldMapping } from './field-mapping'
 import type { AggregatedMeasure } from './field-utils'
 import { getPeriodDates } from './period-utils'
 import type { PeriodType } from './telemetry-schema'
+
+export type FlatTelemetryRow = {
+  id?: number
+  meterId: number
+  time: string
+  [key: string]: unknown
+}
 
 interface DateFilters {
   filterStartDate: Date
@@ -50,7 +56,7 @@ interface RawDataInput {
 }
 
 interface RawDataResult {
-  data: GetDatabase200ResponseDataSchema[]
+  data: FlatTelemetryRow[]
   total: number
 }
 
@@ -152,7 +158,7 @@ export async function fetchLastMeasurement(
     ([camelCase, snakeCase]) => sql.raw(`${snakeCase} as "${camelCase}"`)
   )
 
-  const rawData = await db.execute<GetDatabase200ResponseDataSchema>(sql`
+  const rawData = await db.execute<FlatTelemetryRow>(sql`
     SELECT DISTINCT ON (meter_id)
       id,
       meter_id as "meterId",

@@ -9,7 +9,7 @@ export function TemperatureCard({
   telemetryData: GetTelemetry200DataItem | undefined
   isLoading: boolean
 }) {
-  const temperature = telemetryData?.temperaturaSensorInterno ?? 0
+  const temperature = telemetryData?.measurements?.temperaturaSensorInterno ?? 0
   const fillHeight = Math.min(Math.max(temperature, 0), 100)
 
   return (

@@ -27,13 +27,7 @@ function RouteComponent() {
   const navigate = useNavigate()
   const { meterId } = Route.useParams()
   const { queryClient } = useRouteContext({ from: '/(dashboard)/telemetria' })
-  const mutation = useDeleteMetersId({
-    axios: {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    },
-  })
+  const mutation = useDeleteMetersId()
 
   function handleDeleteMeter() {
     mutation.mutate(
@@ -44,7 +38,7 @@ function RouteComponent() {
         },
         onError(error) {
           toast('Erro ao deletar', {
-            description: `${error.response?.data.error}, é necessário estar logado`,
+            description: `${error}, é necessário estar logado`,
             action: {
               label: 'Login',
               onClick: () => navigate({ to: '/login' }),

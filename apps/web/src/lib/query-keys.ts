@@ -17,8 +17,7 @@ export const meterQueries = {
     queryOptions({
       queryKey: meterKeys.all,
       queryFn: async () => {
-        const response = await getMeters()
-        return response.data
+        return await getMeters()
       },
       staleTime: 5 * 60 * 1000,
     }),
@@ -37,8 +36,7 @@ export const telemetryQueries = {
     queryOptions({
       queryKey: telemetryKeys.byParams(params),
       queryFn: async () => {
-        const response = await getTelemetry(params)
-        return response.data
+        return await getTelemetry(params)
       },
       staleTime: 30 * 1000,
     }),

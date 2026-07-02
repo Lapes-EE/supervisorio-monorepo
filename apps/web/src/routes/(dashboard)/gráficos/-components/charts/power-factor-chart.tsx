@@ -32,9 +32,9 @@ const chartConfig = {
 export function PowerFactorChart({ data, isLoading }: PowerFactorChartProps) {
   const chartData = data?.map((item) => ({
     time: formatTime(item.time),
-    pfA: item.fpRealFaseA,
-    pfB: item.fpRealFaseB,
-    pfC: item.fpRealFaseC,
+    pfA: item.measurements?.fpRealFaseA,
+    pfB: item.measurements?.fpRealFaseB,
+    pfC: item.measurements?.fpRealFaseC,
   }))
 
   return (

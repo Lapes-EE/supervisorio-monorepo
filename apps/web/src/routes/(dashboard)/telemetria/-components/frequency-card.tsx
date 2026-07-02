@@ -19,7 +19,7 @@ export function FrequencyCard({ telemetryData }: FrequencyCardProps) {
             className="font-bold text-2xl"
             format={{ minimumFractionDigits: 2 }}
             suffix="Hz"
-            value={telemetryData?.frequencia ?? 0}
+            value={telemetryData?.measurements?.frequencia ?? 0}
           />
         ) : (
           <Skeleton className="h-5 w-10" />

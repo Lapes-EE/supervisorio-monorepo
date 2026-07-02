@@ -19,31 +19,31 @@ export function ReactivePowerCard({
           isLoading={isLoading}
           label="Fase A"
           suffix="var"
-          value={telemetryData?.potenciaReativaA}
+          value={telemetryData?.measurements?.potenciaReativaA}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase B"
           suffix="var"
-          value={telemetryData?.potenciaReativaB}
+          value={telemetryData?.measurements?.potenciaReativaB}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Fase C"
           suffix="var"
-          value={telemetryData?.potenciaReativaC}
+          value={telemetryData?.measurements?.potenciaReativaC}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Soma Aritmética"
           suffix="var"
-          value={telemetryData?.potenciaReativaTotalAritmetica}
+          value={telemetryData?.measurements?.potenciaReativaTotalAritmetica}
         />
         <TelemetryItem
           isLoading={isLoading}
           label="Soma Vetorial"
           suffix="var"
-          value={telemetryData?.potenciaReativaTotalVetorial}
+          value={telemetryData?.measurements?.potenciaReativaTotalVetorial}
         />
       </CardContent>
     </Card>

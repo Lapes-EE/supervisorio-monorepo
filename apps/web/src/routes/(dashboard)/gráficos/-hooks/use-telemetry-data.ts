@@ -2,7 +2,7 @@ import { queryOptions, useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { getTelemetry } from '@/http/gen/endpoints/lapes-api'
 import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period'
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
+import type { GetTelemetry200 } from '@/http/gen/model/get-telemetry200'
 import { telemetryKeys } from '@/lib/query-keys'
 
 export const telemetryQueries = {
@@ -10,11 +10,10 @@ export const telemetryQueries = {
     queryOptions({
       queryKey: telemetryKeys.byMeterId(params.meterId, params.period),
       queryFn: async () => {
-        const result = await getTelemetry({
+        return await getTelemetry({
           meterId: params.meterId,
           period: params.period,
         })
-        return result.data
       },
       staleTime: 30 * 1000,
     }),
@@ -32,7 +31,7 @@ export function useTelemetryData(
     ...telemetryQueries.byParams(params),
     enabled: !!meterId && !!period,
     select: useMemo(
-      () => (data: { data: GetTelemetry200DataItem[] }) => data?.data ?? [],
+      () => (data: GetTelemetry200) => data?.data ?? [],
       []
     ),
   })

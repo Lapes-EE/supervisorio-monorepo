@@ -31,24 +31,24 @@ export function calculateKpis(
   }
 
   const activePowerTotal =
-    (latestData.potenciaAtivaFundamentalHarmonicaA ?? 0) +
-    (latestData.potenciaAtivaFundamentalHarmonicaB ?? 0) +
-    (latestData.potenciaAtivaFundamentalHarmonicaC ?? 0)
+    (latestData.measurements?.potenciaAtivaFundamentalHarmonicaA ?? 0) +
+    (latestData.measurements?.potenciaAtivaFundamentalHarmonicaB ?? 0) +
+    (latestData.measurements?.potenciaAtivaFundamentalHarmonicaC ?? 0)
 
   const avgPowerFactor =
-    ((latestData.fpRealFaseA ?? 0) +
-      (latestData.fpRealFaseB ?? 0) +
-      (latestData.fpRealFaseC ?? 0)) /
+    ((latestData.measurements?.fpRealFaseA ?? 0) +
+      (latestData.measurements?.fpRealFaseB ?? 0) +
+      (latestData.measurements?.fpRealFaseC ?? 0)) /
     3
 
   const avgVoltage =
-    ((latestData.tensaoFaseNeutroA ?? 0) +
-      (latestData.tensaoFaseNeutroB ?? 0) +
-      (latestData.tensaoFaseNeutroC ?? 0)) /
+    ((latestData.measurements?.tensaoFaseNeutroA ?? 0) +
+      (latestData.measurements?.tensaoFaseNeutroB ?? 0) +
+      (latestData.measurements?.tensaoFaseNeutroC ?? 0)) /
     3
 
   const maxDemand = Math.max(
-    ...data.map((d) => d.potenciaAtivaFundamentalHarmonicaTotal ?? 0)
+    ...data.map((d) => d.measurements?.potenciaAtivaFundamentalHarmonicaTotal ?? 0)
   )
 
   return {
