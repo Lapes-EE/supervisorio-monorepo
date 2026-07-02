@@ -1,8 +1,8 @@
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import {
+  getDatabase200ResponseSchema,
   type TelemetryItemSchema,
   type TelemetryMeasurementsSchema,
-  getDatabase200ResponseSchema,
 } from '../types/get-database-200-response'
 import { availableFields } from '../utils/field-mapping'
 import { filterFields, isAggregatedMeasure } from '../utils/field-utils'
@@ -14,7 +14,18 @@ import {
 } from '../utils/telemetry-query-builder'
 import { telemetryQuerySchema } from '../utils/telemetry-schema'
 
-const METADATA_KEYS = new Set(['id', 'meterId', 'time'])
+function normalizeTime(value: unknown): string {
+  if (value instanceof Date) {
+    return value.toISOString()
+  }
+  if (typeof value === 'string') {
+    const parsed = new Date(value)
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed.toISOString()
+    }
+  }
+  return String(value)
+}
 
 function transformToNested(
   flatRow: Record<string, unknown>
@@ -34,10 +45,7 @@ function transformToNested(
   return {
     id: flatRow.id !== undefined ? Number(flatRow.id) : undefined,
     meterId: Number(flatRow.meterId),
-    time:
-      flatRow.time instanceof Date
-        ? flatRow.time.toISOString()
-        : String(flatRow.time),
+    time: normalizeTime(flatRow.time),
     status: allMeasurementsNull ? 'error' : 'success',
     message: allMeasurementsNull
       ? 'Timeout na comunicação com o medidor'
@@ -94,17 +102,15 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
           fields: fields && fields.length > 0 ? fields : availableFields,
         })
 
-        flatData = aggregatedData
-          .filter(isAggregatedMeasure)
-          .map((row) => ({
-            ...row,
-            time: new Date(row.time).toISOString(),
-          }))
+        flatData = aggregatedData.filter(isAggregatedMeasure).map((row) => ({
+          ...row,
+          time: new Date(row.time).toISOString(),
+        }))
 
         total = flatData.length
       }
 
-      let nestedData = flatData.map(transformToNested)
+      const nestedData = flatData.map(transformToNested)
 
       const filteredData =
         aggregation === 'raw' || period === 'last_measurement'

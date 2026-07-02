@@ -29,13 +29,12 @@ export function filterFields(
       return row
     }
 
-    const filteredMeasurements: Partial<typeof row.measurements> = {}
+    const filteredMeasurements: Record<string, number> = {}
 
-    for (const field of fields) {
-      if (field in row.measurements) {
-        filteredMeasurements[field as keyof typeof row.measurements] =
-          row.measurements[field as keyof typeof row.measurements]
-      }
+    for (const field of Object.keys(row.measurements)) {
+      filteredMeasurements[field] = fields.includes(field)
+        ? (row.measurements as Record<string, number>)[field]
+        : 0
     }
 
     return {
