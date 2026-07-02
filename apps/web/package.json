@@ -7,7 +7,8 @@
 		"env:load": "dotenv -e ../../.env --",
 		"build": "vite build && tsc",
 		"serve": "vite preview",
-		"test": "vitest run",
+		"test": "vitest",
+		"test:run": "vitest run",
 		"api:generate": "pnpm env:load orval && node fix-orval-nullable.js",
 		"ui": "pnpm dlx shadcn@latest add --"
 	},
@@ -63,6 +64,7 @@
 		"@types/react-dom": "^19.0.3",
 		"@vitejs/plugin-react": "^4.3.4",
 		"dotenv-cli": "^8.0.0",
+		"eventsourcemock": "^2.0.0",
 		"jsdom": "^26.0.0",
 		"orval": "8.9.0",
 		"typescript": "^5.7.2",
