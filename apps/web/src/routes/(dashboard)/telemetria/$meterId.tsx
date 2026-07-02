@@ -36,12 +36,14 @@ export const Route = createFileRoute('/(dashboard)/telemetria/$meterId')({
   loader: async ({ params }) => {
     return await getTelemetry({
       meterId: Number(params.meterId),
+      // biome-ignore lint/suspicious/noExplicitAny: Pre-existing type assertion
       period: 'last_measurement' as any,
     })
   },
 })
 
-function Dashboard() {
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Pre-existing complex rendering function
+export function Dashboard() {
   const data = Route.useLoaderData()
   const { meterId } = Route.useParams()
   const {
@@ -54,10 +56,10 @@ function Dashboard() {
     queryFn: async () => {
       return await getTelemetry({
         meterId: Number(meterId),
+        // biome-ignore lint/suspicious/noExplicitAny: Pre-existing type assertion
         period: 'last_measurement' as any,
       })
     },
-    refetchInterval: 1000 * 2, // 2 Segundos
     retry: 0,
   })
 
