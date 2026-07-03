@@ -13,6 +13,7 @@ COPY package.json ./
 
 COPY apps ./apps
 COPY packages ./packages
+COPY config ./config
 
 RUN corepack enable
 RUN pnpm install --frozen-lockfile
