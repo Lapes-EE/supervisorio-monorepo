@@ -1,4 +1,4 @@
-import { insertMeasure } from '@repo/db'
+import { insertMeasure, notifyTelemetryChange } from '@repo/db'
 import { workerEnv } from '@repo/env/worker'
 import { getTelemetryFromMeter } from '@repo/telemetry'
 import cron from 'node-cron'
@@ -46,8 +46,13 @@ async function collectFromMeter(ip: string, failureCount: number) {
       }
     )
 
-    await insertMeasure(telemetry, ip)
+    const { meterId } = await insertMeasure(telemetry, ip)
     await updateMeterSuccess(ip)
+    try {
+      await notifyTelemetryChange(meterId)
+    } catch (notifyError) {
+      logger.warn({ notifyError }, `Failed to emit notify for meter ${ip}`)
+    }
     logger.info(`Successfully collected telemetry from meter ${ip}`)
   } catch (error) {
     if (error instanceof MeterDisabledError) {
@@ -59,7 +64,12 @@ async function collectFromMeter(ip: string, failureCount: number) {
     await updateMeterFailure(ip, newFailureCount)
 
     try {
-      await insertMeasure({}, ip)
+      const { meterId } = await insertMeasure({}, ip)
+      try {
+        await notifyTelemetryChange(meterId)
+      } catch (notifyError) {
+        logger.warn({ notifyError }, `Failed to emit notify for meter ${ip}`)
+      }
     } catch (insertError) {
       logger.warn(
         { insertError },

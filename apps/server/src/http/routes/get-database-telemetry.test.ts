@@ -641,10 +641,12 @@ describe('Field Test', () => {
   test('should return only selected fields for aggregated data', async () => {
     const meter = await makeMeters()
     const now = new Date()
-    // Set to 5 and 15 minutes of the current hour to ensure they are in the same 1h bucket
+    // Set to 5 and 15 minutes of the previous hour to ensure they are in the same 1h bucket and in the past
     const fifteenMinutesPastHour = new Date(now)
+    fifteenMinutesPastHour.setHours(fifteenMinutesPastHour.getHours() - 1)
     fifteenMinutesPastHour.setMinutes(15, 0, 0)
     const fiveMinutesPastHour = new Date(now)
+    fiveMinutesPastHour.setHours(fiveMinutesPastHour.getHours() - 1)
     fiveMinutesPastHour.setMinutes(5, 0, 0)
 
     await makeTelemetry({

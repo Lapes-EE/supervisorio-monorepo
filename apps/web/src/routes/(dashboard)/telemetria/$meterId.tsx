@@ -43,7 +43,7 @@ export const Route = createFileRoute('/(dashboard)/telemetria/$meterId')({
 })
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: legacy routing setup
-function Dashboard() {
+export function Dashboard() {
   const data = Route.useLoaderData()
   const { meterId } = Route.useParams()
   const matches = useMatches()
@@ -67,7 +67,6 @@ function Dashboard() {
         period: 'last_measurement' as any,
       })
     },
-    refetchInterval: 1000 * 2,
     retry: 0,
   })
 

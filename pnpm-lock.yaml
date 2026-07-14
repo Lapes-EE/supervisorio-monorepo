@@ -64,6 +64,9 @@ importers:
       '@fastify/jwt':
         specifier: ^10.0.0
         version: 10.0.0
+      '@fastify/sse':
+        specifier: 0.4.0
+        version: 0.4.0(fastify@5.8.5)
       '@fastify/swagger':
         specifier: ^9.5.1
         version: 9.6.1
@@ -282,6 +285,9 @@ importers:
       dotenv-cli:
         specifier: ^8.0.0
         version: 8.0.0
+      eventsourcemock:
+        specifier: ^2.0.0
+        version: 2.0.0
       jsdom:
         specifier: ^26.0.0
         version: 26.1.0
@@ -382,6 +388,12 @@ importers:
       '@types/node':
         specifier: ^24.0.15
         version: 24.10.1
+      dotenv-cli:
+        specifier: ^8.0.0
+        version: 8.0.0
+      vitest:
+        specifier: ^3.0.5
+        version: 3.2.4(@types/node@24.10.1)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.9.0)
 
   packages/env:
     dependencies:
@@ -1174,6 +1186,12 @@ packages:
 
   '@fastify/proxy-addr@5.1.0':
     resolution: {integrity: sha512-INS+6gh91cLUjB+PVHfu1UqcB76Sqtpyp7bnL+FYojhjygvOPA9ctiD/JDKsyD9Xgu4hUhCSJBPig/w7duNajw==}
+
+  '@fastify/sse@0.4.0':
+    resolution: {integrity: sha512-bBV96iT2kHEw6h3i8IMkZGaqA7Gk81ugUzTNctXuE6N2BEC/qBnUuzlD/O17V43OkJP73h0/kf3Bp/asXlSuFA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      fastify: ^5.x
 
   '@fastify/swagger@9.6.1':
     resolution: {integrity: sha512-fKlpJqFMWoi4H3EdUkDaMteEYRCfQMEkK0HJJ0eaf4aRlKd8cbq0pVkOfXDXmtvMTXYcnx3E+l023eFDBsA1HA==}
@@ -3050,6 +3068,9 @@ packages:
 
   eventemitter3@5.0.1:
     resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
+
+  eventsourcemock@2.0.0:
+    resolution: {integrity: sha512-tSmJnuE+h6A8/hLRg0usf1yL+Q8w01RQtmg0Uzgoxk/HIPZrIUeAr/A4es/8h1wNsoG8RdiESNQLTKiNwbSC3Q==}
 
   execa@9.6.1:
     resolution: {integrity: sha512-9Be3ZoN4LmYR90tUoVu2te2BsbzHfhJyfEiAVfz7N5/zv+jduIfLrV2xdQXOHbaD6KgpGdO9PRPM1Y4Q9QkPkA==}
@@ -5156,6 +5177,11 @@ snapshots:
       '@fastify/forwarded': 3.0.1
       ipaddr.js: 2.3.0
 
+  '@fastify/sse@0.4.0(fastify@5.8.5)':
+    dependencies:
+      fastify: 5.8.5
+      fastify-plugin: 5.1.0
+
   '@fastify/swagger@9.6.1':
     dependencies:
       fastify-plugin: 5.1.0
@@ -6971,6 +6997,8 @@ snapshots:
   eventemitter3@4.0.7: {}
 
   eventemitter3@5.0.1: {}
+
+  eventsourcemock@2.0.0: {}
 
   execa@9.6.1:
     dependencies:

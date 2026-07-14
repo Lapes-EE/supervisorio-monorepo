@@ -18,6 +18,8 @@ import { login } from './http/routes/login'
 import { updateMeterStatus } from './http/routes/update-meter-status'
 import { updateMeter } from './http/routes/update-meters'
 import { auth } from './http/utils/middleware.auth'
+import fastifySSE from '@fastify/sse'
+import { sseTelemetry } from './http/routes/sse-telemetry'
 
 const api = fastify({
   logger: true,
@@ -29,6 +31,9 @@ api.register(fastifyCors, {
 })
 api.register(fastifyJwt, {
   secret: env.JWT_SECRET,
+})
+api.register(fastifySSE, {
+  heartbeatInterval: 30_000,
 })
 
 api.setSerializerCompiler(serializerCompiler)
@@ -74,6 +79,7 @@ api.register(updateMeter)
 api.register(getMeters)
 api.register(deleteMeter)
 api.register(getDatabaseTelemetry)
+api.register(sseTelemetry)
 
 api.get('/openapi.json', (_, reply) => {
   const spec = api.swagger()

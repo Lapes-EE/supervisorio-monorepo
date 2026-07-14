@@ -56,7 +56,7 @@ async function getMetersFull(filter: ToggleSearchSchema): Promise<Meter[]> {
   })
 }
 
-function getSensorHistory(
+export function getSensorHistory(
   telemetryData: GetTelemetry200DataItem[],
   filter: ToggleSearchSchema
 ): History {
@@ -189,9 +189,11 @@ function calculateSensorTrend(
 
 export function getAggregationConfig(period: GetTelemetryPeriod): {
   aggregation: GetTelemetryAggregation
-  refetchInterval: number
+  refetchInterval: number | false
 } {
   switch (period) {
+    case 'last_measurement':
+      return { aggregation: 'raw', refetchInterval: false }
     case 'last_5_minutes':
       return { aggregation: 'raw', refetchInterval: 10_000 } // 10s
     case 'last_30_minutes':
@@ -231,12 +233,12 @@ export function useSensors(
     queryFn: () => getMetersFull(filter),
   })
 
-  const { aggregation, refetchInterval } = getAggregationConfig(period)
+  const { aggregation } = getAggregationConfig(period)
 
   const telemetryQueries = useQueries({
     queries:
       meters?.map((meter) => ({
-        refetchInterval,
+        refetchInterval: false,
         queryKey: ['Telemetry', meter.id, period],
         queryFn: async (): Promise<GetTelemetry200> => {
           return await getTelemetry({

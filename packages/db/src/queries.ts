@@ -1,6 +1,6 @@
 import type { Formatted } from '@repo/telemetry'
 import { eq } from 'drizzle-orm'
-import { db } from './connections'
+import { db, sql } from './connections'
 import { measures } from './schema/measures'
 import { meters } from './schema/meters'
 
@@ -90,5 +90,10 @@ export async function insertMeasure(data: Partial<Formatted>, ip: string) {
     temperaturaSensorInterno: data.temperatura_sensor_interno,
   }
 
-  return db.insert(measures).values(measureData).execute()
+  await db.insert(measures).values(measureData).execute()
+  return { meterId }
+}
+
+export async function notifyTelemetryChange(meterId: number) {
+  await sql`SELECT pg_notify('telemetry_changes', ${JSON.stringify({ meterId })})`
 }
