@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useMatches } from '@tanstack/react-router'
 import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item'
 import { TelemetryForm } from './-components/telemetrys-form'
 import { TelemetryList } from './-components/telemetrys-list'
@@ -13,15 +13,13 @@ export const Route = createFileRoute('/(dashboard)/telemetria')({
 
 function Dashboard() {
   const { data } = Route.useLoaderData()
+  const matches = useMatches()
+  const leafRouteId = matches.at(-1)?.id
 
-  const matchRoute = useMatchRoute()
+  const isExactMeterIdDetail =
+    leafRouteId === '/(dashboard)/telemetria/$meterId'
 
-  const isMeterIdRoute = matchRoute({
-    to: '/telemetria/$meterId',
-    fuzzy: false,
-  })
-
-  if (isMeterIdRoute) {
+  if (isExactMeterIdDetail) {
     return <Outlet />
   }
 

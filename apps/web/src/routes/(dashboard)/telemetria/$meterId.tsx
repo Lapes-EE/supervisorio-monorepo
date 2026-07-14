@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useMatches } from '@tanstack/react-router'
 import { AlertCircleIcon } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { getTelemetry } from '@/http/gen/endpoints/lapes-api'
@@ -36,14 +36,23 @@ export const Route = createFileRoute('/(dashboard)/telemetria/$meterId')({
   loader: async ({ params }) => {
     return await getTelemetry({
       meterId: Number(params.meterId),
+      // biome-ignore lint/suspicious/noExplicitAny: needed for Orval types
       period: 'last_measurement' as any,
     })
   },
 })
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: legacy routing setup
 function Dashboard() {
   const data = Route.useLoaderData()
   const { meterId } = Route.useParams()
+  const matches = useMatches()
+  const leafRouteId = matches.at(-1)?.id
+
+  const isModalRoute =
+    leafRouteId === '/(dashboard)/telemetria/$meterId/edit' ||
+    leafRouteId === '/(dashboard)/telemetria/$meterId/delete'
+
   const {
     data: telemetryResponse,
     isLoading: telemetryDataIsLoading,
@@ -54,10 +63,11 @@ function Dashboard() {
     queryFn: async () => {
       return await getTelemetry({
         meterId: Number(meterId),
+        // biome-ignore lint/suspicious/noExplicitAny: needed for Orval types
         period: 'last_measurement' as any,
       })
     },
-    refetchInterval: 1000 * 2, // 2 Segundos
+    refetchInterval: 1000 * 2,
     retry: 0,
   })
 
@@ -122,9 +132,12 @@ function Dashboard() {
     },
   ]
 
+  if (isModalRoute) {
+    return <Outlet />
+  }
+
   return (
     <div className="space-y-4">
-      {/* Tensões e Correntes */}
       <div className="rounded-md border p-4">
         <h2 className="mb-4 font-semibold text-lg">Tensões e correntes</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
@@ -152,7 +165,6 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Potências */}
       <div className="rounded-md border p-4">
         <h2 className="mb-4 font-semibold text-lg">Potências</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -179,7 +191,6 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Fator de potência e temperatura */}
       <div className="rounded-md border p-4">
         <h2 className="mb-4 font-semibold text-lg">
           Fator de potência e temperatura
@@ -195,6 +206,8 @@ function Dashboard() {
           />
         </div>
       </div>
+
+      <Outlet />
     </div>
   )
 }
