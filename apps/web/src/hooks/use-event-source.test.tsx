@@ -46,20 +46,24 @@ describe('useEventSource Hook', () => {
     const mockConnection = sources[expectedUrl]
 
     const mockPayload = {
-      meterId: 4,
-      data: {
-        data: [
-          {
-            id: 10,
-            meterId: 4,
-            time: '2026-07-02T20:00:00Z',
-            status: 'success',
-            measurements: {
-              tensaoFaseNeutroA: 220,
-            },
+      data: [
+        {
+          id: 10,
+          meterId: 4,
+          time: '2026-07-02T20:00:00Z',
+          status: 'success',
+          measurements: {
+            tensaoFaseNeutroA: 220,
           },
-        ],
+        },
+      ],
+      total: 1,
+      period: {
+        startDate: '2026-07-02T20:00:00Z',
+        endDate: '2026-07-02T20:00:00Z',
       },
+      nullCount: 0,
+      aggregation: 'raw',
     }
 
     // Emit the custom event
@@ -79,7 +83,7 @@ describe('useEventSource Hook', () => {
       'last_measurement',
     ])
 
-    expect(numericCached).toEqual(mockPayload.data)
-    expect(stringCached).toEqual(mockPayload.data)
+    expect(numericCached).toEqual(mockPayload)
+    expect(stringCached).toEqual(mockPayload)
   })
 })
