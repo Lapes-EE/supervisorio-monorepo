@@ -26,6 +26,12 @@ export const sseTelemetry: FastifyPluginCallbackZod = (app) => {
 
 			reply.sse.keepAlive();
 
+			// Send initial message to initialize the SSE stream and prevent immediate closure
+			await reply.sse.send({
+				event: "connected",
+				data: { status: "ready" },
+			});
+
 			reply.sse.onClose(() => {
 				sseConnectionManager.remove(reply);
 			});
