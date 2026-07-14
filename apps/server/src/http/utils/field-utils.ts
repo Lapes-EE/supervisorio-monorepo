@@ -32,9 +32,11 @@ export function filterFields(
     const filteredMeasurements: Record<string, number> = {}
 
     for (const field of Object.keys(row.measurements)) {
-      filteredMeasurements[field] = fields.includes(field)
-        ? (row.measurements as Record<string, number>)[field]
-        : 0
+      if (fields.includes(field)) {
+        filteredMeasurements[field] = (
+          row.measurements as Record<string, number>
+        )[field]
+      }
     }
 
     return {

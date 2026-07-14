@@ -112,10 +112,7 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
 
       const nestedData = flatData.map(transformToNested)
 
-      const filteredData =
-        aggregation === 'raw' || period === 'last_measurement'
-          ? filterFields(nestedData, fields)
-          : nestedData
+      const filteredData = filterFields(nestedData, fields)
 
       const nullCount = filteredData.filter(
         (row) => row.status === 'error'
@@ -131,7 +128,7 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
               : filterStartDate.toISOString(),
           endDate:
             filteredData.length > 0
-              ? (filteredData.at(-1)?.time ?? filterEndDate.toISOString())
+              ? filteredData[filteredData.length - 1].time
               : filterEndDate.toISOString(),
         },
         nullCount,

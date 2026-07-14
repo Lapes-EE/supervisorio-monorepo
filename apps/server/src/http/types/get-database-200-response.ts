@@ -1,9 +1,11 @@
 import z from 'zod'
 import { availableFields } from '../utils/field-mapping'
 
-export const telemetryMeasurementsSchema = z.object(
-  Object.fromEntries(availableFields.map((field) => [field, z.number()]))
-)
+export const telemetryMeasurementsSchema = z
+  .object(
+    Object.fromEntries(availableFields.map((field) => [field, z.number()]))
+  )
+  .partial()
 
 export const telemetryItemSchema = z.object({
   id: z.number().optional(),

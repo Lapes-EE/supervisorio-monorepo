@@ -294,19 +294,7 @@
         ],
         "security": [{ "bearerAuth": [] }],
         "responses": {
-          "204": {
-            "description": "Sucesso",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "description": "Sucesso",
-                  "type": "object",
-                  "properties": {},
-                  "additionalProperties": false
-                }
-              }
-            }
-          },
+          "204": { "description": "Sucesso" },
           "401": {
             "description": "Não autorizado, necessita de login",
             "content": {
@@ -379,6 +367,7 @@
             "schema": {
               "type": "string",
               "enum": [
+                "last_measurement",
                 "last_5_minutes",
                 "last_30_minutes",
                 "last_hour",
@@ -389,8 +378,7 @@
                 "last_7_days",
                 "this_month",
                 "last_30_days",
-                "this_year",
-                "last_measurement"
+                "this_year"
               ]
             },
             "in": "query",
@@ -420,79 +408,11 @@
             "required": false
           },
           {
-            "schema": {
-              "anyOf": [
-                { "type": "string" },
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "enum": [
-                      "tensaoFaseNeutroA",
-                      "tensaoFaseNeutroB",
-                      "tensaoFaseNeutroC",
-                      "tensaoFaseFaseAB",
-                      "tensaoFaseFaseBC",
-                      "tensaoFaseFaseCA",
-                      "frequencia",
-                      "correnteA",
-                      "correnteB",
-                      "correnteC",
-                      "correnteNeutroMedido",
-                      "correnteNeutroCalculado",
-                      "potenciaAparenteA",
-                      "potenciaAparenteB",
-                      "potenciaAparenteC",
-                      "potenciaAparenteTotalAritmetica",
-                      "potenciaAparenteTotalVetorial",
-                      "potenciaAtivaFundamentalA",
-                      "potenciaAtivaHarmonicaA",
-                      "potenciaAtivaFundamentalHarmonicaA",
-                      "potenciaAtivaFundamentalB",
-                      "potenciaAtivaHarmonicaB",
-                      "potenciaAtivaFundamentalHarmonicaB",
-                      "potenciaAtivaFundamentalC",
-                      "potenciaAtivaHarmonicaC",
-                      "potenciaAtivaFundamentalHarmonicaC",
-                      "potenciaAtivaFundamentalTotal",
-                      "potenciaAtivaHarmonicaTotal",
-                      "potenciaAtivaFundamentalHarmonicaTotal",
-                      "potenciaReativaA",
-                      "potenciaReativaB",
-                      "potenciaReativaC",
-                      "potenciaReativaTotalAritmetica",
-                      "potenciaReativaTotalVetorial",
-                      "anguloFaseA",
-                      "anguloFaseB",
-                      "anguloFaseC",
-                      "phiFaseA",
-                      "phiFaseB",
-                      "phiFaseC",
-                      "fpRealFaseA",
-                      "fpRealFaseB",
-                      "fpRealFaseC",
-                      "fpRealTotalAritmetica",
-                      "fpRealTotalVetorial",
-                      "fpDeslocamentoFaseA",
-                      "fpDeslocamentoFaseB",
-                      "fpDeslocamentoFaseC",
-                      "fpDeslocamentoTotal",
-                      "thdTensaoA",
-                      "thdTensaoB",
-                      "thdTensaoC",
-                      "thdCorrenteA",
-                      "thdCorrenteB",
-                      "thdCorrenteC",
-                      "temperaturaSensorInterno"
-                    ]
-                  }
-                }
-              ]
-            },
+            "schema": { "type": "string", "pattern": "^\\[.*\\]$" },
             "in": "query",
             "name": "fields",
             "required": false,
-            "description": "Campos específicos para retornar. Se não informado, retorna todos."
+            "description": "Campos específicos para retornar (ex: [\"correnteA\",\"correnteB\"])"
           }
         ],
         "responses": {
@@ -511,344 +431,127 @@
                           "id": { "type": "number" },
                           "meterId": { "type": "number" },
                           "time": { "type": "string" },
-                          "tensaoFaseNeutroA": {
+                          "status": {
+                            "type": "string",
+                            "enum": ["success", "error"]
+                          },
+                          "message": {
                             "anyOf": [
-                              { "type": "number" },
+                              { "type": "string" },
                               { "nullable": true, "enum": [null] }
                             ]
                           },
-                          "tensaoFaseNeutroB": {
+                          "measurements": {
                             "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "tensaoFaseNeutroC": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "tensaoFaseFaseAB": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "tensaoFaseFaseBC": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "tensaoFaseFaseCA": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "frequencia": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "correnteA": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "correnteB": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "correnteC": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "correnteNeutroMedido": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "correnteNeutroCalculado": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAparenteA": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAparenteB": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAparenteC": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAparenteTotalAritmetica": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAparenteTotalVetorial": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAtivaFundamentalA": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAtivaHarmonicaA": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAtivaFundamentalHarmonicaA": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAtivaFundamentalB": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAtivaHarmonicaB": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAtivaFundamentalHarmonicaB": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAtivaFundamentalC": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAtivaHarmonicaC": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAtivaFundamentalHarmonicaC": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAtivaFundamentalTotal": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAtivaHarmonicaTotal": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaAtivaFundamentalHarmonicaTotal": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaReativaA": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaReativaB": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaReativaC": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaReativaTotalAritmetica": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "potenciaReativaTotalVetorial": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "anguloFaseA": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "anguloFaseB": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "anguloFaseC": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "phiFaseA": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "phiFaseB": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "phiFaseC": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "fpRealFaseA": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "fpRealFaseB": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "fpRealFaseC": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "fpRealTotalAritmetica": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "fpRealTotalVetorial": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "fpDeslocamentoFaseA": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "fpDeslocamentoFaseB": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "fpDeslocamentoFaseC": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "fpDeslocamentoTotal": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "thdTensaoA": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "thdTensaoB": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "thdTensaoC": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "thdCorrenteA": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "thdCorrenteB": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "thdCorrenteC": {
-                            "anyOf": [
-                              { "type": "number" },
-                              { "nullable": true, "enum": [null] }
-                            ]
-                          },
-                          "temperaturaSensorInterno": {
-                            "anyOf": [
-                              { "type": "number" },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "tensaoFaseNeutroA": { "type": "number" },
+                                  "tensaoFaseNeutroB": { "type": "number" },
+                                  "tensaoFaseNeutroC": { "type": "number" },
+                                  "tensaoFaseFaseAB": { "type": "number" },
+                                  "tensaoFaseFaseBC": { "type": "number" },
+                                  "tensaoFaseFaseCA": { "type": "number" },
+                                  "frequencia": { "type": "number" },
+                                  "correnteA": { "type": "number" },
+                                  "correnteB": { "type": "number" },
+                                  "correnteC": { "type": "number" },
+                                  "correnteNeutroMedido": { "type": "number" },
+                                  "correnteNeutroCalculado": {
+                                    "type": "number"
+                                  },
+                                  "potenciaAparenteA": { "type": "number" },
+                                  "potenciaAparenteB": { "type": "number" },
+                                  "potenciaAparenteC": { "type": "number" },
+                                  "potenciaAparenteTotalAritmetica": {
+                                    "type": "number"
+                                  },
+                                  "potenciaAparenteTotalVetorial": {
+                                    "type": "number"
+                                  },
+                                  "potenciaAtivaFundamentalA": {
+                                    "type": "number"
+                                  },
+                                  "potenciaAtivaHarmonicaA": {
+                                    "type": "number"
+                                  },
+                                  "potenciaAtivaFundamentalHarmonicaA": {
+                                    "type": "number"
+                                  },
+                                  "potenciaAtivaFundamentalB": {
+                                    "type": "number"
+                                  },
+                                  "potenciaAtivaHarmonicaB": {
+                                    "type": "number"
+                                  },
+                                  "potenciaAtivaFundamentalHarmonicaB": {
+                                    "type": "number"
+                                  },
+                                  "potenciaAtivaFundamentalC": {
+                                    "type": "number"
+                                  },
+                                  "potenciaAtivaHarmonicaC": {
+                                    "type": "number"
+                                  },
+                                  "potenciaAtivaFundamentalHarmonicaC": {
+                                    "type": "number"
+                                  },
+                                  "potenciaAtivaFundamentalTotal": {
+                                    "type": "number"
+                                  },
+                                  "potenciaAtivaHarmonicaTotal": {
+                                    "type": "number"
+                                  },
+                                  "potenciaAtivaFundamentalHarmonicaTotal": {
+                                    "type": "number"
+                                  },
+                                  "potenciaReativaA": { "type": "number" },
+                                  "potenciaReativaB": { "type": "number" },
+                                  "potenciaReativaC": { "type": "number" },
+                                  "potenciaReativaTotalAritmetica": {
+                                    "type": "number"
+                                  },
+                                  "potenciaReativaTotalVetorial": {
+                                    "type": "number"
+                                  },
+                                  "anguloFaseA": { "type": "number" },
+                                  "anguloFaseB": { "type": "number" },
+                                  "anguloFaseC": { "type": "number" },
+                                  "phiFaseA": { "type": "number" },
+                                  "phiFaseB": { "type": "number" },
+                                  "phiFaseC": { "type": "number" },
+                                  "fpRealFaseA": { "type": "number" },
+                                  "fpRealFaseB": { "type": "number" },
+                                  "fpRealFaseC": { "type": "number" },
+                                  "fpRealTotalAritmetica": { "type": "number" },
+                                  "fpRealTotalVetorial": { "type": "number" },
+                                  "fpDeslocamentoFaseA": { "type": "number" },
+                                  "fpDeslocamentoFaseB": { "type": "number" },
+                                  "fpDeslocamentoFaseC": { "type": "number" },
+                                  "fpDeslocamentoTotal": { "type": "number" },
+                                  "thdTensaoA": { "type": "number" },
+                                  "thdTensaoB": { "type": "number" },
+                                  "thdTensaoC": { "type": "number" },
+                                  "thdCorrenteA": { "type": "number" },
+                                  "thdCorrenteB": { "type": "number" },
+                                  "thdCorrenteC": { "type": "number" },
+                                  "temperaturaSensorInterno": {
+                                    "type": "number"
+                                  }
+                                },
+                                "additionalProperties": false
+                              },
                               { "nullable": true, "enum": [null] }
                             ]
                           }
                         },
-                        "required": ["meterId", "time"],
+                        "required": [
+                          "meterId",
+                          "time",
+                          "status",
+                          "message",
+                          "measurements"
+                        ],
                         "additionalProperties": false
                       }
                     },
