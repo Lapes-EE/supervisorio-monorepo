@@ -36,6 +36,8 @@ export const fixedPositions: Array<{ id: number; x: number; y: number }> = [
   { id: 14, x: 96, y: 79 },
 ]
 
+import { parameterUnits, type TypeOption } from './constants'
+
 async function getMetersFull(filter: ToggleSearchSchema): Promise<Meter[]> {
   const data = await getMeters()
 
@@ -46,38 +48,10 @@ async function getMetersFull(filter: ToggleSearchSchema): Promise<Meter[]> {
       throw new Error(`Faltam dados para o medidor ${index}`)
     }
 
-    if (filter.type === 'frequency') {
-      return {
-        ...meter,
-        unit: 'Hz',
-        position,
-        // limits: { min: 58, max: 61 },
-      }
-    }
-
-    if (filter.type === 'current') {
-      return {
-        ...meter,
-        unit: 'A',
-        position,
-        // limits: { min: -1, max: 5 },
-      }
-    }
-
-    if (filter.type === 'power') {
-      return {
-        ...meter,
-        unit: 'kW',
-        position,
-        // limits: { min: -1, max: 4000 },
-      }
-    }
-
     return {
       ...meter,
-      unit: 'V',
+      unit: parameterUnits[filter.type as TypeOption],
       position,
-      // limits: { min: 210, max: 224 },
     }
   })
 }
@@ -86,36 +60,65 @@ function getSensorHistory(
   telemetryData: GetTelemetry200DataItem[],
   filter: ToggleSearchSchema
 ): History {
-  // Agora todas as medições são tratadas como trifásicas
   const phases: PhasePoint[] = telemetryData.map((item) => {
     let phaseAValue = 0
     let phaseBValue = 0
     let phaseCValue = 0
 
+    if (!item.measurements) {
+      return { time: item.time, phaseA: 0, phaseB: 0, phaseC: 0 }
+    }
+    const m = item.measurements as Required<
+      NonNullable<GetTelemetry200DataItem['measurements']>
+    >
+
     switch (filter.type) {
-      case 'current':
-        phaseAValue = Number((item.measurements?.correnteA ?? 0).toFixed(2))
-        phaseBValue = Number((item.measurements?.correnteB ?? 0).toFixed(2))
-        phaseCValue = Number((item.measurements?.correnteC ?? 0).toFixed(2))
+      case 'voltage_fn':
+        phaseAValue = Number(m.tensaoFaseNeutroA.toFixed(2))
+        phaseBValue = Number(m.tensaoFaseNeutroB.toFixed(2))
+        phaseCValue = Number(m.tensaoFaseNeutroC.toFixed(2))
         break
 
-      case 'power':
-        phaseAValue = Number(
-          ((item.measurements?.potenciaAparenteA ?? 0) / 1000).toFixed(2)
-        )
-        phaseBValue = Number(
-          ((item.measurements?.potenciaAparenteB ?? 0) / 1000).toFixed(2)
-        )
-        phaseCValue = Number(
-          ((item.measurements?.potenciaAparenteC ?? 0) / 1000).toFixed(2)
-        )
+      case 'voltage_ff':
+        phaseAValue = Number(m.tensaoFaseFaseAB.toFixed(2))
+        phaseBValue = Number(m.tensaoFaseFaseBC.toFixed(2))
+        phaseCValue = Number(m.tensaoFaseFaseCA.toFixed(2))
+        break
+
+      case 'current':
+        phaseAValue = Number(m.correnteA.toFixed(2))
+        phaseBValue = Number(m.correnteB.toFixed(2))
+        phaseCValue = Number(m.correnteC.toFixed(2))
+        break
+
+      case 'current_neutral': {
+        const neutralValue = Number(m.correnteNeutroMedido.toFixed(2))
+        phaseAValue = neutralValue
+        phaseBValue = neutralValue
+        phaseCValue = neutralValue
+        break
+      }
+
+      case 'power_active':
+        phaseAValue = Number((m.potenciaAtivaFundamentalA / 1000).toFixed(2))
+        phaseBValue = Number((m.potenciaAtivaFundamentalB / 1000).toFixed(2))
+        phaseCValue = Number((m.potenciaAtivaFundamentalC / 1000).toFixed(2))
+        break
+
+      case 'power_reactive':
+        phaseAValue = Number((m.potenciaReativaA / 1000).toFixed(2))
+        phaseBValue = Number((m.potenciaReativaB / 1000).toFixed(2))
+        phaseCValue = Number((m.potenciaReativaC / 1000).toFixed(2))
+        break
+
+      case 'power_apparent':
+        phaseAValue = Number((m.potenciaAparenteA / 1000).toFixed(2))
+        phaseBValue = Number((m.potenciaAparenteB / 1000).toFixed(2))
+        phaseCValue = Number((m.potenciaAparenteC / 1000).toFixed(2))
         break
 
       case 'frequency': {
-        // Para frequência, replica o mesmo valor nas três fases
-        const frequencyValue = Number(
-          (item.measurements?.frequencia ?? 0).toFixed(2)
-        )
+        const frequencyValue = Number(m.frequencia.toFixed(2))
         phaseAValue = frequencyValue
         phaseBValue = frequencyValue
         phaseCValue = frequencyValue
@@ -123,15 +126,9 @@ function getSensorHistory(
       }
 
       default:
-        phaseAValue = Number(
-          (item.measurements?.tensaoFaseNeutroA ?? 0).toFixed(2)
-        )
-        phaseBValue = Number(
-          (item.measurements?.tensaoFaseNeutroB ?? 0).toFixed(2)
-        )
-        phaseCValue = Number(
-          (item.measurements?.tensaoFaseNeutroC ?? 0).toFixed(2)
-        )
+        phaseAValue = Number(m.tensaoFaseNeutroA.toFixed(2))
+        phaseBValue = Number(m.tensaoFaseNeutroB.toFixed(2))
+        phaseCValue = Number(m.tensaoFaseNeutroC.toFixed(2))
         break
     }
 
