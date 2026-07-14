@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/chart'
 import { dayjs } from '@/lib/dayjs'
 import type { ToggleSearchSchema } from '../../-types'
+import { getPhaseLabels, isSingleValue } from './constants'
 import { getAggregationConfig, useSensors } from './data'
 import type { Sensor } from './types'
 
@@ -72,21 +73,20 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
     })
   }, [search.period, updatedSensor.history.phases])
 
+  const phaseLabels = getPhaseLabels(search.type)
+  const isSingle = isSingleValue(search.type)
+
   const chartConfig = {
-    value: {
-      label: 'Valor',
-      color: 'var(--chart-4)',
-    },
     phaseA: {
-      label: 'Fase A',
+      label: phaseLabels[0] ?? 'Fase A',
       color: 'var(--chart-1)',
     },
     phaseB: {
-      label: 'Fase B',
+      label: phaseLabels[1] ?? 'Fase B',
       color: 'var(--chart-2)',
     },
     phaseC: {
-      label: 'Fase C',
+      label: phaseLabels[2] ?? 'Fase C',
       color: 'var(--chart-3)',
     },
   } satisfies ChartConfig
@@ -134,29 +134,27 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
           cursor={true}
         />
         <Line
-          dataKey="value"
-          stroke="var(--color-value)"
-          strokeWidth={2}
-          type="monotone"
-        />
-        <Line
           dataKey="phaseA"
           stroke="var(--color-phaseA)"
           strokeWidth={2}
           type="monotone"
         />
-        <Line
-          dataKey="phaseB"
-          stroke="var(--color-phaseB)"
-          strokeWidth={2}
-          type="monotone"
-        />
-        <Line
-          dataKey="phaseC"
-          stroke="var(--color-phaseC)"
-          strokeWidth={2}
-          type="monotone"
-        />
+        {!isSingle && (
+          <Line
+            dataKey="phaseB"
+            stroke="var(--color-phaseB)"
+            strokeWidth={2}
+            type="monotone"
+          />
+        )}
+        {!isSingle && (
+          <Line
+            dataKey="phaseC"
+            stroke="var(--color-phaseC)"
+            strokeWidth={2}
+            type="monotone"
+          />
+        )}
       </LineChart>
     </ChartContainer>
   )

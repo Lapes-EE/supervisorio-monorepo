@@ -8,7 +8,8 @@ import { Image } from '@/components/ui/image'
 import { Label } from '@/components/ui/label'
 import { usePatchMeterId } from '@/http/gen/endpoints/lapes-api'
 import { meterKeys } from '@/lib/query-keys'
-import { type ToggleSearchSchema, toggleSearchSchema } from '../../-types'
+import type { ToggleSearchSchema } from '../../-types'
+import { getPhaseLabels, isSingleValue } from './constants'
 import { fixedPositions, useSensors } from './data'
 import type { Sensor } from './types'
 
@@ -24,8 +25,9 @@ export function BuildingLayout({
   queryClient,
 }: BuildingLayoutProps) {
   const { data: sensors } = useSensors(search, search.period)
-  const phaseOptions = toggleSearchSchema.shape.phase.def.defaultValue
   const mutation = usePatchMeterId()
+  const phaseLabels = getPhaseLabels(search.type)
+  const isSingle = isSingleValue(search.type)
 
   function handleRefresh(sensorId: number) {
     mutation.mutate(
@@ -40,13 +42,14 @@ export function BuildingLayout({
     )
   }
 
-  // Preparar fases ativas com cores
-  const activePhases = phaseOptions
-    .map((phase, idx) => ({
-      phase,
+  const activePhases = phaseLabels
+    .map((label, idx) => ({
+      label,
       idx,
       color: ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)'][idx % 3],
-      isSelected: search.phase.includes(phase),
+      isSelected:
+        isSingle ||
+        search.phase.includes(['A', 'B', 'C'][idx] as 'A' | 'B' | 'C'),
     }))
     .filter(({ isSelected }) => isSelected)
 
@@ -92,16 +95,16 @@ export function BuildingLayout({
                       <Label className="wrap-break-words max-w-24 whitespace-normal text-center text-foreground">
                         {sensor.name}
                       </Label>
-                      {activePhases.map(({ phase, idx, color }) => (
+                      {activePhases.map(({ label, idx, color }) => (
                         <div
                           className="flex select-none items-center justify-center text-center font-medium text-gray-700 text-xs"
-                          key={phase}
+                          key={label}
                           style={{ color }}
                         >
                           <NumberFlow
                             className="font-bold text-lg"
                             format={{ minimumFractionDigits: 2 }}
-                            prefix={`${phase} `}
+                            prefix={isSingle ? '' : `${label} `}
                             suffix={sensor.unit}
                             value={
                               Array.isArray(sensor.value)

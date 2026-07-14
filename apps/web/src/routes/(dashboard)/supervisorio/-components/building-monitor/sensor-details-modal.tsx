@@ -1,3 +1,4 @@
+import NumberFlow from '@number-flow/react'
 import type { QueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
@@ -9,7 +10,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { type ToggleSearchSchema, toggleSearchSchema } from '../../-types'
+import type { ToggleSearchSchema } from '../../-types'
+import { getPhaseLabels } from './constants'
 import { SelectPeriod } from './period-select'
 import { SensorChart } from './sensor-chart'
 import type { Sensor } from './types'
@@ -27,7 +29,7 @@ export function SensorDetailsModal({
   queryClient,
   search,
 }: SensorDetailsModalProps) {
-  const phaseOptions = toggleSearchSchema.shape.phase.def.defaultValue
+  const phaseLabels = getPhaseLabels(search.type)
   return (
     <Dialog onOpenChange={onClose} open={!!sensor}>
       <DialogContent className="max-w-2xl">
@@ -47,7 +49,7 @@ export function SensorDetailsModal({
                 <div>
                   <div className="flex w-full items-center justify-between gap-2 font-bold text-3xl">
                     <div className="flex flex-col">
-                      {phaseOptions.map((label, idx) => {
+                      {phaseLabels.map((label, idx) => {
                         const colorVar = [
                           'var(--chart-1)',
                           'var(--chart-2)',
@@ -61,9 +63,12 @@ export function SensorDetailsModal({
                             >
                               {label}:
                             </Label>
-                            <span>
-                              {sensor.value[idx]} {sensor.unit}
-                            </span>
+                            <NumberFlow
+                              className="font-bold text-2xl"
+                              format={{ minimumFractionDigits: 2 }}
+                              suffix={` ${sensor.unit}`}
+                              value={sensor.value[idx]}
+                            />
                           </div>
                         )
                       })}
