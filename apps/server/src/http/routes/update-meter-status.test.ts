@@ -1,7 +1,7 @@
 import { db, schema } from '@repo/db'
 import { eq } from 'drizzle-orm'
 import request from 'supertest'
-import { beforeEach, expect, test } from 'vitest'
+import { beforeEach, expect, test, vi } from 'vitest'
 import { api } from '@/app'
 
 let token = ''
@@ -80,4 +80,18 @@ test('PATCH /meter/:id without authorization returns 401', async () => {
     .send({ enabled: true })
 
   expect(response.status).toBe(401)
+})
+
+test('PATCH /meter/:id returns 400 when database update fails', async () => {
+  const spy = vi.spyOn(db, 'update').mockImplementationOnce(() => {
+    throw new Error('Database error')
+  })
+
+  const response = await request(api.server)
+    .patch('/meter/1')
+    .set('Authorization', `Bearer ${token}`)
+    .send({ enabled: true })
+
+  expect(response.status).toBe(400)
+  spy.mockRestore()
 })

@@ -1,11 +1,12 @@
 import { db, schema } from '@repo/db'
 import request from 'supertest'
-import { beforeEach, describe, expect, test } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { api } from '@/app'
 import { makeMeters } from '../tests/factories/make-meters'
 import { makeTelemetry } from '../tests/factories/make-telemetry'
 import { availableFields } from '../utils/field-mapping'
 import { getPeriodDates } from '../utils/period-utils'
+import * as telemetryQueryBuilder from '../utils/telemetry-query-builder'
 
 describe('Telemetry API Tests', () => {
   beforeEach(async () => {
@@ -633,8 +634,8 @@ describe('Field Test', () => {
     expect(telemetryData).toHaveProperty('meterId', meter.id)
     expect(telemetryData).toHaveProperty('time')
 
-    expect(telemetryData.measurements).toHaveProperty('tensaoFaseNeutroA', 0)
-    expect(telemetryData.measurements).toHaveProperty('potenciaReativaB', 0)
+    expect(telemetryData.measurements).not.toHaveProperty('tensaoFaseNeutroA')
+    expect(telemetryData.measurements).not.toHaveProperty('potenciaReativaB')
   })
 
   test('should return only selected fields for aggregated data', async () => {
@@ -678,8 +679,8 @@ describe('Field Test', () => {
     expect(telemetryData).toHaveProperty('time')
     expect(telemetryData).not.toHaveProperty('id') // Aggregated data shouldn't have ID
 
-    expect(telemetryData.measurements).toHaveProperty('tensaoFaseNeutroA', 0)
-    expect(telemetryData.measurements).toHaveProperty('correnteA', 0)
+    expect(telemetryData.measurements).not.toHaveProperty('tensaoFaseNeutroA')
+    expect(telemetryData.measurements).not.toHaveProperty('correnteA')
   })
 
   test('should return all fields if no fields are specified (raw)', async () => {
@@ -779,5 +780,72 @@ describe('Field Test', () => {
     )
     expect(response.body.data[0].measurements).toBeNull()
     expect(response.body.nullCount).toBe(1)
+  })
+
+  test('should be return one measurements', async () => {
+    const meter = await makeMeters()
+    await makeTelemetry({
+      meterId: meter.id,
+      frequencia: 60,
+    })
+
+    const response = await request(api.server)
+      .get('/telemetry')
+      .query({ meterId: meter.id, period: 'last_24_hours' })
+
+    expect(response.status).toBe(200)
+    expect(response.body.data).toHaveLength(1)
+  })
+
+  test('should be return measurement with one field', async () => {
+    const meter = await makeMeters()
+    await makeTelemetry({
+      meterId: meter.id,
+      frequencia: 60,
+      tensaoFaseNeutroA: 220,
+    })
+
+    const response = await request(api.server).get('/telemetry').query({
+      meterId: meter.id,
+      period: 'last_24_hours',
+      fields: '["frequencia"]',
+    })
+
+    expect(response.status).toBe(200)
+    expect(response.body.data).toHaveLength(1)
+    const telemetryData = response.body.data[0]
+    expect(telemetryData.measurements).toHaveProperty('frequencia', 60)
+    expect(telemetryData.measurements).not.toHaveProperty('tensaoFaseNeutroA')
+  })
+
+  test('should cover normalizeTime with Date object and invalid date value', async () => {
+    const spy = vi
+      .spyOn(telemetryQueryBuilder, 'fetchRawData')
+      .mockResolvedValueOnce({
+        data: [
+          {
+            id: 1,
+            meterId: 1,
+            time: new Date('2024-01-01T12:00:00.000Z') as any,
+          },
+          {
+            id: 2,
+            meterId: 1,
+            time: 'invalid-date' as any,
+          },
+        ],
+        total: 2,
+      })
+
+    const response = await request(api.server).get('/telemetry').query({
+      meterId: 1,
+      aggregation: 'raw',
+    })
+
+    expect(response.status).toBe(200)
+    expect(response.body.data[0].time).toBe('2024-01-01T12:00:00.000Z')
+    expect(response.body.data[1].time).toBe('invalid-date')
+
+    spy.mockRestore()
   })
 })
