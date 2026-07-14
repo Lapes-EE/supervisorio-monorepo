@@ -236,12 +236,12 @@ export function useSensors(
     queryFn: () => getMetersFull(filter),
   })
 
-  const { aggregation, refetchInterval } = getAggregationConfig(period)
+  const { aggregation } = getAggregationConfig(period)
 
   const telemetryQueries = useQueries({
     queries:
       meters?.map((meter) => ({
-        refetchInterval,
+        refetchInterval: false,
         queryKey: ['Telemetry', meter.id, period],
         queryFn: async (): Promise<GetTelemetry200> => {
           return await getTelemetry({

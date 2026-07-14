@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { BuildingLayout } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/building-layout'
 import { SensorDetailsModal } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/sensor-details-modal'
 import type { Sensor } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/types'
+import { useEventSource } from '@/hooks/use-event-source'
 import {
   toggleSearchSchema,
   typeOption,
@@ -15,6 +16,7 @@ export const Route = createFileRoute('/full-plan')({
 })
 
 function SupervisorioFullPlan() {
+  useEventSource()
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null)
   const search = Route.useSearch()
   const { queryClient } = Route.useRouteContext()
