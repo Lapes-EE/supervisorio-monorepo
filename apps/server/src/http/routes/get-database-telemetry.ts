@@ -6,12 +6,7 @@ import {
 } from '../types/get-database-200-response'
 import { availableFields } from '../utils/field-mapping'
 import { filterFields, isAggregatedMeasure } from '../utils/field-utils'
-import {
-  buildAggregatedQuery,
-  buildDateFilters,
-  fetchLastMeasurement,
-  fetchRawData,
-} from '../utils/telemetry-query-builder'
+import { telemetryQueryBuilder } from '../utils/telemetry-query-builder'
 import { telemetryQuerySchema } from '../utils/telemetry-schema'
 
 export function normalizeTime(value: unknown): string {
@@ -72,21 +67,24 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
       const { meterId, startDate, endDate, period, aggregation, fields } =
         request.query
 
-      const { filterStartDate, filterEndDate } = buildDateFilters({
-        period,
-        startDate,
-        endDate,
-      })
+      const { filterStartDate, filterEndDate } =
+        telemetryQueryBuilder.buildDateFilters({
+          period,
+          startDate,
+          endDate,
+        })
 
       let flatData: Record<string, unknown>[]
       let total: number
 
       if (period === 'last_measurement') {
-        const result = await fetchLastMeasurement({ meterId })
+        const result = await telemetryQueryBuilder.fetchLastMeasurement({
+          meterId,
+        })
         flatData = result.data
         total = result.total
       } else if (aggregation === 'raw') {
-        const result = await fetchRawData({
+        const result = await telemetryQueryBuilder.fetchRawData({
           filterStartDate,
           filterEndDate,
           meterId,
@@ -94,13 +92,15 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
         flatData = result.data
         total = result.total
       } else {
-        const aggregatedData = await buildAggregatedQuery({
-          filterStartDate,
-          filterEndDate,
-          meterId,
-          aggregation,
-          fields: fields && fields.length > 0 ? fields : availableFields,
-        })
+        const aggregatedData = await telemetryQueryBuilder.buildAggregatedQuery(
+          {
+            filterStartDate,
+            filterEndDate,
+            meterId,
+            aggregation,
+            fields: fields && fields.length > 0 ? fields : availableFields,
+          }
+        )
 
         flatData = aggregatedData.filter(isAggregatedMeasure).map((row) => ({
           ...row,
@@ -128,7 +128,7 @@ export const getDatabaseTelemetry: FastifyPluginCallbackZod = (app) => {
               : filterStartDate.toISOString(),
           endDate:
             filteredData.length > 0
-              ? filteredData[filteredData.length - 1].time
+              ? (filteredData.at(-1)?.time ?? filterEndDate.toISOString())
               : filterEndDate.toISOString(),
         },
         nullCount,

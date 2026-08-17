@@ -1,10 +1,10 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { zodValidator } from '@tanstack/zod-adapter'
 import { useEffect, useRef, useState } from 'react'
+import { useEventSource } from '@/hooks/use-event-source'
 import { BuildingLayout } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/building-layout'
 import { SensorDetailsModal } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/sensor-details-modal'
 import type { Sensor } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/types'
-import { useEventSource } from '@/hooks/use-event-source'
 import {
   toggleSearchSchema,
   typeOption,
@@ -31,7 +31,7 @@ function SupervisorioFullPlan() {
 
       navigate({
         to: '.',
-        search: (prev: any) => ({
+        search: (prev) => ({
           ...prev,
           type: nextType,
         }),

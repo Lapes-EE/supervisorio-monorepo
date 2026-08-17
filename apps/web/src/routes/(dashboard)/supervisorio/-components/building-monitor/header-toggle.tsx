@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import type { ToggleSearchSchema } from '../../-types'
 import { toggleSearchSchema } from '../../-types'
 import { getPhaseLabels, isSingleValue, parameterGroups } from './constants'
 
@@ -33,9 +34,9 @@ export function HeaderToggle() {
   const handleTypeChange = (value: string) => {
     navigate({
       to: '.',
-      search: (prev: any) => ({
+      search: (prev) => ({
         ...prev,
-        type: value,
+        type: value as ToggleSearchSchema['type'],
       }),
     })
   }
@@ -65,7 +66,7 @@ export function HeaderToggle() {
           {phaseOptions.map((fase, idx) => (
             <div className="flex items-center gap-2" key={fase}>
               <Link
-                search={(prev: any) => ({
+                search={(prev) => ({
                   ...prev,
                   phase: togglePhase(fase),
                 })}

@@ -3,6 +3,8 @@ import { expect, test } from 'vitest'
 import { api } from '@/app'
 import { makeMeters } from '../tests/factories/make-meters'
 
+const HEALTH_STATUS_REGEX = /healthy|failing|cooldown/
+
 test('Get meters', async () => {
   api.ready()
 
@@ -19,7 +21,7 @@ test('Get meters', async () => {
         ip: expect.any(String),
         description: expect.any(String),
         enabled: expect.any(Boolean),
-        health: expect.stringMatching(/healthy|failing|cooldown/),
+        health: expect.stringMatching(HEALTH_STATUS_REGEX),
       }),
     ])
   )

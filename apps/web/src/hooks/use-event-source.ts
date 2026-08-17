@@ -1,131 +1,148 @@
 import { webEnv } from '@repo/env/web'
+import type { QueryClient } from '@tanstack/react-query'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
+import type { GetTelemetry200 } from '@/http/gen/model/get-telemetry200'
+import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
+
+const PERIOD_DURATIONS: Record<string, number> = {
+  last_5_minutes: 5 * 60 * 1000,
+  last_30_minutes: 30 * 60 * 1000,
+  last_hour: 60 * 60 * 1000,
+  last_6_hours: 6 * 60 * 60 * 1000,
+  last_12_hours: 12 * 60 * 60 * 1000,
+  last_24_hours: 24 * 60 * 60 * 1000,
+  today: 24 * 60 * 60 * 1000,
+  last_7_days: 7 * 24 * 60 * 60 * 1000,
+  this_month: 30 * 24 * 60 * 60 * 1000,
+  last_30_days: 30 * 24 * 60 * 60 * 1000,
+  this_year: 365 * 24 * 60 * 60 * 1000,
+}
+
+function mergeAndPruneItems(
+  oldData: GetTelemetry200DataItem[],
+  newItems: GetTelemetry200DataItem[],
+  period: string
+): GetTelemetry200DataItem[] {
+  const oldDataFiltered = oldData.filter(
+    (oldItem) =>
+      !newItems.some(
+        (newItem) => newItem.id === oldItem.id || newItem.time === oldItem.time
+      )
+  )
+  const merged = [...oldDataFiltered, ...newItems]
+  const duration = PERIOD_DURATIONS[period]
+  if (!duration) {
+    return merged
+  }
+  const cutoff = Date.now() - duration
+  return merged.filter((item) => new Date(item.time).getTime() >= cutoff)
+}
+
+function updateHistoricalQueries(
+  queryClient: QueryClient,
+  telemetryItems: GetTelemetry200DataItem[],
+  meterId: number | string
+) {
+  const queries = queryClient.getQueryCache().findAll({
+    queryKey: ['Telemetry', meterId],
+  })
+
+  for (const query of queries) {
+    const key = query.queryKey
+    const period = typeof key[2] === 'string' ? key[2] : undefined
+    if (!period || period === 'last_measurement') {
+      continue
+    }
+
+    queryClient.setQueryData<GetTelemetry200>(key, (old) => {
+      if (!(old && Array.isArray(old.data))) {
+        return old
+      }
+
+      return {
+        ...old,
+        data: mergeAndPruneItems(old.data, telemetryItems, period),
+      }
+    })
+  }
+}
+
+export function updateTelemetryCache(
+  queryClient: QueryClient,
+  payload: GetTelemetry200
+) {
+  const telemetryItems = payload.data
+  if (!Array.isArray(telemetryItems) || telemetryItems.length === 0) {
+    return
+  }
+
+  const firstItem = telemetryItems[0]
+  const meterId = firstItem?.meterId
+  if (meterId === undefined || meterId === null) {
+    return
+  }
+
+  const meterIdNum = Number(meterId)
+  const meterIdStr = String(meterId)
+
+  queryClient.setQueryData(
+    ['Telemetry', meterIdNum, 'last_measurement'],
+    payload
+  )
+  queryClient.setQueryData(
+    ['Telemetry', meterIdStr, 'last_measurement'],
+    payload
+  )
+
+  updateHistoricalQueries(queryClient, telemetryItems, meterIdNum)
+  updateHistoricalQueries(queryClient, telemetryItems, meterIdStr)
+}
+
+interface SSEState {
+  es: EventSource
+  listeners: Set<(event: MessageEvent) => void>
+  refCount: number
+}
+
+let activeSSEState: SSEState | null = null
 
 export function useEventSource() {
   const queryClient = useQueryClient()
 
   useEffect(() => {
     const sseUrl = `${webEnv.VITE_API_URL}/sse/telemetry`
-    const clientAny = queryClient as any
 
-    if (!clientAny.__sseState) {
+    if (!activeSSEState) {
       const es = new EventSource(sseUrl)
-
-      es.onopen = () => {
-        console.log('[SSE] Connection established')
-      }
-
-      es.onerror = (error) => {
-        console.error('[SSE] Connection error:', error)
-      }
-
-      const state = {
+      const state: SSEState = {
         es,
-        listeners: new Set<(event: MessageEvent) => void>(),
+        listeners: new Set(),
         refCount: 0,
       }
 
       es.addEventListener('telemetry-update', (event) => {
-        state.listeners.forEach((cb) => {
+        for (const cb of state.listeners) {
           try {
             cb(event)
-          } catch (err) {
-            console.error('[SSE] Callback execution error:', err)
+          } catch {
+            // Ignore callback errors
           }
-        })
+        }
       })
 
-      clientAny.__sseState = state
+      activeSSEState = state
     }
 
-    const state = clientAny.__sseState
+    const state = activeSSEState
     state.refCount++
 
     const handleTelemetryUpdate = (event: MessageEvent) => {
       try {
-        const payload = JSON.parse(event.data)
-        const telemetryItems = payload.data
-        if (Array.isArray(telemetryItems) && telemetryItems.length > 0) {
-          const firstItem = telemetryItems[0]
-          const meterId = firstItem.meterId
-          if (meterId !== undefined && meterId !== null) {
-            const meterIdNum = Number(meterId)
-            const meterIdStr = String(meterId)
-
-            // 1. Update the 'last_measurement' queries for this meter
-            queryClient.setQueryData(
-              ['Telemetry', meterIdNum, 'last_measurement'],
-              payload
-            )
-            queryClient.setQueryData(
-              ['Telemetry', meterIdStr, 'last_measurement'],
-              payload
-            )
-
-            // 2. Update the historical queries for this meter
-            const updateHistoricalQueries = (mId: number | string) => {
-              const queries = queryClient.getQueryCache().findAll({
-                queryKey: ['Telemetry', mId],
-              })
-
-              for (const query of queries) {
-                const key = query.queryKey
-                const period = key[2] // 'last_5_minutes', 'last_30_minutes', etc.
-                if (!period || period === 'last_measurement') continue
-
-                queryClient.setQueryData(key, (old: any) => {
-                  if (!old || !Array.isArray(old.data)) return old
-
-                  // Filter out existing items with the same ID or timestamp to avoid duplicates
-                  const oldDataFiltered = old.data.filter((oldItem: any) =>
-                    !telemetryItems.some(
-                      (newItem: any) =>
-                        newItem.id === oldItem.id || newItem.time === oldItem.time
-                    )
-                  )
-                  const newData = [...oldDataFiltered, ...telemetryItems]
-
-                  // Filter out items older than the period duration
-                  const periodDurations: Record<string, number> = {
-                    last_5_minutes: 5 * 60 * 1000,
-                    last_30_minutes: 30 * 60 * 1000,
-                    last_hour: 60 * 60 * 1000,
-                    last_6_hours: 6 * 60 * 60 * 1000,
-                    last_12_hours: 12 * 60 * 60 * 1000,
-                    last_24_hours: 24 * 60 * 60 * 1000,
-                    today: 24 * 60 * 60 * 1000,
-                    last_7_days: 7 * 24 * 60 * 60 * 1000,
-                    this_month: 30 * 24 * 60 * 60 * 1000,
-                    last_30_days: 30 * 24 * 60 * 60 * 1000,
-                    this_year: 365 * 24 * 60 * 60 * 1000,
-                  }
-
-                  const duration = periodDurations[period as string]
-                  if (duration) {
-                    const cutoff = Date.now() - duration
-                    return {
-                      ...old,
-                      data: newData.filter(
-                        (x: any) => new Date(x.time).getTime() >= cutoff
-                      ),
-                    }
-                  }
-
-                  return {
-                    ...old,
-                    data: newData,
-                  }
-                })
-              }
-            }
-
-            updateHistoricalQueries(meterIdNum)
-            updateHistoricalQueries(meterIdStr)
-          }
-        }
-      } catch (err) {
-        console.error('[SSE] Failed to parse message event data:', err)
+        const payload = JSON.parse(event.data) as GetTelemetry200
+        updateTelemetryCache(queryClient, payload)
+      } catch {
+        // Ignore json parse error
       }
     }
 
@@ -137,8 +154,7 @@ export function useEventSource() {
 
       if (state.refCount <= 0) {
         state.es.close()
-        delete clientAny.__sseState
-        console.log('[SSE] Connection closed')
+        activeSSEState = null
       }
     }
   }, [queryClient])

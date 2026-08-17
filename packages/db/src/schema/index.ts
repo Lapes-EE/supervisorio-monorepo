@@ -1,5 +1,9 @@
+export { measures } from './measures'
+export { healthEnum, meters } from './meters'
+export { user } from './user'
+
 import { measures } from './measures'
-import { healthEnum, meters } from './meters'
+import { meters } from './meters'
 import { user } from './user'
 
 export const schema = {
@@ -7,5 +11,3 @@ export const schema = {
   measures,
   user,
 }
-
-export { healthEnum, measures, meters, user }

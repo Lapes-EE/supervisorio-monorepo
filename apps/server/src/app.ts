@@ -1,5 +1,6 @@
 import fastifyCors from '@fastify/cors'
 import fastifyJwt from '@fastify/jwt'
+import fastifySSE from '@fastify/sse'
 import fastifySwagger from '@fastify/swagger'
 import { env } from '@repo/env'
 import fastifyApiReference from '@scalar/fastify-api-reference'
@@ -15,11 +16,10 @@ import { deleteMeter } from './http/routes/delete-meters'
 import { getDatabaseTelemetry } from './http/routes/get-database-telemetry'
 import { getMeters } from './http/routes/get-meters'
 import { login } from './http/routes/login'
+import { sseTelemetry } from './http/routes/sse-telemetry'
 import { updateMeterStatus } from './http/routes/update-meter-status'
 import { updateMeter } from './http/routes/update-meters'
 import { auth } from './http/utils/middleware.auth'
-import fastifySSE from '@fastify/sse'
-import { sseTelemetry } from './http/routes/sse-telemetry'
 
 const api = fastify({
   logger: true,

@@ -174,3 +174,10 @@ export async function fetchLastMeasurement(
     total: rawData.length,
   }
 }
+
+export const telemetryQueryBuilder = {
+  buildDateFilters,
+  fetchRawData,
+  buildAggregatedQuery,
+  fetchLastMeasurement,
+}

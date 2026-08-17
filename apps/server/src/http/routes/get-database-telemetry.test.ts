@@ -6,7 +6,7 @@ import { makeMeters } from '../tests/factories/make-meters'
 import { makeTelemetry } from '../tests/factories/make-telemetry'
 import { availableFields } from '../utils/field-mapping'
 import { getPeriodDates } from '../utils/period-utils'
-import * as telemetryQueryBuilder from '../utils/telemetry-query-builder'
+import { telemetryQueryBuilder } from '../utils/telemetry-query-builder'
 
 describe('Telemetry API Tests', () => {
   beforeEach(async () => {
@@ -829,12 +829,12 @@ describe('Field Test', () => {
           {
             id: 1,
             meterId: 1,
-            time: new Date('2024-01-01T12:00:00.000Z') as any,
+            time: new Date('2024-01-01T12:00:00.000Z') as unknown as string,
           },
           {
             id: 2,
             meterId: 1,
-            time: 'invalid-date' as any,
+            time: 'invalid-date',
           },
         ],
         total: 2,

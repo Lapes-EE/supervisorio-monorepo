@@ -1,6 +1,9 @@
 import { env } from '@repo/env'
 import { api } from './app'
-import { startTelemetryListener, stopTelemetryListener } from './http/sse/telemetry-listener'
+import {
+  startTelemetryListener,
+  stopTelemetryListener,
+} from './http/sse/telemetry-listener'
 
 api
   .listen({ port: env.PORT, host: '0.0.0.0' })
