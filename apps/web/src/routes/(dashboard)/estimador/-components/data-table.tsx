@@ -57,9 +57,14 @@ export function DataTable<TData, TValue>({
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => {
-              const rowData = row.original
+              const rowData = row.original as {
+                meterId?: number | string
+                id?: number | string
+              }
               const isSelected =
-                selectedRowId !== undefined && rowData === selectedRowId
+                selectedRowId !== undefined &&
+                (rowData?.meterId === selectedRowId ||
+                  rowData?.id === selectedRowId)
 
               return (
                 <TableRow

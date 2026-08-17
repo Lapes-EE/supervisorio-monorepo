@@ -6,5 +6,6 @@ export type LastMeasurementData = {
   tensaoFaseNeutroA: number | null
   tensaoFaseNeutroB: number | null
   tensaoFaseNeutroC: number | null
-  estimation: string
+  estimation: number | null
+  error: number | null
 }
