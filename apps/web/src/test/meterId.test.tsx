@@ -7,6 +7,9 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-router')>()
   return {
     ...actual,
+    useMatches: vi
+      .fn()
+      .mockReturnValue([{ id: '/(dashboard)/telemetria/$meterId' }]),
     // biome-ignore lint/suspicious/noExplicitAny: Options can be any type here
     createFileRoute: () => (options: any) => ({
       useLoaderData: vi.fn().mockReturnValue({ data: [] }),
