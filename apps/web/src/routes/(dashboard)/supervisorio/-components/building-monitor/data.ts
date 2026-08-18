@@ -220,10 +220,8 @@ export function getAggregationConfig(period: GetTelemetryPeriod): {
   }
 }
 
-export function useSensors(
-  filter: ToggleSearchSchema,
-  period: GetTelemetryPeriod
-) {
+export function useSensors(filter: ToggleSearchSchema) {
+  const period = filter.period
   const {
     data: meters,
     isLoading: metersLoading,

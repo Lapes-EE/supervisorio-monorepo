@@ -1,5 +1,6 @@
 import NumberFlow from '@number-flow/react'
-import type { QueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
+import { useSearch } from '@tanstack/react-router'
 import { RefreshCcw } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -15,16 +16,12 @@ import type { Sensor } from './types'
 
 interface BuildingLayoutProps {
   onSensorClick: (sensor: Sensor) => void
-  search: ToggleSearchSchema
-  queryClient: QueryClient
 }
 
-export function BuildingLayout({
-  onSensorClick,
-  search,
-  queryClient,
-}: BuildingLayoutProps) {
-  const { data: sensors } = useSensors(search, search.period)
+export function BuildingLayout({ onSensorClick }: BuildingLayoutProps) {
+  const search = useSearch({ strict: false }) as ToggleSearchSchema
+  const queryClient = useQueryClient()
+  const { data: sensors } = useSensors(search)
   const mutation = usePatchMeterId()
   const phaseLabels = getPhaseLabels(search.type)
   const isSingle = isSingleValue(search.type)
