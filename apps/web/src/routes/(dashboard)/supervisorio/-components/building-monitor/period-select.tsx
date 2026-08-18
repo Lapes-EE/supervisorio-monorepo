@@ -1,5 +1,5 @@
-import type { QueryClient } from '@tanstack/react-query'
-import { useNavigate } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import {
   Select,
   SelectContent,
@@ -13,15 +13,12 @@ import { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period'
 import { sensorKeys } from '@/lib/query-keys'
 import type { ToggleSearchSchema } from '../../-types'
 
-interface SelectPeriodProps {
-  queryClient: QueryClient
-  search: ToggleSearchSchema
-}
-
-export function SelectPeriod({ queryClient, search }: SelectPeriodProps) {
-  const period = search.period
-
+export function SelectPeriod() {
+  const search = useSearch({ strict: false }) as ToggleSearchSchema
+  const period = search.period ?? 'last_5_minutes'
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
+
   const periodLabels: Record<string, string> = {
     last_5_minutes: 'Últimos 5 minutos',
     last_30_minutes: 'Últimos 30 minutos',
