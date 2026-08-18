@@ -24,7 +24,7 @@ const periodLabels = {
 
 export function PeriodSelector() {
   const { period } = useSearch({ from: '/(dashboard)/gráficos' })
-  const navigate = useNavigate({ from: '/(dashboard)/gráficos' })
+  const navigate = useNavigate({ from: '/gráficos' })
 
   const handlePeriodChange = (newPeriod: GetTelemetryPeriod) => {
     navigate({
