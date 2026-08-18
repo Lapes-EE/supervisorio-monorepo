@@ -1,6 +1,5 @@
 import NumberFlow from '@number-flow/react'
-import type { QueryClient } from '@tanstack/react-query'
-import { Link } from '@tanstack/react-router'
+import { Link, useSearch } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -19,16 +18,13 @@ import type { Sensor } from './types'
 interface SensorDetailsModalProps {
   sensor: Sensor | null
   onClose: () => void
-  queryClient: QueryClient
-  search: ToggleSearchSchema
 }
 
 export function SensorDetailsModal({
   sensor,
   onClose,
-  queryClient,
-  search,
 }: SensorDetailsModalProps) {
+  const search = useSearch({ strict: false }) as ToggleSearchSchema
   const phaseLabels = getPhaseLabels(search.type)
   return (
     <Dialog onOpenChange={onClose} open={!!sensor}>
@@ -80,9 +76,9 @@ export function SensorDetailsModal({
               <div>
                 <h4 className="mb-3 flex gap-2 font-semibold text-lg">
                   <p>Histórico</p>
-                  <SelectPeriod queryClient={queryClient} search={search} />
+                  <SelectPeriod />
                 </h4>
-                <SensorChart search={search} sensor={sensor} />
+                <SensorChart sensor={sensor} />
               </div>
 
               <div className="flex gap-2">
