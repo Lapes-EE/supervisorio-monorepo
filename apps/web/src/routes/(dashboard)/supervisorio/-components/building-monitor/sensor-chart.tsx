@@ -1,3 +1,4 @@
+import { useSearch } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
 import {
@@ -15,10 +16,10 @@ import type { Sensor } from './types'
 
 interface SensorChartProps {
   sensor: Sensor
-  search: ToggleSearchSchema
 }
 
-export function SensorChart({ sensor, search }: SensorChartProps) {
+export function SensorChart({ sensor }: SensorChartProps) {
+  const search = useSearch({ strict: false }) as ToggleSearchSchema
   const { history } = useSensorChart(sensor.id, search.period, search)
 
   const sensorPhases = useMemo(() => {
