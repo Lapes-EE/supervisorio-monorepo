@@ -18,8 +18,6 @@ export const Route = createFileRoute('/full-plan')({
 function SupervisorioFullPlan() {
   useEventSource()
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null)
-  const search = Route.useSearch()
-  const { queryClient } = Route.useRouteContext()
   const navigate = useNavigate()
 
   // índice atual do ciclo
@@ -45,15 +43,9 @@ function SupervisorioFullPlan() {
 
   return (
     <div className="h-full w-full px-2">
-      <BuildingLayout
-        onSensorClick={setSelectedSensor}
-        queryClient={queryClient}
-        search={search}
-      />
+      <BuildingLayout onSensorClick={setSelectedSensor} />
       <SensorDetailsModal
         onClose={() => setSelectedSensor(null)}
-        queryClient={queryClient}
-        search={search}
         sensor={selectedSensor}
       />
     </div>
