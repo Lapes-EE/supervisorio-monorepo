@@ -5,7 +5,11 @@ import { SelectPeriod } from './period-select'
 
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => vi.fn(),
-  useSearch: () => ({ period: 'last_5_minutes', type: 'voltage_fn', phase: ['A', 'B', 'C'] }),
+  useSearch: () => ({
+    period: 'last_5_minutes',
+    type: 'voltage_fn',
+    phase: ['A', 'B', 'C'],
+  }),
   useRouteContext: () => ({ queryClient: new QueryClient() }),
 }))
 
