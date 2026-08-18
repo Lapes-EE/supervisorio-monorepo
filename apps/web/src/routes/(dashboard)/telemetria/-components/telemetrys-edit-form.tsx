@@ -1,9 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  useNavigate,
-  useParams,
-  useRouteContext,
-} from '@tanstack/react-router'
+import { useNavigate, useParams, useRouteContext } from '@tanstack/react-router'
 import { isIP } from 'is-ip'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -49,7 +45,9 @@ const formEditMeterSchema = z.object({
 })
 
 export function TelemetryEditForm() {
-  const { meterId } = useParams({ from: '/(dashboard)/telemetria/$meterId/edit' })
+  const { meterId } = useParams({
+    from: '/(dashboard)/telemetria/$meterId/edit',
+  })
   const { meters, queryClient } = useRouteContext({ from: '__root__' })
   const mutation = usePutMetersId()
   const navigate = useNavigate()

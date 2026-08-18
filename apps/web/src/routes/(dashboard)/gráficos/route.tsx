@@ -19,7 +19,6 @@ import {
   ComboboxTrigger,
 } from '@/components/ui/shadcn-io/combobox'
 import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item'
-import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period'
 import { ChartsGrid } from './-components/charts-grid'
 import { KpiGrid } from './-components/kpi-grid'
 import { PeriodSelector } from './-components/period-selector'
@@ -51,12 +50,6 @@ function RouteComponent() {
   const handleMeterSelect = (selectedMeterId: string) => {
     navigate({
       search: (prev) => ({ ...prev, meterId: selectedMeterId || undefined }),
-    })
-  }
-
-  const handlePeriodChange = (newPeriod: GetTelemetryPeriod) => {
-    navigate({
-      search: (prev) => ({ ...prev, period: newPeriod }),
     })
   }
 
@@ -104,7 +97,7 @@ function RouteComponent() {
             </div>
             <div className="space-y-2">
               <Label className="font-medium text-sm">Período</Label>
-              <PeriodSelector onChange={handlePeriodChange} value={period} />
+              <PeriodSelector />
             </div>
           </div>
         </CardContent>

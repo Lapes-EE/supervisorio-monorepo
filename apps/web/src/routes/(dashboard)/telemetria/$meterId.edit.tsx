@@ -8,4 +8,3 @@ export const Route = createFileRoute('/(dashboard)/telemetria/$meterId/edit')({
 function RouteComponent() {
   return <TelemetryEditForm />
 }
-

@@ -1,3 +1,4 @@
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import {
   Select,
   SelectContent,
@@ -21,20 +22,24 @@ const periodLabels = {
   today: 'Hoje',
 }
 
-interface PeriodSelectorProps {
-  value: GetTelemetryPeriod
-  onChange: (value: GetTelemetryPeriod) => void
-}
+export function PeriodSelector() {
+  const { period } = useSearch({ from: '/(dashboard)/gráficos' })
+  const navigate = useNavigate({ from: '/(dashboard)/gráficos' })
 
-export function PeriodSelector({ value, onChange }: PeriodSelectorProps) {
+  const handlePeriodChange = (newPeriod: GetTelemetryPeriod) => {
+    navigate({
+      search: (prev) => ({ ...prev, period: newPeriod }),
+    })
+  }
+
   return (
-    <Select onValueChange={onChange} value={value}>
+    <Select onValueChange={handlePeriodChange} value={period}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Selecione o período" />
       </SelectTrigger>
       <SelectContent>
-        {Object.entries(periodLabels).map(([period, label]) => (
-          <SelectItem key={period} value={period}>
+        {Object.entries(periodLabels).map(([periodKey, label]) => (
+          <SelectItem key={periodKey} value={periodKey as GetTelemetryPeriod}>
             {label}
           </SelectItem>
         ))}
