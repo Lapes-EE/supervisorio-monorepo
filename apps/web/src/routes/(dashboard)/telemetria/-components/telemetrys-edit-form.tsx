@@ -1,5 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate, useRouteContext } from '@tanstack/react-router'
+import {
+  useNavigate,
+  useParams,
+  useRouteContext,
+} from '@tanstack/react-router'
 import { isIP } from 'is-ip'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -23,14 +27,12 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { usePutMetersId } from '@/http/gen/endpoints/lapes-api'
-import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item'
 import { meterKeys } from '@/lib/query-keys'
 
 const ISSO_SERIAL_REGEX = /^[A-Z0-9]{3}(?:-[A-Z0-9]{3}){3}$/
 
 const formEditMeterSchema = z.object({
   name: z.string().min(1, 'O nome do medidor é requerido'),
-
   ip: z
     .string()
     .min(1, 'O IP do medidor é requerido')
@@ -46,15 +48,9 @@ const formEditMeterSchema = z.object({
     }),
 })
 
-interface TelemetryEditFormProps {
-  meters: GetMeters200Item[]
-  meterId: string
-}
-
-export function TelemetryEditForm({ meters, meterId }: TelemetryEditFormProps) {
-  const { queryClient } = useRouteContext({
-    from: '/(dashboard)/telemetria',
-  })
+export function TelemetryEditForm() {
+  const { meterId } = useParams({ from: '/(dashboard)/telemetria/$meterId/edit' })
+  const { meters, queryClient } = useRouteContext({ from: '__root__' })
   const mutation = usePutMetersId()
   const navigate = useNavigate()
 
