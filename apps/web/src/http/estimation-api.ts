@@ -18,8 +18,6 @@ export interface EstimationResponse {
 
 export async function getEstimation(): Promise<EstimationResponse> {
   const baseURL = webEnv.VITE_ESTIMATION_API_URL ?? 'http://localhost:8000'
-  const response = await axios.get<EstimationResponse>(
-    `${baseURL}/estimation`
-  )
+  const response = await axios.get<EstimationResponse>(`${baseURL}/estimation`)
   return response.data
 }
