@@ -43,6 +43,8 @@ def test_get_estimation():
             assert "ID_medidor" in item
             assert "tensao_pu" in item
             assert "tensao_V" in item
+            assert "tensao_medida_V" in item
+            assert "erro_V" in item
     finally:
         app.dependency_overrides.clear()
 

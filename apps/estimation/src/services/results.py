@@ -166,45 +166,61 @@ def obter_tensoes_barras(x, df_medicoes):
     """
     Extrai as tensões estimadas do vetor de estados,
     converte de pu para volts e associa cada tensão
-    ao meterId vindo das medições.
+    ao meterId vindo das medições, incluindo medição real e erro.
     """
 
     tensoes = []
-
     inicio_tensoes = num_barras - 1
 
     # Um registro por barra/medidor
+    cols_to_keep = [
+        col for col in ["meterId", "i_bus", "barra", "time", "tensaoFaseNeutroC"]
+        if col in df_medicoes.columns
+    ]
     medidores = (
-        df_medicoes[
-            ["meterId", "i_bus", "barra"]
-        ]
+        df_medicoes[cols_to_keep]
         .drop_duplicates(subset=["meterId", "i_bus"])
         .sort_values("i_bus")
     )
 
     for _, medidor in medidores.iterrows():
-
         meter_id = int(medidor["meterId"])
         indice = int(medidor["i_bus"])
         barra = medidor["barra"]
 
-        tensao_pu = x[
-            inicio_tensoes + indice
-        ]
+        tensao_pu = float(x[inicio_tensoes + indice])
+        tensao_V = float(tensao_pu * Vbase)
 
-        tensao_V = tensao_pu * Vbase
+        tensao_medida = (
+            float(medidor["tensaoFaseNeutroC"])
+            if "tensaoFaseNeutroC" in medidor and pd.notna(medidor["tensaoFaseNeutroC"])
+            else None
+        )
+        erro_V = (
+            round(tensao_medida - tensao_V, 2)
+            if tensao_medida is not None
+            else None
+        )
+        medicao_time = (
+            str(medidor["time"])
+            if "time" in medidor and pd.notna(medidor["time"])
+            else None
+        )
 
         tensoes.append({
             "barra": barra,
             "ID_medidor": meter_id,
             "indice_EE": indice,
-            "tensao_pu": float(tensao_pu),
-            "tensao_V": float(tensao_V),
+            "time": medicao_time,
+            "tensao_pu": tensao_pu,
+            "tensao_V": round(tensao_V, 2),
+            "tensao_medida_V": tensao_medida,
+            "erro_V": erro_V,
         })
 
     return {
-    "data": tensoes
-}
+        "data": tensoes
+    }
 
 # PROCESSAMENTO COMPLETO DOS RESULTADOS
 def processar_resultados(

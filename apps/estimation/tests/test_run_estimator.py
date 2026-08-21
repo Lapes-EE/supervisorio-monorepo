@@ -187,6 +187,8 @@ def test_executar_estimador_nested_payload():
         assert "indice_EE" in item
         assert "tensao_pu" in item
         assert "tensao_V" in item
+        assert "tensao_medida_V" in item
+        assert "erro_V" in item
         assert item["tensao_pu"] > 0.8
         assert item["tensao_V"] > 180.0
 
