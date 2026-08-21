@@ -2,10 +2,18 @@ from unittest.mock import MagicMock
 
 from fastapi.testclient import TestClient
 
-from src.api.main import app, get_session
+from src.api.main import app, get_session, normalize_database_url
 from .test_run_estimator import criar_telemetry_data_teste
 
 client = TestClient(app)
+
+
+def test_normalize_database_url():
+    assert normalize_database_url("postgres://u:p@h:5432/db") == "postgresql+psycopg://u:p@h:5432/db"
+    assert normalize_database_url("postgres+psycopg://u:p@h:5432/db") == "postgresql+psycopg://u:p@h:5432/db"
+    assert normalize_database_url("postgresql://u:p@h:5432/db") == "postgresql+psycopg://u:p@h:5432/db"
+    assert normalize_database_url("postgresql+psycopg://u:p@h:5432/db") == "postgresql+psycopg://u:p@h:5432/db"
+
 
 
 def test_get_docs():
