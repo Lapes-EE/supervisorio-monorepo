@@ -2,10 +2,10 @@
 # EXECUÇÃO DO ESTIMADOR DE ESTADO
 # ==========================================
 
-from .network import criar_rede
-from .functions import criar_estados_iniciais
+from ..core.network import criar_rede
+from ..core.functions import criar_estados_iniciais
+from ..core.estimator import metodo_newton_raphson
 from .measurements import preparar_medicoes
-from .estimator import metodo_newton_raphson
 from .results import processar_resultados
 
 def executar_estimador(telemetry_data):

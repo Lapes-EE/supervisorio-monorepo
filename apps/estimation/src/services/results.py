@@ -5,7 +5,7 @@
 import numpy as np
 import pandas as pd
 
-from .config import (
+from ..core.config import (
     num_barras,
     Vbase,
     bus_name,
