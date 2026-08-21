@@ -7,7 +7,7 @@ from scalar_fastapi import get_scalar_api_reference
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
-from .run_estimator import executar_estimador
+from ..services.run_estimator import executar_estimador
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
