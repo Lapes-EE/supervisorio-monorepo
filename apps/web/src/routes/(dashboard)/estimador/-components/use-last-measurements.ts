@@ -34,7 +34,9 @@ export function useLastMeasurements() {
 
       return combinedData
     },
-    refetchInterval: 5000,
+    refetchInterval: 60_000,
+    staleTime: 60_000,
+    placeholderData: (previousData) => previousData,
     retry: 2,
   })
 }

@@ -75,6 +75,7 @@ function RouteComponent() {
         </div>
         <div className="flex-1">
           <MeterChart
+            latestTime={selectedMeter?.time}
             selectedEstimation={selectedMeter?.estimation}
             selectedMeterId={selectedMeterId}
           />

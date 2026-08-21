@@ -1,5 +1,5 @@
 import { Activity, Gauge } from 'lucide-react'
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
 import {
   Card,
   CardContent,
@@ -25,32 +25,31 @@ import { useMeterNames, useVoltageChartData } from './use-voltage-chart'
 
 const chartConfig = {
   actual: {
-    label: 'Tensão Real',
+    label: 'Medido',
     color: 'var(--chart-2)',
   },
   estimated: {
-    label: 'Tensão Estimada',
+    label: 'Estimado',
     color: 'var(--chart-4)',
-  },
-  error: {
-    label: 'Erro',
-    color: 'var(--chart-1)',
   },
 } satisfies ChartConfig
 
 interface MeterChartProps {
   selectedMeterId?: number
   selectedEstimation?: number | null
+  latestTime?: string | null
 }
 
 export function MeterChart({
   selectedMeterId,
   selectedEstimation,
+  latestTime,
 }: MeterChartProps) {
   const { data: meters } = useMeterNames()
   const { data: chartData } = useVoltageChartData(
     selectedMeterId,
-    selectedEstimation
+    selectedEstimation,
+    latestTime
   )
 
   const selectedMeter = meters?.find((m) => m.id === selectedMeterId)
@@ -77,7 +76,15 @@ export function MeterChart({
             className="aspect-auto h-[380px] w-full"
             config={chartConfig}
           >
-            <BarChart accessibilityLayer data={chartData}>
+            <LineChart
+              accessibilityLayer
+              data={chartData}
+              margin={{
+                top: 24,
+                left: 12,
+                right: 12,
+              }}
+            >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis
                 axisLine={false}
@@ -87,22 +94,47 @@ export function MeterChart({
               />
               <YAxis
                 axisLine={false}
+                domain={['auto', 'auto']}
                 tickFormatter={(value) => `${value}V`}
                 tickLine={false}
                 tickMargin={8}
               />
               <ChartTooltip
-                content={<ChartTooltipContent indicator="dashed" />}
+                content={<ChartTooltipContent indicator="line" />}
                 cursor={false}
               />
-              <Bar dataKey="actual" fill="var(--color-actual)" radius={4} />
-              <Bar
-                dataKey="estimated"
-                fill="var(--color-estimated)"
-                radius={4}
+              <Line
+                activeDot={{
+                  r: 6,
+                }}
+                dataKey="actual"
+                dot={{
+                  fill: 'var(--color-actual)',
+                  strokeWidth: 2,
+                  r: 4,
+                }}
+                isAnimationActive={false}
+                stroke="var(--color-actual)"
+                strokeWidth={2}
+                type="monotone"
               />
-              <Bar dataKey="error" fill="var(--color-error)" radius={4} />
-            </BarChart>
+
+              <Line
+                activeDot={{
+                  r: 6,
+                }}
+                dataKey="estimated"
+                dot={{
+                  fill: 'var(--color-estimated)',
+                  strokeWidth: 2,
+                  r: 4,
+                }}
+                isAnimationActive={false}
+                stroke="var(--color-estimated)"
+                strokeWidth={2}
+                type="monotone"
+              />
+            </LineChart>
           </ChartContainer>
         ) : (
           <Empty className="flex h-[380px] w-full flex-col items-center justify-center border border-dashed p-6">
@@ -113,7 +145,7 @@ export function MeterChart({
               <EmptyTitle>Nenhum medidor selecionado</EmptyTitle>
               <EmptyDescription>
                 Selecione um medidor na tabela ao lado para visualizar o gráfico
-                de estimação e erro dos últimos 5 minutos.
+                de estimação dos últimos 5 minutos.
               </EmptyDescription>
             </EmptyHeader>
           </Empty>
@@ -122,12 +154,7 @@ export function MeterChart({
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
           <Activity className="h-4 w-4 text-primary" />
-          Erro = Tensão Real - Tensão Estimada
-        </div>
-        <div className="text-muted-foreground leading-none">
-          {selectedMeter
-            ? 'Clique na linha selecionada na tabela para desmarcar o medidor'
-            : 'Nenhum medidor selecionado'}
+          Resíduo = Tensão Real - Tensão Estimada
         </div>
       </CardFooter>
     </Card>

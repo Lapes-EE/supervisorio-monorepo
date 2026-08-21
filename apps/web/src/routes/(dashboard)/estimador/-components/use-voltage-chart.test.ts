@@ -64,14 +64,14 @@ describe('use-voltage-chart utilities', () => {
 
       expect(buckets).toHaveLength(5)
 
-      // Bucket 3 (i=1, 14:59) should average 220.0 and 222.0 -> 221.0
-      const bucket1459 = buckets[3]
+      // Bucket 4 (i=0, 14:59) should average 220.0 and 222.0 -> 221.0
+      const bucket1459 = buckets[4]
       expect(bucket1459.actual).toBe(221.0)
       expect(bucket1459.estimated).toBe(220.0)
       expect(bucket1459.error).toBe(1.0)
 
-      // Bucket 2 (i=2, 14:58) should have 219.0
-      const bucket1458 = buckets[2]
+      // Bucket 3 (i=1, 14:58) should have 219.0
+      const bucket1458 = buckets[3]
       expect(bucket1458.actual).toBe(219.0)
       expect(bucket1458.estimated).toBe(220.0)
       expect(bucket1458.error).toBe(-1.0)

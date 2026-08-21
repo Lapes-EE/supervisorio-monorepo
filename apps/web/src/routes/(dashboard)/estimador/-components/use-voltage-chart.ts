@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
+import { useEffect, useMemo } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getMeters, getTelemetry } from '@/http/gen/endpoints/lapes-api'
 import { GetTelemetryAggregation } from '@/http/gen/model/get-telemetry-aggregation'
 import { GetTelemetryFieldsAnyOfItem } from '@/http/gen/model/get-telemetry-fields-any-of-item'
@@ -31,7 +32,18 @@ export function buildFiveMinuteBuckets(
   estimatedVoltage: number | null = null,
   referenceDate: Date = new Date()
 ): EstimatorBarChartPoint[] {
-  const currentMinuteMs = Math.floor(referenceDate.getTime() / 60_000) * 60_000
+  let effectiveDate = referenceDate
+  if (measurements.length > 0) {
+    const latestMs = measurements.reduce<number | null>((latest, m) => {
+      const t = new Date(m.time).getTime()
+      return !Number.isNaN(t) && (latest === null || t > latest) ? t : latest
+    }, null)
+    if (latestMs !== null) {
+      effectiveDate = new Date(latestMs)
+    }
+  }
+
+  const currentMinuteMs = Math.floor(effectiveDate.getTime() / 60_000) * 60_000
 
   const buckets: EstimatorBarChartPoint[] = []
 
@@ -77,16 +89,13 @@ export function buildFiveMinuteBuckets(
 
 export function useVoltageChartData(
   meterId?: number,
-  estimatedVoltage?: number | null
+  estimatedVoltage?: number | null,
+  latestTime?: string | null
 ) {
-  return useQuery({
-    queryKey: [
-      'voltage-chart',
-      'fase-c',
-      '5-minutes-1-min-bars',
-      meterId,
-      estimatedVoltage,
-    ],
+  const queryClient = useQueryClient()
+
+  const query = useQuery({
+    queryKey: ['voltage-chart', 'fase-c', '5-minutes', meterId],
     queryFn: async () => {
       if (meterId === undefined) {
         return []
@@ -99,13 +108,36 @@ export function useVoltageChartData(
         meterId,
       })
 
-      const measurements = measurementsResponse.data
-      return buildFiveMinuteBuckets(measurements, estimatedVoltage ?? null)
+      return measurementsResponse.data ?? []
     },
     enabled: meterId !== undefined,
-    refetchInterval: 5000,
+    refetchInterval: 60_000,
+    staleTime: 60_000,
+    placeholderData: (previousData) => previousData,
     retry: 2,
   })
+
+  // Synchronize chart refetch whenever the table receives a new measurement timestamp
+  useEffect(() => {
+    if (meterId !== undefined && latestTime) {
+      queryClient.invalidateQueries({
+        queryKey: ['voltage-chart', 'fase-c', '5-minutes', meterId],
+      })
+    }
+  }, [latestTime, meterId, queryClient])
+
+  const chartData = useMemo(() => {
+    if (!query.data) {
+      return []
+    }
+    const fallbackDate = latestTime ? new Date(latestTime) : new Date()
+    return buildFiveMinuteBuckets(query.data, estimatedVoltage ?? null, fallbackDate)
+  }, [query.data, estimatedVoltage, latestTime])
+
+  return {
+    ...query,
+    data: chartData,
+  }
 }
 
 export function useMeterNames() {

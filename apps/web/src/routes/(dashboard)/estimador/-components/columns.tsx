@@ -1,17 +1,6 @@
+import NumberFlow from '@number-flow/react'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { LastMeasurementData } from './data'
-
-function formatVoltage(value: number | null): string {
-  return value !== null ? `${value.toFixed(1)} V` : '---'
-}
-
-function formatError(value: number | null): string {
-  if (value === null || value === undefined) {
-    return '---'
-  }
-  const prefix = value > 0 ? '+' : ''
-  return `${prefix}${value.toFixed(2)} V`
-}
 
 function getErrorClassName(error: number | null): string {
   if (error === null || error === 0) {
@@ -29,29 +18,60 @@ export const columns: ColumnDef<LastMeasurementData>[] = [
   {
     accessorKey: 'tensaoFaseNeutroC',
     header: 'Tensão Medida (V)',
-    cell: ({ row }) => (
-      <span className="text-chart-2">
-        {formatVoltage(row.getValue('tensaoFaseNeutroC'))}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const value = row.getValue('tensaoFaseNeutroC') as number | null
+      if (value === null || value === undefined) {
+        return <span className="text-muted-foreground">---</span>
+      }
+
+      return (
+        <NumberFlow
+          className="text-chart-2"
+          format={{ minimumFractionDigits: 1, maximumFractionDigits: 1 }}
+          suffix=" V"
+          value={value}
+        />
+      )
+    },
   },
   {
     accessorKey: 'estimation',
     header: 'Estimação (V)',
-    cell: ({ row }) => (
-      <span className="text-chart-4">
-        {formatVoltage(row.getValue('estimation'))}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const value = row.getValue('estimation') as number | null
+      if (value === null || value === undefined) {
+        return <span className="text-muted-foreground">---</span>
+      }
+
+      return (
+        <NumberFlow
+          className="text-chart-4"
+          format={{ minimumFractionDigits: 1, maximumFractionDigits: 1 }}
+          suffix=" V"
+          value={value}
+        />
+      )
+    },
   },
   {
     accessorKey: 'error',
-    header: 'Erro (V)',
+    header: 'Resíduo (V)',
     cell: ({ row }) => {
       const error = row.getValue('error') as number | null
+      if (error === null || error === undefined) {
+        return <span className="text-muted-foreground">---</span>
+      }
+
+      const prefix = error > 0 ? '+' : ''
 
       return (
-        <span className={getErrorClassName(error)}>{formatError(error)}</span>
+        <NumberFlow
+          className={getErrorClassName(error)}
+          format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+          prefix={prefix}
+          suffix=" V"
+          value={error}
+        />
       )
     },
   },
