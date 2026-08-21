@@ -1,14 +1,20 @@
 import { useQuery } from '@tanstack/react-query'
-import { getEstimation } from '@/http/estimation-api'
+import {
+  calculateEstimation,
+  getEstimation,
+  type MeasurementOverride,
+} from '@/http/estimation-api'
 import { getMeters } from '@/http/gen/endpoints/lapes-api'
 import type { LastMeasurementData } from './data'
 
-export function useLastMeasurements() {
+export function useLastMeasurements(overrides: MeasurementOverride[] = []) {
+  const isSimulated = overrides.length > 0
+
   return useQuery({
-    queryKey: ['estimation', 'latest-measurements'],
+    queryKey: ['estimation', 'latest-measurements', overrides],
     queryFn: async () => {
       const [estimationResponse, meters] = await Promise.all([
-        getEstimation(),
+        isSimulated ? calculateEstimation(overrides) : getEstimation(),
         getMeters().catch(() => []),
       ])
 
@@ -17,6 +23,9 @@ export function useLastMeasurements() {
       const combinedData: LastMeasurementData[] = estimationItems.map(
         (item) => {
           const meter = meters.find((m) => m.id === item.ID_medidor)
+          const isOverridden = overrides.some(
+            (o) => o.meterId === item.ID_medidor
+          )
 
           return {
             id: item.ID_medidor,
@@ -28,14 +37,15 @@ export function useLastMeasurements() {
             tensaoFaseNeutroC: item.tensao_medida_V,
             estimation: item.tensao_V,
             error: item.erro_V,
+            isOverridden,
           }
         }
       )
 
       return combinedData
     },
-    refetchInterval: 60_000,
-    staleTime: 60_000,
+    refetchInterval: isSimulated ? false : 60_000,
+    staleTime: isSimulated ? Number.POSITIVE_INFINITY : 60_000,
     placeholderData: (previousData) => previousData,
     retry: 2,
   })

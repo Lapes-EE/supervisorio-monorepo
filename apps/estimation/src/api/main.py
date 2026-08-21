@@ -3,6 +3,7 @@ from typing import Generator
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 from scalar_fastapi import get_scalar_api_reference
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
@@ -30,14 +31,31 @@ app.add_middleware(
 )
 
 
+class MeasurementOverride(BaseModel):
+    meterId: int
+    tensaoFaseNeutroC: float | None = Field(
+        default=None, description="Tensão Fase-Neutro C em Volts"
+    )
+    potenciaAtivaFundamentalC: float | None = Field(
+        default=None, description="Potência Ativa Fase C em Watts"
+    )
+    potenciaReativaC: float | None = Field(
+        default=None, description="Potência Reativa Fase C em VAr"
+    )
+
+
+class EstimationRequest(BaseModel):
+    overrides: list[MeasurementOverride] = []
+
+
 def get_session() -> Generator[Session, None, None]:
     with Session(engine) as session:
         yield session
 
 
-@app.get("/estimation")
-def get_latest_voltage(
-    session: Session = Depends(get_session),
+def _calcular_estimacao(
+    session: Session,
+    overrides: list[MeasurementOverride] | None = None,
 ):
     statement = """
         SELECT
@@ -73,10 +91,39 @@ def get_latest_voltage(
             detail="Nenhuma medida encontrada",
         )
 
+    # Apply manual overrides if present
+    if overrides:
+        override_map = {o.meterId: o for o in overrides}
+        for item in measurements:
+            m_id = item.get("meterId")
+            if m_id in override_map:
+                o = override_map[m_id]
+                if o.tensaoFaseNeutroC is not None:
+                    item["tensaoFaseNeutroC"] = o.tensaoFaseNeutroC
+                if o.potenciaAtivaFundamentalC is not None:
+                    item["potenciaAtivaFundamentalC"] = o.potenciaAtivaFundamentalC
+                if o.potenciaReativaC is not None:
+                    item["potenciaReativaC"] = o.potenciaReativaC
+
     resultado = executar_estimador(measurements)
     resultados = resultado["resultados"]
 
     return resultados["tensoes"]
+
+
+@app.get("/estimation")
+def get_latest_voltage(
+    session: Session = Depends(get_session),
+):
+    return _calcular_estimacao(session)
+
+
+@app.post("/estimation")
+def calculate_voltage_with_overrides(
+    request: EstimationRequest,
+    session: Session = Depends(get_session),
+):
+    return _calcular_estimacao(session, request.overrides)
 
 
 @app.get("/docs", include_in_schema=False)

@@ -8,4 +8,5 @@ export type LastMeasurementData = {
   tensaoFaseNeutroC: number | null
   estimation: number | null
   error: number | null
+  isOverridden?: boolean
 }
