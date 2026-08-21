@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useMemo } from 'react'
 import { getMeters, getTelemetry } from '@/http/gen/endpoints/lapes-api'
 import { GetTelemetryAggregation } from '@/http/gen/model/get-telemetry-aggregation'
 import { GetTelemetryFieldsAnyOfItem } from '@/http/gen/model/get-telemetry-fields-any-of-item'
@@ -131,7 +131,11 @@ export function useVoltageChartData(
       return []
     }
     const fallbackDate = latestTime ? new Date(latestTime) : new Date()
-    return buildFiveMinuteBuckets(query.data, estimatedVoltage ?? null, fallbackDate)
+    return buildFiveMinuteBuckets(
+      query.data,
+      estimatedVoltage ?? null,
+      fallbackDate
+    )
   }, [query.data, estimatedVoltage, latestTime])
 
   return {
