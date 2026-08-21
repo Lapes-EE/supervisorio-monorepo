@@ -16,7 +16,8 @@
     "ui": "turbo -F @repo/web ui --",
     "test": "turbo -F @repo/server test -F @repo/worker test",
     "test:server": "turbo -F @repo/server test",
-    "test:worker": "turbo -F @repo/worker test"
+    "test:worker": "turbo -F @repo/worker test",
+    "test:estimation": "turbo -F @repo/estimation test"
   },
   "packageManager": "pnpm@9.4.0",
   "devDependencies": {
