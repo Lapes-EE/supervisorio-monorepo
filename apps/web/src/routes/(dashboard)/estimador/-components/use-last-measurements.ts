@@ -1,48 +1,33 @@
 import { useQuery } from '@tanstack/react-query'
-import { getMeters, getTelemetry } from '@/http/gen/endpoints/lapes-api'
-import { GetTelemetryFieldsAnyOfItem } from '@/http/gen/model/get-telemetry-fields-any-of-item'
-import { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period'
+import { getEstimation } from '@/http/estimation-api'
+import { getMeters } from '@/http/gen/endpoints/lapes-api'
 import type { LastMeasurementData } from './data'
-import {
-  calculateEstimatedVoltage,
-  calculateVoltageError,
-} from './use-voltage-chart'
 
 export function useLastMeasurements() {
   return useQuery({
-    queryKey: ['last-measurements', 'all-voltages'],
+    queryKey: ['estimation', 'latest-measurements'],
     queryFn: async () => {
-      const measurementsResponse = await getTelemetry({
-        period: GetTelemetryPeriod.last_measurement,
-        fields: JSON.stringify([
-          GetTelemetryFieldsAnyOfItem.tensaoFaseNeutroA,
-          GetTelemetryFieldsAnyOfItem.tensaoFaseNeutroB,
-          GetTelemetryFieldsAnyOfItem.tensaoFaseNeutroC,
-        ]),
-      })
+      const [estimationResponse, meters] = await Promise.all([
+        getEstimation(),
+        getMeters().catch(() => []),
+      ])
 
-      const meters = await getMeters()
-      const measurements = measurementsResponse.data
+      const estimationItems = estimationResponse.data ?? []
 
-      const combinedData: LastMeasurementData[] = measurements.map(
-        (measurement) => {
-          const meter = meters.find((m) => m.id === measurement.meterId)
-          const actualC = measurement.measurements?.tensaoFaseNeutroC ?? null
-          const estimatedC = calculateEstimatedVoltage(actualC)
-          const errorC = calculateVoltageError(actualC, estimatedC)
+      const combinedData: LastMeasurementData[] = estimationItems.map(
+        (item) => {
+          const meter = meters.find((m) => m.id === item.ID_medidor)
 
           return {
-            id: measurement.id ?? 0,
-            meterId: measurement.meterId,
-            name: meter?.name ?? `Medidor ${measurement.meterId}`,
-            time: measurement.time,
-            tensaoFaseNeutroA:
-              measurement.measurements?.tensaoFaseNeutroA ?? null,
-            tensaoFaseNeutroB:
-              measurement.measurements?.tensaoFaseNeutroB ?? null,
-            tensaoFaseNeutroC: actualC,
-            estimation: estimatedC,
-            error: errorC,
+            id: item.ID_medidor,
+            meterId: item.ID_medidor,
+            name: meter?.name ?? item.barra,
+            time: item.time ?? '',
+            tensaoFaseNeutroA: null,
+            tensaoFaseNeutroB: null,
+            tensaoFaseNeutroC: item.tensao_medida_V,
+            estimation: item.tensao_V,
+            error: item.erro_V,
           }
         }
       )

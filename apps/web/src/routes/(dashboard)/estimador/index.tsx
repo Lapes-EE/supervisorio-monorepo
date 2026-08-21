@@ -58,6 +58,8 @@ function RouteComponent() {
     )
   }
 
+  const selectedMeter = data?.find((d) => d.meterId === selectedMeterId)
+
   return (
     <div className="container mx-auto py-10">
       <h1 className="mb-1 font-bold text-2xl">Estimação de Estados</h1>
@@ -72,7 +74,10 @@ function RouteComponent() {
           />
         </div>
         <div className="flex-1">
-          <MeterChart selectedMeterId={selectedMeterId} />
+          <MeterChart
+            selectedEstimation={selectedMeter?.estimation}
+            selectedMeterId={selectedMeterId}
+          />
         </div>
       </div>
     </div>

@@ -12,15 +12,6 @@ export interface EstimatorBarChartPoint {
   error: number | null
 }
 
-export function calculateEstimatedVoltage(
-  actual: number | null
-): number | null {
-  if (actual === null || actual === undefined) {
-    return null
-  }
-  return 214.0
-}
-
 export function calculateVoltageError(
   actual: number | null,
   estimated: number | null
@@ -37,6 +28,7 @@ export function buildFiveMinuteBuckets(
     meterId: number
     measurements?: { tensaoFaseNeutroC?: number | null } | null
   }>,
+  estimatedVoltage: number | null = null,
   referenceDate: Date = new Date()
 ): EstimatorBarChartPoint[] {
   const currentMinuteMs = Math.floor(referenceDate.getTime() / 60_000) * 60_000
@@ -68,7 +60,7 @@ export function buildFiveMinuteBuckets(
       actual = Number((sum / validVoltages.length).toFixed(1))
     }
 
-    const estimated = calculateEstimatedVoltage(actual)
+    const estimated = actual !== null ? estimatedVoltage : null
     const error = calculateVoltageError(actual, estimated)
 
     buckets.push({
@@ -83,9 +75,18 @@ export function buildFiveMinuteBuckets(
   return buckets
 }
 
-export function useVoltageChartData(meterId?: number) {
+export function useVoltageChartData(
+  meterId?: number,
+  estimatedVoltage?: number | null
+) {
   return useQuery({
-    queryKey: ['voltage-chart', 'fase-c', '5-minutes-1-min-bars', meterId],
+    queryKey: [
+      'voltage-chart',
+      'fase-c',
+      '5-minutes-1-min-bars',
+      meterId,
+      estimatedVoltage,
+    ],
     queryFn: async () => {
       if (meterId === undefined) {
         return []
@@ -99,7 +100,7 @@ export function useVoltageChartData(meterId?: number) {
       })
 
       const measurements = measurementsResponse.data
-      return buildFiveMinuteBuckets(measurements)
+      return buildFiveMinuteBuckets(measurements, estimatedVoltage ?? null)
     },
     enabled: meterId !== undefined,
     refetchInterval: 5000,

@@ -40,11 +40,18 @@ const chartConfig = {
 
 interface MeterChartProps {
   selectedMeterId?: number
+  selectedEstimation?: number | null
 }
 
-export function MeterChart({ selectedMeterId }: MeterChartProps) {
+export function MeterChart({
+  selectedMeterId,
+  selectedEstimation,
+}: MeterChartProps) {
   const { data: meters } = useMeterNames()
-  const { data: chartData } = useVoltageChartData(selectedMeterId)
+  const { data: chartData } = useVoltageChartData(
+    selectedMeterId,
+    selectedEstimation
+  )
 
   const selectedMeter = meters?.find((m) => m.id === selectedMeterId)
 
