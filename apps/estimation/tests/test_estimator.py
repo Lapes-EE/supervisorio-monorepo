@@ -1,8 +1,8 @@
 import numpy as np
 
-from .estimator import metodo_newton_raphson
-from .functions import criar_estados_iniciais
-from .network import criar_rede
+from src.core.estimator import metodo_newton_raphson
+from src.core.functions import criar_estados_iniciais
+from src.core.network import criar_rede
 
 
 def test_newton_raphson_convergence():

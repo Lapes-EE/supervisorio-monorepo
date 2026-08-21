@@ -1,7 +1,7 @@
 import numpy as np
 
-from .measurements import preparar_medicoes
-from .run_estimator import executar_estimador
+from src.services.measurements import preparar_medicoes
+from src.services.run_estimator import executar_estimador
 
 
 def criar_telemetry_data_teste():

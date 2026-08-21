@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 from fastapi.testclient import TestClient
 
-from .main import app, get_session
+from src.api.main import app, get_session
 from .test_run_estimator import criar_telemetry_data_teste
 
 client = TestClient(app)

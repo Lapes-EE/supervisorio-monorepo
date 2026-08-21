@@ -1,9 +1,9 @@
 import numpy as np
 
-from .config import num_estados
-from .functions import calcular_h_x, criar_estados_iniciais
-from .jacobian import calcular_jacobiana
-from .network import criar_rede
+from src.core.config import num_estados
+from src.core.functions import calcular_h_x, criar_estados_iniciais
+from src.core.jacobian import calcular_jacobiana
+from src.core.network import criar_rede
 
 
 def calcular_jacobiana_numerica(
