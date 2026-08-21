@@ -3,12 +3,16 @@ name = "estimation"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
-    "datetime>=6.0",
     "fastapi[standard]>=0.141.1",
     "numpy>=2.5.2",
     "pandas>=3.0.5",
     "psycopg[binary]>=3.3.4",
     "scalar-fastapi>=1.8.2",
     "sqlalchemy>=2.0.52",
-    "sqlmodel>=0.0.39",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
