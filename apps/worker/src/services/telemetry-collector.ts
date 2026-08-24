@@ -119,13 +119,17 @@ export function startTelemetryCollector() {
           continue
         }
         inFlightMeters.add(meter.ip)
-        queue.add(async () => {
-          try {
-            await collectFromMeter(meter.ip, meter.failureCount)
-          } finally {
-            inFlightMeters.delete(meter.ip)
-          }
-        })
+        queue
+          .add(async () => {
+            try {
+              await collectFromMeter(meter.ip, meter.failureCount)
+            } finally {
+              inFlightMeters.delete(meter.ip)
+            }
+          })
+          .catch((err) =>
+            logger.error(err, 'Unhandled error in collection task')
+          )
       }
     } catch (error) {
       logger.error(error, 'Error in telemetry collector loop')

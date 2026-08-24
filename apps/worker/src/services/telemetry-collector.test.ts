@@ -410,4 +410,30 @@ describe('Telemetry Collector Integration', () => {
     releaseGate?.({ potencia_ativa_fundamental_harmonica_total: 100 })
     await new Promise((resolve) => setTimeout(resolve, 300))
   })
+
+  test('does not leak an unhandled rejection when the failure path itself rejects', async () => {
+    const mockMeter = createMockMeter({ ip: '192.168.1.11', failureCount: 0 })
+
+    vi.mocked(getEligibleMeters).mockResolvedValue([mockMeter])
+    vi.mocked(checkMeterEnabled).mockResolvedValue(true)
+    vi.mocked(getTelemetryFromMeter).mockRejectedValue(
+      new Error('Connection refused')
+    )
+    // incident trigger: updateMeterFailure rejecting during DB saturation
+    vi.mocked(updateMeterFailure).mockRejectedValue(new Error('DB saturated'))
+
+    startTelemetryCollector()
+
+    vi.useFakeTimers()
+    try {
+      const callback = (globalThis as Record<string, unknown>)
+        .__cronCallback as () => Promise<void>
+      await callback()
+      await vi.advanceTimersByTimeAsync(4000)
+    } finally {
+      vi.useRealTimers()
+    }
+
+    expect(updateMeterFailure).toHaveBeenCalledWith('192.168.1.11', 1)
+  })
 })
