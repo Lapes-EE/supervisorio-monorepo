@@ -22,6 +22,7 @@ class MeterDisabledError extends Error {
 
 const logger = pino({ name: 'worker:collector' })
 const queue = new PQueue({ concurrency: 14 })
+const inFlightMeters = new Set<string>()
 
 async function collectFromMeter(ip: string, failureCount: number) {
   try {
@@ -105,7 +106,18 @@ export function startTelemetryCollector() {
       logger.info(`Queueing collection for ${eligibleMeters.length} meters`)
 
       for (const meter of eligibleMeters) {
-        queue.add(() => collectFromMeter(meter.ip, meter.failureCount))
+        // ponytail: sync has+add is the race guard — do not extract an async helper
+        if (inFlightMeters.has(meter.ip)) {
+          continue
+        }
+        inFlightMeters.add(meter.ip)
+        queue.add(async () => {
+          try {
+            await collectFromMeter(meter.ip, meter.failureCount)
+          } finally {
+            inFlightMeters.delete(meter.ip)
+          }
+        })
       }
     } catch (error) {
       logger.error(error, 'Error in telemetry collector loop')

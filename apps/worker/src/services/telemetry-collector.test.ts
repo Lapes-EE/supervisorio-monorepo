@@ -275,4 +275,95 @@ describe('Telemetry Collector Integration', () => {
     // p-retry v6 `retries: 3` = 1 initial attempt + 3 retries = 4 total
     expect(getTelemetryFromMeter).toHaveBeenCalledTimes(4)
   })
+
+  test('deduplicates in-flight meters (blocks duplicate enqueue)', async () => {
+    const mockMeter = createMockMeter({ ip: '192.168.1.9' })
+    let resolveTelemetry: ((value: unknown) => void) | undefined
+
+    vi.mocked(getEligibleMeters).mockResolvedValue([mockMeter])
+    vi.mocked(checkMeterEnabled).mockResolvedValue(true)
+    vi.mocked(getTelemetryFromMeter).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveTelemetry = resolve
+        })
+    )
+
+    startTelemetryCollector()
+
+    const callback = (globalThis as Record<string, unknown>)
+      .__cronCallback as () => Promise<void>
+
+    await callback()
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(getTelemetryFromMeter).toHaveBeenCalledTimes(1)
+
+    await callback()
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(getTelemetryFromMeter).toHaveBeenCalledTimes(1)
+
+    // drain the deferred so the shared in-flight set cleans up for later tests
+    resolveTelemetry?.({ potencia_ativa_fundamental_harmonica_total: 100 })
+    await new Promise((resolve) => setTimeout(resolve, 100))
+  })
+
+  test('drains the in-flight set after collection completes', async () => {
+    const mockMeter = createMockMeter({ ip: '192.168.1.9' })
+    let resolveTelemetry: ((value: unknown) => void) | undefined
+
+    vi.mocked(getEligibleMeters).mockResolvedValue([mockMeter])
+    vi.mocked(checkMeterEnabled).mockResolvedValue(true)
+    vi.mocked(getTelemetryFromMeter).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveTelemetry = resolve
+        })
+    )
+
+    startTelemetryCollector()
+
+    const callback = (globalThis as Record<string, unknown>)
+      .__cronCallback as () => Promise<void>
+
+    await callback()
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(getTelemetryFromMeter).toHaveBeenCalledTimes(1)
+
+    resolveTelemetry?.({ potencia_ativa_fundamental_harmonica_total: 100 })
+    await new Promise((resolve) => setTimeout(resolve, 100))
+
+    await callback()
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(getTelemetryFromMeter).toHaveBeenCalledTimes(2)
+
+    // drain the second deferred so the shared set is empty for later tests
+    resolveTelemetry?.({ potencia_ativa_fundamental_harmonica_total: 100 })
+    await new Promise((resolve) => setTimeout(resolve, 100))
+  })
+
+  test('cleans the in-flight set on abort (meter disabled)', async () => {
+    const mockMeter = createMockMeter({ ip: '192.168.1.10' })
+
+    vi.mocked(getEligibleMeters).mockResolvedValue([mockMeter])
+    vi.mocked(checkMeterEnabled).mockResolvedValue(false)
+    vi.mocked(updateMeterFailure).mockResolvedValue(undefined)
+
+    startTelemetryCollector()
+
+    const callback = (globalThis as Record<string, unknown>)
+      .__cronCallback as () => Promise<void>
+
+    await callback()
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(getTelemetryFromMeter).not.toHaveBeenCalled()
+
+    vi.mocked(checkMeterEnabled).mockResolvedValue(true)
+    vi.mocked(getTelemetryFromMeter).mockResolvedValue({
+      potencia_ativa_fundamental_harmonica_total: 100,
+    })
+
+    await callback()
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(getTelemetryFromMeter).toHaveBeenCalledTimes(1)
+  })
 })
