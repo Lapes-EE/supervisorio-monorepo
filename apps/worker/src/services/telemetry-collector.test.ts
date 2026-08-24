@@ -96,7 +96,7 @@ describe('Telemetry Collector Integration', () => {
     vi.mocked(checkMeterEnabled).mockResolvedValue(true)
     vi.mocked(updateMeterSuccess).mockResolvedValue(undefined)
     vi.mocked(getTelemetryFromMeter).mockResolvedValue({
-      potenciaAtivaFundamentalHarmonicaTotal: 100,
+      potencia_ativa_fundamental_harmonica_total: 100,
     })
 
     startTelemetryCollector()
@@ -145,10 +145,15 @@ describe('Telemetry Collector Integration', () => {
 
     startTelemetryCollector()
 
-    const callback = (globalThis as Record<string, unknown>)
-      .__cronCallback as () => Promise<void>
-    await callback()
-    await new Promise((resolve) => setTimeout(resolve, 200))
+    vi.useFakeTimers()
+    try {
+      const callback = (globalThis as Record<string, unknown>)
+        .__cronCallback as () => Promise<void>
+      await callback()
+      await vi.advanceTimersByTimeAsync(4000)
+    } finally {
+      vi.useRealTimers()
+    }
 
     expect(updateMeterFailure).toHaveBeenCalledWith('192.168.1.3', 3)
   })
@@ -166,10 +171,15 @@ describe('Telemetry Collector Integration', () => {
 
     startTelemetryCollector()
 
-    const callback = (globalThis as Record<string, unknown>)
-      .__cronCallback as () => Promise<void>
-    await callback()
-    await new Promise((resolve) => setTimeout(resolve, 200))
+    vi.useFakeTimers()
+    try {
+      const callback = (globalThis as Record<string, unknown>)
+        .__cronCallback as () => Promise<void>
+      await callback()
+      await vi.advanceTimersByTimeAsync(4000)
+    } finally {
+      vi.useRealTimers()
+    }
 
     expect(insertMeasure).toHaveBeenCalledWith({}, '192.168.1.5')
     expect(updateMeterFailure).toHaveBeenCalledWith('192.168.1.5', 1)
@@ -202,7 +212,7 @@ describe('Telemetry Collector Integration', () => {
     vi.mocked(checkMeterEnabled).mockResolvedValue(true)
     vi.mocked(updateMeterSuccess).mockResolvedValue(undefined)
     vi.mocked(getTelemetryFromMeter).mockResolvedValue({
-      potenciaAtivaFundamentalHarmonicaTotal: 100,
+      potencia_ativa_fundamental_harmonica_total: 100,
     })
 
     startTelemetryCollector()
@@ -227,11 +237,42 @@ describe('Telemetry Collector Integration', () => {
 
     startTelemetryCollector()
 
-    const callback = (globalThis as Record<string, unknown>)
-      .__cronCallback as () => Promise<void>
-    await callback()
-    await new Promise((resolve) => setTimeout(resolve, 200))
+    vi.useFakeTimers()
+    try {
+      const callback = (globalThis as Record<string, unknown>)
+        .__cronCallback as () => Promise<void>
+      await callback()
+      await vi.advanceTimersByTimeAsync(4000)
+    } finally {
+      vi.useRealTimers()
+    }
 
     expect(notifyTelemetryChange).toHaveBeenCalledWith(1)
+  })
+
+  test('retries getTelemetryFromMeter exactly 4 times before giving up', async () => {
+    const mockMeter = createMockMeter({ ip: '192.168.1.8', failureCount: 0 })
+
+    vi.mocked(getEligibleMeters).mockResolvedValue([mockMeter])
+    vi.mocked(checkMeterEnabled).mockResolvedValue(true)
+    vi.mocked(updateMeterFailure).mockResolvedValue(undefined)
+    vi.mocked(getTelemetryFromMeter).mockRejectedValue(
+      new Error('Connection refused')
+    )
+
+    startTelemetryCollector()
+
+    vi.useFakeTimers()
+    try {
+      const callback = (globalThis as Record<string, unknown>)
+        .__cronCallback as () => Promise<void>
+      await callback()
+      await vi.advanceTimersByTimeAsync(4000)
+    } finally {
+      vi.useRealTimers()
+    }
+
+    // p-retry v6 `retries: 3` = 1 initial attempt + 3 retries = 4 total
+    expect(getTelemetryFromMeter).toHaveBeenCalledTimes(4)
   })
 })

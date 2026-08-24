@@ -36,8 +36,9 @@ async function collectFromMeter(ip: string, failureCount: number) {
         return await getTelemetryFromMeter(ip)
       },
       {
-        retries: 5,
-        minTimeout: 0,
+        retries: 3,
+        minTimeout: 500,
+        factor: 2,
         onFailedAttempt: (error) => {
           logger.warn(
             `Attempt ${error.attemptNumber} failed for meter ${ip}. ${error.retriesLeft} retries left.`
