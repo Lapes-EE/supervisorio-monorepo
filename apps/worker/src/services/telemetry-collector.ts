@@ -91,6 +91,14 @@ export function startTelemetryCollector() {
   cron.schedule(schedule, async () => {
     logger.debug('Running scheduled telemetry collection...')
 
+    if (queue.size > queue.concurrency) {
+      logger.warn(
+        { queueSize: queue.size, pending: queue.pending },
+        'Fila congestionada. Pulando ciclo de coleta.'
+      )
+      return
+    }
+
     try {
       const allEnabledMeters = await getEligibleMeters()
       const now = new Date()

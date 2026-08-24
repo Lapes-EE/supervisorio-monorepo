@@ -366,4 +366,48 @@ describe('Telemetry Collector Integration', () => {
     await new Promise((resolve) => setTimeout(resolve, 100))
     expect(getTelemetryFromMeter).toHaveBeenCalledTimes(1)
   })
+
+  test('skips the collection cycle when the queue is congested', async () => {
+    // 29 meters = 14 running (queue.concurrency) + 15 pending — the minimum
+    // fleet size to cross queue.size > queue.concurrency. At the current
+    // 14-meter fleet this guard is unreachable; it is the fleet-growth
+    // safety net.
+    const mockMeters = Array.from({ length: 29 }, (_, i) =>
+      createMockMeter({ id: i + 1, ip: `10.0.0.${i + 1}` })
+    )
+    let releaseGate: ((v: unknown) => void) | undefined
+    const gate = new Promise((resolve) => {
+      releaseGate = resolve
+    })
+
+    vi.mocked(getEligibleMeters).mockResolvedValue(mockMeters)
+    vi.mocked(checkMeterEnabled).mockResolvedValue(true)
+    // every task awaits the SAME pending promise, so all running tasks block
+    vi.mocked(getTelemetryFromMeter).mockImplementation(() => gate)
+
+    startTelemetryCollector()
+
+    const callback = (globalThis as Record<string, unknown>)
+      .__cronCallback as () => Promise<void>
+
+    // fire 1: 14 tasks start immediately (concurrency), 15 sit pending
+    await callback()
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(getTelemetryFromMeter).toHaveBeenCalledTimes(14)
+    expect(getEligibleMeters).toHaveBeenCalledTimes(1)
+
+    // fire 2: queue.size (15) > queue.concurrency (14) → cycle skipped before
+    // the DB roundtrip. getEligibleMeters staying at 1 is what distinguishes
+    // this backpressure skip from the in-flight dedup skip.
+    await callback()
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(getTelemetryFromMeter).toHaveBeenCalledTimes(14)
+    expect(getEligibleMeters).toHaveBeenCalledTimes(1)
+
+    // teardown: resolve the shared gate so all 29 tasks (14 running + 15
+    // pending) drain, keeping the module-level queue + in-flight set clean
+    // for later tests
+    releaseGate?.({ potencia_ativa_fundamental_harmonica_total: 100 })
+    await new Promise((resolve) => setTimeout(resolve, 300))
+  })
 })
