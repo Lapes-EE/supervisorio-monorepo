@@ -71,14 +71,13 @@ def calcular_Pkm(x, G, B, k, m):
     Vk = get_V(x, k)
     Vm = get_V(x, m)
 
-    Gkm = G[k, m]
-    Bkm = B[k, m]
+    delta = theta_k - theta_m
 
     return (
-        Vk**2 * Gkm
+        Vk**2 * G
         - Vk * Vm * (
-            Gkm * np.cos(theta_k - theta_m)
-            + Bkm * np.sin(theta_k - theta_m)
+            G * np.cos(delta)
+            + B * np.sin(delta)
         )
     )
 
@@ -91,14 +90,13 @@ def calcular_Qkm(x, G, B, k, m):
     Vk = get_V(x, k)
     Vm = get_V(x, m)
 
-    Gkm = G[k, m]
-    Bkm = B[k, m]
+    delta = theta_k - theta_m
 
     return (
-        -Vk**2 * Bkm
+        -Vk**2 * B
         - Vk * Vm * (
-            Gkm * np.sin(theta_k - theta_m)
-            - Bkm * np.cos(theta_k - theta_m)
+            G * np.sin(delta)
+            - B * np.cos(delta)
         )
     )
 
@@ -147,8 +145,9 @@ def calcular_h_x(x, Y, tipos_z, k, m):
 
     h_x = np.zeros((len(tipos_z), 1))
 
-    G = np.real(Y)
-    B = np.imag(Y)
+    # G e B DA YBUS
+    G_ybus = np.real(Y)
+    B_ybus = np.imag(Y)
 
     for i, tipo in enumerate(tipos_z):
 
@@ -162,17 +161,19 @@ def calcular_h_x(x, Y, tipos_z, k, m):
 
                 h_x[i] = calcular_Pk(
                     x,
-                    G,
-                    B,
+                    G_ybus,
+                    B_ybus,
                     barra_k
                 )
 
             else:
+                G_linha = -np.real(Y[barra_k, barra_m])
+                B_linha = -np.imag(Y[barra_k, barra_m])
 
                 h_x[i] = calcular_Pkm(
                     x,
-                    G,
-                    B,
+                    G_linha,
+                    B_linha,
                     barra_k,
                     barra_m
                 )
@@ -184,20 +185,24 @@ def calcular_h_x(x, Y, tipos_z, k, m):
 
                 h_x[i] = calcular_Qk(
                     x,
-                    G,
-                    B,
+                    G_ybus,
+                    B_ybus,
                     barra_k
                 )
 
             else:
 
+                G_linha = -np.real(Y[barra_k, barra_m])
+                B_linha = -np.imag(Y[barra_k, barra_m])
+
                 h_x[i] = calcular_Qkm(
                     x,
-                    G,
-                    B,
+                    G_linha,
+                    B_linha,
                     barra_k,
                     barra_m
                 )
+
 
         # TENSÃO
         elif tipo == "V":
@@ -214,6 +219,3 @@ def calcular_h_x(x, Y, tipos_z, k, m):
             )
 
     return h_x
-
-
-

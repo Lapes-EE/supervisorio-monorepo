@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from typing import Generator
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -8,6 +9,7 @@ from scalar_fastapi import get_scalar_api_reference
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
+from ..core.config import Sbase
 from ..services.run_estimator import executar_estimador
 
 def normalize_database_url(url: str) -> str:
@@ -57,12 +59,97 @@ class MeasurementOverride(BaseModel):
 
 
 class EstimationRequest(BaseModel):
-    overrides: list[MeasurementOverride] = []
+    overrides: list[MeasurementOverride] = Field(default_factory=list)
 
 
 def get_session() -> Generator[Session, None, None]:
     with Session(engine) as session:
         yield session
+
+
+def _linha_comparacao(comparacao, tipo, indice):
+    """
+    Retorna a linha da tabela de comparação para um dado tipo (P/Q) e índice
+    de barra. Retorna None quando não há correspondência.
+    """
+    if comparacao is None or comparacao.empty or indice is None:
+        return None
+
+    linhas = comparacao[
+        (comparacao["Tipo"] == tipo) & (comparacao["Barra_m"] == indice)
+    ]
+    return linhas.iloc[0] if not linhas.empty else None
+
+
+def _enriquecer_item_pq(item, comparacao, indice):
+    """
+    Adiciona a um item de resposta os valores medidos, estimados e o erro de
+    potência ativa (P, em W) e reativa (Q, em VAr), convertidos de pu para
+    unidades físicas usando Sbase. Campos ausentes ficam como None.
+    """
+    linha_p = _linha_comparacao(comparacao, "P", indice)
+    if linha_p is not None:
+        p_medida = float(linha_p["z_medida (pu)"]) * Sbase
+        p_estimada = float(linha_p["z_estimada (pu)"]) * Sbase
+        item["potencia_ativa_medida_W"] = round(p_medida, 2)
+        item["potencia_ativa_W"] = round(p_estimada, 2)
+        item["erro_potencia_ativa_W"] = round(p_medida - p_estimada, 2)
+    else:
+        item["potencia_ativa_medida_W"] = None
+        item["potencia_ativa_W"] = None
+        item["erro_potencia_ativa_W"] = None
+
+    linha_q = _linha_comparacao(comparacao, "Q", indice)
+    if linha_q is not None:
+        q_medida = float(linha_q["z_medida (pu)"]) * Sbase
+        q_estimada = float(linha_q["z_estimada (pu)"]) * Sbase
+        item["potencia_reativa_medida_VAr"] = round(q_medida, 2)
+        item["potencia_reativa_VAr"] = round(q_estimada, 2)
+        item["erro_potencia_reativa_VAr"] = round(q_medida - q_estimada, 2)
+    else:
+        item["potencia_reativa_medida_VAr"] = None
+        item["potencia_reativa_VAr"] = None
+        item["erro_potencia_reativa_VAr"] = None
+
+
+def _aplicar_overrides(measurements, overrides):
+    if not overrides:
+        return measurements
+
+    override_map = {o.meterId: o for o in overrides}
+    for item in measurements:
+        override = override_map.get(item.get("meterId"))
+        if override is None:
+            continue
+        for field in (
+            "tensaoFaseNeutroC",
+            "potenciaAtivaFundamentalC",
+            "potenciaReativaC",
+        ):
+            value = getattr(override, field)
+            if value is not None:
+                item[field] = value
+    return measurements
+
+
+def _estimar_snapshot(measurements, overrides):
+    resultado = executar_estimador(_aplicar_overrides(measurements, overrides))
+    resultados = resultado["resultados"]
+    tensoes = resultados["tensoes"]
+    comparacao = resultados.get("comparacao")
+
+    for item in tensoes["data"]:
+        _enriquecer_item_pq(item, comparacao, item.get("indice_EE"))
+
+    return tensoes["data"]
+
+
+def _minuto(value):
+    if isinstance(value, datetime):
+        return value.replace(second=0, microsecond=0)
+    return datetime.fromisoformat(str(value).replace("Z", "+00:00")).replace(
+        second=0, microsecond=0
+    )
 
 
 def _calcular_estimacao(
@@ -72,55 +159,43 @@ def _calcular_estimacao(
     statement = """
         SELECT
             meter_id AS "meterId",
-            time,
-            tensao_fase_neutro_c AS "tensaoFaseNeutroC",
-            potencia_ativa_fundamental_c AS "potenciaAtivaFundamentalC",
-            potencia_reativa_c AS "potenciaReativaC"
-        FROM (
-            SELECT
-                meter_id,
-                time,
-                tensao_fase_neutro_c,
-                potencia_ativa_fundamental_c,
-                potencia_reativa_c,
-                ROW_NUMBER() OVER (
-                    PARTITION BY meter_id
-                    ORDER BY time DESC
-                ) AS rn
-            FROM measures
-        ) AS medidas
-        WHERE rn = 1
-        ORDER BY meter_id
+            date_trunc('minute', time) AS time,
+            AVG(tensao_fase_neutro_c) AS "tensaoFaseNeutroC",
+            AVG(potencia_ativa_fundamental_c) AS "potenciaAtivaFundamentalC",
+            AVG(potencia_reativa_c) AS "potenciaReativaC"
+        FROM measures
+        WHERE time >= date_trunc('minute', NOW()) - INTERVAL '4 minutes'
+        GROUP BY meter_id, date_trunc('minute', time)
+        ORDER BY time, meter_id
     """
 
-    measurements = [
+    rows = [
         dict(row) for row in session.execute(text(statement)).mappings().all()
     ]
 
-    if not measurements:
+    if not rows:
         raise HTTPException(
             status_code=404,
             detail="Nenhuma medida encontrada",
         )
 
-    # Apply manual overrides if present
-    if overrides:
-        override_map = {o.meterId: o for o in overrides}
-        for item in measurements:
-            m_id = item.get("meterId")
-            if m_id in override_map:
-                o = override_map[m_id]
-                if o.tensaoFaseNeutroC is not None:
-                    item["tensaoFaseNeutroC"] = o.tensaoFaseNeutroC
-                if o.potenciaAtivaFundamentalC is not None:
-                    item["potenciaAtivaFundamentalC"] = o.potenciaAtivaFundamentalC
-                if o.potenciaReativaC is not None:
-                    item["potenciaReativaC"] = o.potenciaReativaC
+    snapshots = {}
+    for row in rows:
+        bucket = _minuto(row["time"])
+        snapshots.setdefault(bucket, []).append(row)
 
-    resultado = executar_estimador(measurements)
-    resultados = resultado["resultados"]
+    history = [
+        {
+            "time": bucket.isoformat(),
+            "data": _estimar_snapshot(measurements, overrides),
+        }
+        for bucket, measurements in sorted(snapshots.items())
+    ]
 
-    return resultados["tensoes"]
+    return {
+        "data": history[-1]["data"],
+        "history": history,
+    }
 
 
 @app.get("/estimation")

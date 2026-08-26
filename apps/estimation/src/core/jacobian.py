@@ -14,74 +14,83 @@ from .functions import (
 
 # DERIVADAS DE Pkm
 def dPkm_dtheta_k(Vk, Vm, Gkm, Bkm, theta_k, theta_m):
+    delta = theta_k - theta_m
+
     return (
         Vk * Vm
         * (
-            Gkm * np.sin(theta_k - theta_m)
-            - Bkm * np.cos(theta_k - theta_m)
+            Gkm * np.sin(delta)
+            - Bkm * np.cos(delta)
         )
     )
 
 def dPkm_dtheta_m(Vk, Vm, Gkm, Bkm, theta_k, theta_m):
-    return (
+    delta = theta_k - theta_m
+
+    return -(
         Vk * Vm
         * (
-            Bkm * np.cos(theta_k - theta_m)
-            - Gkm * np.sin(theta_k - theta_m)
+            Gkm * np.sin(delta)
+            - Bkm * np.cos(delta)
         )
     )
 
 def dPkm_dVk(Vk, Vm, Gkm, Bkm, theta_k, theta_m):
+    delta = theta_k - theta_m
+
     return (
         2 * Vk * Gkm
         - Vm * (
-            Gkm * np.cos(theta_k - theta_m)
-            + Bkm * np.sin(theta_k - theta_m)
+            Gkm * np.cos(delta)
+            + Bkm * np.sin(delta)
         )
     )
 
 def dPkm_dVm(Vk, Vm, Gkm, Bkm, theta_k, theta_m):
-    return (
-        -Vk * (
-            Gkm * np.cos(theta_k - theta_m)
-            + Bkm * np.sin(theta_k - theta_m)
-        )
+    delta = theta_k - theta_m
+
+    return -Vk * (
+        Gkm * np.cos(delta)
+        + Bkm * np.sin(delta)
     )
 
 # DERIVADAS DE Qkm
 def dQkm_dtheta_k(Vk, Vm, Gkm, Bkm, theta_k, theta_m):
-    return (
-        -Vk * Vm
+    delta = theta_k - theta_m
+
+    return -(
+        Vk * Vm
         * (
-            Gkm * np.cos(theta_k - theta_m)
-            + Bkm * np.sin(theta_k - theta_m)
+            Gkm * np.cos(delta)
+            + Bkm * np.sin(delta)
         )
     )
 
 def dQkm_dtheta_m(Vk, Vm, Gkm, Bkm, theta_k, theta_m):
+    delta = theta_k - theta_m
+
     return (
         Vk * Vm
         * (
-            Gkm * np.cos(theta_k - theta_m)
-            + Bkm * np.sin(theta_k - theta_m)
+            Gkm * np.cos(delta)
+            + Bkm * np.sin(delta)
         )
     )
 
 def dQkm_dVk(Vk, Vm, Gkm, Bkm, theta_k, theta_m):
-    return (
-        -2 * Vk * Bkm
-        - Vm * (
-            Gkm * np.sin(theta_k - theta_m)
-            - Bkm * np.cos(theta_k - theta_m)
-        )
+    delta = theta_k - theta_m
+
+    return -2 * Vk * Bkm - Vm * (
+        Gkm * np.sin(delta)
+        - Bkm * np.cos(delta)
     )
 
 def dQkm_dVm(Vk, Vm, Gkm, Bkm, theta_k, theta_m):
-    return (
-        -Vk * (
-            Gkm * np.sin(theta_k - theta_m)
-            - Bkm * np.cos(theta_k - theta_m)
-        )
+    delta = theta_k - theta_m
+
+    return -Vk * (
+        Gkm * np.sin(delta)
+        - Bkm * np.cos(delta)
     )
 
 # DERIVADAS DE Pk
@@ -165,8 +174,8 @@ def calcular_jacobiana(
         estados do estimador
     """
 
-    G = np.real(Y)
-    B = np.imag(Y)
+    G_ybus = np.real(Y)
+    B_ybus = np.imag(Y)
 
     num_z = len(tipos_z)
 
@@ -185,17 +194,15 @@ def calcular_jacobiana(
         theta_m = get_theta(x, barra_m)
         Vm = get_V(x, barra_m)
 
-        Gkm = G[barra_k, barra_m]
-        Bkm = B[barra_k, barra_m]
-
-        Gkk = G[barra_k, barra_k]
-        Bkk = B[barra_k, barra_k]
-
         # P
         if tipo_med == "P":
 
             # Fluxo Pkm
             if barra_m != barra_k:
+
+                # Admitância da linha k-m
+                Gkm = -np.real(Y[barra_k, barra_m])
+                Bkm = -np.imag(Y[barra_k, barra_m])
 
                 for j, estado in enumerate(estados):
 
@@ -254,15 +261,15 @@ def calcular_jacobiana(
 
                 Pk = calcular_Pk(
                     x,
-                    G,
-                    B,
+                    G_ybus,
+                    B_ybus,
                     barra_k,
                 )
 
                 Qk = calcular_Qk(
                     x,
-                    G,
-                    B,
+                    G_ybus,
+                    B_ybus,
                     barra_k,
                 )
 
@@ -278,7 +285,7 @@ def calcular_jacobiana(
                             H[i, j] = dPk_dtheta_k(
                                 Qk,
                                 Vk,
-                                Bkk,
+                                Bkk = B_ybus[barra_k, barra_k],
                             )
 
                         elif estado == "V":
@@ -286,7 +293,7 @@ def calcular_jacobiana(
                             H[i, j] = dPk_dVk(
                                 Pk,
                                 Vk,
-                                Gkk,
+                                Gkk = G_ybus[barra_k, barra_k],
                             )
 
                     # Barras vizinhas/outros estados
@@ -302,15 +309,9 @@ def calcular_jacobiana(
                             barra_estado,
                         )
 
-                        Gkm_estado = G[
-                            barra_k,
-                            barra_estado,
-                        ]
+                        Gkm_estado = G_ybus[barra_k, barra_estado]
 
-                        Bkm_estado = B[
-                            barra_k,
-                            barra_estado,
-                        ]
+                        Bkm_estado = B_ybus[barra_k, barra_estado]
 
                         if estado == "theta":
 
@@ -338,6 +339,13 @@ def calcular_jacobiana(
 
             # Fluxo Qkm
             if barra_m != barra_k:
+
+                # ==========================================
+                # ADMITÂNCIA DA LINHA k-m
+                # ==========================================
+                Gkm = -np.real(Y[barra_k, barra_m])
+                Bkm = -np.imag(Y[barra_k, barra_m])
+
 
                 for j, estado in enumerate(estados):
 
@@ -396,15 +404,15 @@ def calcular_jacobiana(
 
                 Pk = calcular_Pk(
                     x,
-                    G,
-                    B,
+                    G_ybus,
+                    B_ybus,
                     barra_k,
                 )
 
                 Qk = calcular_Qk(
                     x,
-                    G,
-                    B,
+                    G_ybus,
+                    B_ybus,
                     barra_k,
                 )
 
@@ -420,7 +428,7 @@ def calcular_jacobiana(
                             H[i, j] = dQk_dtheta_k(
                                 Pk,
                                 Vk,
-                                Gkk,
+                                Gkk = G_ybus[barra_k, barra_k],
                             )
 
                         elif estado == "V":
@@ -428,7 +436,7 @@ def calcular_jacobiana(
                             H[i, j] = dQk_dVk(
                                 Qk,
                                 Vk,
-                                Bkk,
+                                Bkk = B_ybus[barra_k, barra_k],
                             )
 
                     # Barras vizinhas/outros estados
@@ -444,15 +452,9 @@ def calcular_jacobiana(
                             barra_estado,
                         )
 
-                        Gkm_estado = G[
-                            barra_k,
-                            barra_estado,
-                        ]
+                        Gkm_estado = G_ybus[barra_k, barra_estado]
 
-                        Bkm_estado = B[
-                            barra_k,
-                            barra_estado,
-                        ]
+                        Bkm_estado = B_ybus[barra_k, barra_estado]
 
                         if estado == "theta":
 
@@ -500,14 +502,3 @@ def calcular_jacobiana(
             )
 
     return H
-
-
-
-
-
-
-
-
-
-
-
