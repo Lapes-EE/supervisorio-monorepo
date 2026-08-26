@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import {
   calculateEstimation,
+  type EstimationItem,
   getEstimation,
   type MeasurementOverride,
 } from '@/http/estimation-api'
@@ -19,6 +20,15 @@ export function useLastMeasurements(overrides: MeasurementOverride[] = []) {
       ])
 
       const estimationItems = estimationResponse.data ?? []
+      const historyByMeter = new Map<number, EstimationItem[]>()
+
+      for (const snapshot of estimationResponse.history ?? []) {
+        for (const item of snapshot.data) {
+          const history = historyByMeter.get(item.ID_medidor) ?? []
+          history.push(item)
+          historyByMeter.set(item.ID_medidor, history)
+        }
+      }
 
       const combinedData: LastMeasurementData[] = estimationItems.map(
         (item) => {
@@ -37,6 +47,13 @@ export function useLastMeasurements(overrides: MeasurementOverride[] = []) {
             tensaoFaseNeutroC: item.tensao_medida_V,
             estimation: item.tensao_V,
             error: item.erro_V,
+            potenciaAtivaFundamentalC: item.potencia_ativa_medida_W,
+            potenciaAtivaEstimada: item.potencia_ativa_W,
+            erroPotenciaAtiva: item.erro_potencia_ativa_W,
+            potenciaReativaC: item.potencia_reativa_medida_VAr,
+            potenciaReativaEstimada: item.potencia_reativa_VAr,
+            erroPotenciaReativa: item.erro_potencia_reativa_VAr,
+            history: historyByMeter.get(item.ID_medidor) ?? [item],
             isOverridden,
           }
         }

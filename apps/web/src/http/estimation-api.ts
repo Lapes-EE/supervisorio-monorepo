@@ -21,10 +21,26 @@ export interface EstimationItem {
   tensao_V: number
   tensao_medida_V: number | null
   erro_V: number | null
+  /** Potência ativa medida (W) */
+  potencia_ativa_medida_W: number | null
+  /** Potência ativa estimada (W) */
+  potencia_ativa_W: number | null
+  /** Erro de potência ativa = medida - estimada (W) */
+  erro_potencia_ativa_W: number | null
+  /** Potência reativa medida (VAr) */
+  potencia_reativa_medida_VAr: number | null
+  /** Potência reativa estimada (VAr) */
+  potencia_reativa_VAr: number | null
+  /** Erro de potência reativa = medida - estimada (VAr) */
+  erro_potencia_reativa_VAr: number | null
 }
 
 export interface EstimationResponse {
   data: EstimationItem[]
+  history: Array<{
+    time: string
+    data: EstimationItem[]
+  }>
 }
 
 export async function getEstimation(): Promise<EstimationResponse> {

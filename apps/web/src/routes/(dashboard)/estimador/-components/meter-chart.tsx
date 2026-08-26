@@ -1,4 +1,5 @@
 import { Activity, Gauge } from 'lucide-react'
+import type { CSSProperties } from 'react'
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
 import {
   Card,
@@ -21,7 +22,9 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
-import { useMeterNames, useVoltageChartData } from './use-voltage-chart'
+import type { EstimationItem } from '@/http/estimation-api'
+import { MEASURE_CONFIG, type MeasureTypeSearch } from './types'
+import { useMeasureChartData, useMeterNames } from './use-measure-chart'
 
 const chartConfig = {
   actual: {
@@ -36,21 +39,19 @@ const chartConfig = {
 
 interface MeterChartProps {
   selectedMeterId?: number
-  selectedEstimation?: number | null
-  latestTime?: string | null
+  selectedMeasure: MeasureTypeSearch['type']
+  history?: EstimationItem[]
 }
 
 export function MeterChart({
   selectedMeterId,
-  selectedEstimation,
-  latestTime,
+  history = [],
+  selectedMeasure,
 }: MeterChartProps) {
   const { data: meters } = useMeterNames()
-  const { data: chartData } = useVoltageChartData(
-    selectedMeterId,
-    selectedEstimation,
-    latestTime
-  )
+  const { data: chartData } = useMeasureChartData(selectedMeasure, history)
+
+  const config = MEASURE_CONFIG[selectedMeasure]
 
   const selectedMeter = meters?.find((m) => m.id === selectedMeterId)
 
@@ -65,7 +66,7 @@ export function MeterChart({
     <Card className="flex h-full flex-col justify-between">
       <CardHeader>
         <CardTitle>
-          Estimação vs Real
+          Medido vs Estimação
           {selectedMeter ? ` - ${selectedMeter.name}` : ''}
         </CardTitle>
         <CardDescription className="min-h-5">{cardDescription}</CardDescription>
@@ -85,7 +86,7 @@ export function MeterChart({
                 right: 12,
               }}
             >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 axisLine={false}
                 dataKey="label"
@@ -95,13 +96,37 @@ export function MeterChart({
               <YAxis
                 axisLine={false}
                 domain={['auto', 'auto']}
-                tickFormatter={(value) => `${value}V`}
+                tickFormatter={(value) => `${value}${config.unit}`}
                 tickLine={false}
                 tickMargin={8}
               />
               <ChartTooltip
-                content={<ChartTooltipContent indicator="line" />}
-                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, name) => (
+                      <>
+                        <div
+                          className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-(--color-bg)"
+                          style={
+                            {
+                              '--color-bg': `var(--color-${name})`,
+                            } as CSSProperties
+                          }
+                        />
+                        {chartConfig[name as keyof typeof chartConfig]?.label ??
+                          name}
+                        <div className="ml-auto flex items-baseline gap-0.5 font-medium font-mono text-foreground tabular-nums">
+                          {typeof value === 'number' ? value.toFixed(2) : '—'}
+                          <span className="font-normal text-muted-foreground">
+                            {config.unit}
+                          </span>
+                        </div>
+                      </>
+                    )}
+                    indicator="line"
+                  />
+                }
+                cursor={true}
               />
               <Line
                 activeDot={{
@@ -113,7 +138,6 @@ export function MeterChart({
                   strokeWidth: 2,
                   r: 4,
                 }}
-                isAnimationActive={false}
                 stroke="var(--color-actual)"
                 strokeWidth={2}
                 type="monotone"
@@ -129,7 +153,6 @@ export function MeterChart({
                   strokeWidth: 2,
                   r: 4,
                 }}
-                isAnimationActive={false}
                 stroke="var(--color-estimated)"
                 strokeWidth={2}
                 type="monotone"
@@ -154,7 +177,7 @@ export function MeterChart({
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
           <Activity className="h-4 w-4 text-primary" />
-          Resíduo = Tensão Real - Tensão Estimada
+          Resíduo = {config.label} Medida - {config.label} Estimada
         </div>
       </CardFooter>
     </Card>
