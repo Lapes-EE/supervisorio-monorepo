@@ -64,6 +64,6 @@ export function useLastMeasurements(overrides: MeasurementOverride[] = []) {
     refetchInterval: isSimulated ? false : 60_000,
     staleTime: isSimulated ? Number.POSITIVE_INFINITY : 60_000,
     placeholderData: (previousData) => previousData,
-    retry: 2,
+    retry: 1,
   })
 }

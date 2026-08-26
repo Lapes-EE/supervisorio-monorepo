@@ -1,6 +1,6 @@
 import NumberFlow from '@number-flow/react'
 import type { ColumnDef } from '@tanstack/react-table'
-import { Edit, Sparkles } from 'lucide-react'
+import { Edit } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import type { LastMeasurementData } from './data'
@@ -35,7 +35,6 @@ export function getColumns(
                 className="gap-1 border-chart-5/60 bg-chart-5/40 text-xs"
                 variant="outline"
               >
-                <Sparkles className="h-3 w-3" />
                 Erro injetado
               </Badge>
             )}
