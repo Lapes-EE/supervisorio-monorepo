@@ -1,6 +1,7 @@
 import os
+import time
 from datetime import datetime
-from typing import Generator
+from typing import Any, Generator
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -164,7 +165,7 @@ def _calcular_estimacao(
             AVG(potencia_ativa_fundamental_c) AS "potenciaAtivaFundamentalC",
             AVG(potencia_reativa_c) AS "potenciaReativaC"
         FROM measures
-        WHERE time >= date_trunc('minute', NOW()) - INTERVAL '4 minutes'
+        WHERE time >= (SELECT COALESCE(MAX(time), NOW()) FROM measures) - INTERVAL '4 minutes'
         GROUP BY meter_id, date_trunc('minute', time)
         ORDER BY time, meter_id
     """
@@ -198,11 +199,34 @@ def _calcular_estimacao(
     }
 
 
+_estimation_cache: dict[str, Any] = {"timestamp": 0.0, "data": None}
+CACHE_TTL_SECONDS = 30.0
+
+
+def _obter_estimacao_com_cache(session: Session) -> dict:
+    agora = time.time()
+    if (
+        _estimation_cache["data"] is not None
+        and (agora - _estimation_cache["timestamp"]) < CACHE_TTL_SECONDS
+    ):
+        return _estimation_cache["data"]
+
+    resultado = _calcular_estimacao(session)
+    _estimation_cache["timestamp"] = agora
+    _estimation_cache["data"] = resultado
+    return resultado
+
+
+def _reset_cache() -> None:
+    _estimation_cache["timestamp"] = 0.0
+    _estimation_cache["data"] = None
+
+
 @app.get("/estimation")
 def get_latest_voltage(
     session: Session = Depends(get_session),
 ):
-    return _calcular_estimacao(session)
+    return _obter_estimacao_com_cache(session)
 
 
 @app.post("/estimation")

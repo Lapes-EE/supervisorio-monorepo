@@ -9,11 +9,19 @@ from src.api.main import (
     get_session,
     normalize_database_url,
     _enriquecer_item_pq,
+    _reset_cache,
 )
 from src.core.config import Sbase
 from .test_run_estimator import criar_telemetry_data_teste
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def reset_estimation_cache():
+    _reset_cache()
+    yield
+    _reset_cache()
 
 
 def test_normalize_database_url():
@@ -261,3 +269,38 @@ def test_get_estimation_includes_power_quantities():
         assert meter1["erro_potencia_reativa_VAr"] is not None
     finally:
         app.dependency_overrides.clear()
+
+
+def test_get_estimation_uses_cache():
+    mock_session = MagicMock()
+    raw_data = criar_telemetry_data_teste()
+    mock_rows = [
+        {
+            "meterId": item["meterId"],
+            "time": item["time"],
+            "tensaoFaseNeutroC": item["measurements"]["tensaoFaseNeutroC"],
+            "potenciaAtivaFundamentalC": item["measurements"]["potenciaAtivaFundamentalC"],
+            "potenciaReativaC": item["measurements"]["potenciaReativaC"],
+        }
+        for item in raw_data
+    ]
+    mock_session.execute.return_value.mappings.return_value.all.return_value = mock_rows
+
+    def override_get_session():
+        yield mock_session
+
+    app.dependency_overrides[get_session] = override_get_session
+    try:
+        # First call queries DB
+        res1 = client.get("/estimation")
+        assert res1.status_code == 200
+        assert mock_session.execute.call_count == 1
+
+        # Second call hits cache (does not query DB again)
+        res2 = client.get("/estimation")
+        assert res2.status_code == 200
+        assert mock_session.execute.call_count == 1
+        assert res1.json() == res2.json()
+    finally:
+        app.dependency_overrides.clear()
+
