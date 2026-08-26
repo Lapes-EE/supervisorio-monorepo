@@ -5,7 +5,7 @@ import { GetTelemetryFieldsAnyOfItem } from '@/http/gen/model/get-telemetry-fiel
 export const measureTypeSchema = z.object({
   type: z
     .enum(['potencia_ativa', 'tensao', 'potencia_reativa'])
-    .default('potencia_ativa'),
+    .default('tensao'),
 })
 
 export type MeasureTypeSearch = z.infer<typeof measureTypeSchema>

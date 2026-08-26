@@ -294,13 +294,96 @@ def test_get_estimation_uses_cache():
         # First call queries DB
         res1 = client.get("/estimation")
         assert res1.status_code == 200
-        assert mock_session.execute.call_count == 1
+        initial_calls = mock_session.execute.call_count
+        assert initial_calls > 0
 
         # Second call hits cache (does not query DB again)
         res2 = client.get("/estimation")
         assert res2.status_code == 200
-        assert mock_session.execute.call_count == 1
+        assert mock_session.execute.call_count == initial_calls
         assert res1.json() == res2.json()
     finally:
         app.dependency_overrides.clear()
+
+
+def test_post_estimation_with_empty_overrides_uses_cache():
+    mock_session = MagicMock()
+    raw_data = criar_telemetry_data_teste()
+    mock_rows = [
+        {
+            "meterId": item["meterId"],
+            "time": item["time"],
+            "tensaoFaseNeutroC": item["measurements"]["tensaoFaseNeutroC"],
+            "potenciaAtivaFundamentalC": item["measurements"]["potenciaAtivaFundamentalC"],
+            "potenciaReativaC": item["measurements"]["potenciaReativaC"],
+        }
+        for item in raw_data
+    ]
+    mock_session.execute.return_value.mappings.return_value.all.return_value = mock_rows
+
+    def override_get_session():
+        yield mock_session
+
+    app.dependency_overrides[get_session] = override_get_session
+    try:
+        res1 = client.get("/estimation")
+        assert res1.status_code == 200
+        calls_after_get = mock_session.execute.call_count
+
+        res2 = client.post("/estimation", json={"overrides": []})
+        assert res2.status_code == 200
+        assert mock_session.execute.call_count == calls_after_get
+        assert res1.json() == res2.json()
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_post_estimation_with_overrides_uses_raw_cache_and_does_not_mutate():
+    mock_session = MagicMock()
+    raw_data = criar_telemetry_data_teste()
+    mock_rows = [
+        {
+            "meterId": item["meterId"],
+            "time": item["time"],
+            "tensaoFaseNeutroC": item["measurements"]["tensaoFaseNeutroC"],
+            "potenciaAtivaFundamentalC": item["measurements"]["potenciaAtivaFundamentalC"],
+            "potenciaReativaC": item["measurements"]["potenciaReativaC"],
+        }
+        for item in raw_data
+    ]
+    mock_session.execute.return_value.mappings.return_value.all.return_value = mock_rows
+
+    def override_get_session():
+        yield mock_session
+
+    app.dependency_overrides[get_session] = override_get_session
+    try:
+        # First call populates raw cache
+        res_get = client.get("/estimation")
+        assert res_get.status_code == 200
+        calls_after_get = mock_session.execute.call_count
+
+        # Override meter 1 voltage
+        res_post = client.post(
+            "/estimation",
+            json={"overrides": [{"meterId": 1, "tensaoFaseNeutroC": 999.0}]},
+        )
+        assert res_post.status_code == 200
+        # Should not query DB again because raw snapshots are cached
+        assert mock_session.execute.call_count == calls_after_get
+
+        post_data = res_post.json()["data"]
+        meter1_post = next(item for item in post_data if item["ID_medidor"] == 1)
+        assert meter1_post["tensao_medida_V"] == 999.0
+
+        # Subsequent GET should still return original unmutated cached value
+        res_get2 = client.get("/estimation")
+        assert res_get2.status_code == 200
+        meter1_get2 = next(
+            item for item in res_get2.json()["data"] if item["ID_medidor"] == 1
+        )
+        assert meter1_get2["tensao_medida_V"] == pytest.approx(218.7025, abs=0.01)
+    finally:
+        app.dependency_overrides.clear()
+
 

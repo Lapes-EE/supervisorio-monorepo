@@ -1,6 +1,6 @@
 import os
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Generator
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -118,19 +118,21 @@ def _aplicar_overrides(measurements, overrides):
         return measurements
 
     override_map = {o.meterId: o for o in overrides}
+    result = []
     for item in measurements:
-        override = override_map.get(item.get("meterId"))
-        if override is None:
-            continue
-        for field in (
-            "tensaoFaseNeutroC",
-            "potenciaAtivaFundamentalC",
-            "potenciaReativaC",
-        ):
-            value = getattr(override, field)
-            if value is not None:
-                item[field] = value
-    return measurements
+        item_copy = dict(item)
+        override = override_map.get(item_copy.get("meterId"))
+        if override is not None:
+            for field in (
+                "tensaoFaseNeutroC",
+                "potenciaAtivaFundamentalC",
+                "potenciaReativaC",
+            ):
+                value = getattr(override, field)
+                if value is not None:
+                    item_copy[field] = value
+        result.append(item_copy)
+    return result
 
 
 def _estimar_snapshot(measurements, overrides):
@@ -153,26 +155,75 @@ def _minuto(value):
     )
 
 
-def _calcular_estimacao(
-    session: Session,
-    overrides: list[MeasurementOverride] | None = None,
-):
-    statement = """
-        SELECT
-            meter_id AS "meterId",
-            date_trunc('minute', time) AS time,
-            AVG(tensao_fase_neutro_c) AS "tensaoFaseNeutroC",
-            AVG(potencia_ativa_fundamental_c) AS "potenciaAtivaFundamentalC",
-            AVG(potencia_reativa_c) AS "potenciaReativaC"
-        FROM measures
-        WHERE time >= (SELECT COALESCE(MAX(time), NOW()) FROM measures) - INTERVAL '4 minutes'
-        GROUP BY meter_id, date_trunc('minute', time)
-        ORDER BY time, meter_id
-    """
+_raw_cache: dict[str, Any] = {"timestamp": 0.0, "snapshots": None}
+_estimation_cache: dict[str, Any] = {"timestamp": 0.0, "data": None}
+CACHE_TTL_SECONDS = 30.0
 
-    rows = [
-        dict(row) for row in session.execute(text(statement)).mappings().all()
-    ]
+
+def _reset_cache() -> None:
+    _raw_cache["timestamp"] = 0.0
+    _raw_cache["snapshots"] = None
+    _estimation_cache["timestamp"] = 0.0
+    _estimation_cache["data"] = None
+
+
+def _fetch_raw_snapshots(session: Session) -> dict:
+    max_time_result = session.execute(
+        text("SELECT time FROM measures ORDER BY time DESC LIMIT 1")
+    ).scalar()
+
+    if max_time_result is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Nenhuma medida encontrada",
+        )
+
+    min_time = None
+    if isinstance(max_time_result, datetime):
+        min_time = max_time_result - timedelta(minutes=4)
+    elif isinstance(max_time_result, str):
+        try:
+            dt = datetime.fromisoformat(max_time_result.replace("Z", "+00:00"))
+            min_time = dt - timedelta(minutes=4)
+        except Exception:
+            min_time = None
+
+    if min_time is not None:
+        statement = """
+            SELECT
+                meter_id AS "meterId",
+                date_trunc('minute', time) AS time,
+                AVG(tensao_fase_neutro_c) AS "tensaoFaseNeutroC",
+                AVG(potencia_ativa_fundamental_c) AS "potenciaAtivaFundamentalC",
+                AVG(potencia_reativa_c) AS "potenciaReativaC"
+            FROM measures
+            WHERE time >= :min_time
+            GROUP BY meter_id, date_trunc('minute', time)
+            ORDER BY time, meter_id
+        """
+        rows = [
+            dict(row)
+            for row in session.execute(
+                text(statement), {"min_time": min_time}
+            ).mappings().all()
+        ]
+    else:
+        # Fallback for environments where scalar() returns mock objects
+        statement = """
+            SELECT
+                meter_id AS "meterId",
+                date_trunc('minute', time) AS time,
+                AVG(tensao_fase_neutro_c) AS "tensaoFaseNeutroC",
+                AVG(potencia_ativa_fundamental_c) AS "potenciaAtivaFundamentalC",
+                AVG(potencia_reativa_c) AS "potenciaReativaC"
+            FROM measures
+            GROUP BY meter_id, date_trunc('minute', time)
+            ORDER BY time, meter_id
+        """
+        rows = [
+            dict(row)
+            for row in session.execute(text(statement)).mappings().all()
+        ]
 
     if not rows:
         raise HTTPException(
@@ -184,6 +235,29 @@ def _calcular_estimacao(
     for row in rows:
         bucket = _minuto(row["time"])
         snapshots.setdefault(bucket, []).append(row)
+
+    return snapshots
+
+
+def _obter_raw_snapshots_com_cache(session: Session) -> dict:
+    agora = time.time()
+    if (
+        _raw_cache["snapshots"] is not None
+        and (agora - _raw_cache["timestamp"]) < CACHE_TTL_SECONDS
+    ):
+        return _raw_cache["snapshots"]
+
+    snapshots = _fetch_raw_snapshots(session)
+    _raw_cache["timestamp"] = agora
+    _raw_cache["snapshots"] = snapshots
+    return snapshots
+
+
+def _calcular_estimacao(
+    session: Session,
+    overrides: list[MeasurementOverride] | None = None,
+):
+    snapshots = _obter_raw_snapshots_com_cache(session)
 
     history = [
         {
@@ -197,10 +271,6 @@ def _calcular_estimacao(
         "data": history[-1]["data"],
         "history": history,
     }
-
-
-_estimation_cache: dict[str, Any] = {"timestamp": 0.0, "data": None}
-CACHE_TTL_SECONDS = 30.0
 
 
 def _obter_estimacao_com_cache(session: Session) -> dict:
@@ -217,11 +287,6 @@ def _obter_estimacao_com_cache(session: Session) -> dict:
     return resultado
 
 
-def _reset_cache() -> None:
-    _estimation_cache["timestamp"] = 0.0
-    _estimation_cache["data"] = None
-
-
 @app.get("/estimation")
 def get_latest_voltage(
     session: Session = Depends(get_session),
@@ -234,6 +299,8 @@ def calculate_voltage_with_overrides(
     request: EstimationRequest,
     session: Session = Depends(get_session),
 ):
+    if not request.overrides:
+        return _obter_estimacao_com_cache(session)
     return _calcular_estimacao(session, request.overrides)
 
 
