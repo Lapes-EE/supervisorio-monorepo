@@ -42,28 +42,24 @@ X_ohms = np.array([
     [0.00563, 0,       0,       0,       0,       0,       0,       0,       0,       0,       0,       0,       0,       0]
 ], dtype=float)
 
-# CONVERSÃO PARA PU
-
 R = R_ohms / Zbase
 X = X_ohms / Zbase
 
-# MONTAGEM DA MATRIZ YBUS
+
 def montar_ybus():
     Y = np.zeros_like(R, dtype=complex)
 
-    # Elementos fora da diagonal
     for i in range(R.shape[0]):
         for j in range(R.shape[1]):
             if i != j and (R[i, j] != 0 or X[i, j] != 0):
                 Y[i, j] = -1 / (R[i, j] + 1j * X[i, j])
 
-    # Elementos da diagonal
     for i in range(R.shape[0]):
         Y[i, i] = -np.sum(Y[i, :])
 
     return Y
 
-# IDENTIFICAÇÃO DAS LINHAS
+
 def obter_linhas(Y):
     linhas = []
     n = Y.shape[0]
@@ -75,9 +71,8 @@ def obter_linhas(Y):
 
     return linhas
 
-# CRIAÇÃO DA REDE
+
 def criar_rede():
     Y = montar_ybus()
     linhas = obter_linhas(Y)
-
     return Y, linhas

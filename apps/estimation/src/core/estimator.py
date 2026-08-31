@@ -77,7 +77,6 @@ def metodo_newton_raphson(
         Número de iterações realizadas.
     """
 
-    # Estado inicial
     x = np.copy(x0)
     
     convergiu = False
@@ -88,7 +87,6 @@ def metodo_newton_raphson(
 
         iteracoes = iteracao + 1
 
-        # Modelo de medição h(x)
         h_x = calcular_h_x(
             x=x,
             Y=Y,
@@ -97,7 +95,6 @@ def metodo_newton_raphson(
             m=m,
         )
 
-        # Jacobiana H
         H = calcular_jacobiana(
             x=x,
             Y=Y,
@@ -119,10 +116,8 @@ def metodo_newton_raphson(
             np.linalg.pinv(G_matrix) @ (H.T @ W @ r)
             )
 
-        # Atualização do estado
         x += delta_x.flatten()
 
-        # Critério de convergência
         delta_norm = np.linalg.norm(delta_x)
 
         if delta_norm < tol:

@@ -1,7 +1,3 @@
-# ==========================================
-# RESULTADOS DO ESTIMADOR DE ESTADO
-# ==========================================
-
 import numpy as np
 import pandas as pd
 
@@ -12,7 +8,6 @@ from ..core.config import (
     limiar_bad_data,
 )
 
-# ESTADO FINAL
 def obter_estado_final(x):
     """
     Converte os ângulos do vetor de estados
@@ -23,7 +18,6 @@ def obter_estado_final(x):
 
     x_graus = np.copy(x)
 
-    # Somente os ângulos são convertidos
     x_graus[:num_barras - 1] = np.degrees(
         x[:num_barras - 1]
     )
@@ -31,7 +25,6 @@ def obter_estado_final(x):
     return x_graus
 
 
-# COMPARAÇÃO DAS MEDIÇÕES
 def criar_comparacao(
     df_dados,
     h_x,
@@ -60,7 +53,6 @@ def criar_comparacao(
     return comparacao
 
 
-# ANÁLISE DE UM TIPO DE MEDIÇÃO
 def analisar_medicoes(
     comparacao,
     tipo,
@@ -75,19 +67,16 @@ def analisar_medicoes(
         comparacao["Tipo"] == tipo
     ].copy()
 
-    # Erro absoluto
     df["Erro Abs (pu)"] = (
         df["z_estimada (pu)"]
         - df["z_medida (pu)"]
     ).abs()
 
-    # Identificação de dado ruim
     df["Bad Data?"] = (
         df["Residuo Normalizado"].abs()
         > limiar
     )
 
-    # Maior resíduo primeiro
     df = df.sort_values(
         by="Residuo Normalizado",
         ascending=False,
@@ -96,7 +85,6 @@ def analisar_medicoes(
     return df
 
 
-# DETECÇÃO DO MAIOR RESÍDUO
 def detectar_bad_data(
     tipos_z,
     k,
@@ -250,7 +238,6 @@ def processar_resultados(
     m = resultado["m"]
     z = resultado["z"]
 
-    # Estado final
     x_graus = obter_estado_final(x)
     
     tensoes_barras = obter_tensoes_barras(
@@ -258,7 +245,6 @@ def processar_resultados(
         df_medicoes,
     )
     
-    # Comparação
     comparacao = criar_comparacao(
         df_dados=df_dados,
         h_x=h_x,
@@ -267,7 +253,6 @@ def processar_resultados(
         r_normalizado=r_normalizado,
     )
 
-    # P, Q e V
     df_p = analisar_medicoes(
         comparacao,
         "P",
@@ -283,7 +268,6 @@ def processar_resultados(
         "V",
     )
 
-    # Bad Data
     bad_data = detectar_bad_data(
         tipos_z=tipos_z,
         k=k,
@@ -293,13 +277,11 @@ def processar_resultados(
         r_normalizado=r_normalizado,
     )
 
-    # Métricas
     metricas = calcular_metricas(
         z=z,
         h_x=h_x,
     )
 
-    # Retorno
     return {
         "estado": x,
         "estado_graus": x_graus,
@@ -310,6 +292,5 @@ def processar_resultados(
         "bad_data": bad_data,
         "metricas": metricas,
         "tensoes": tensoes_barras,
-
     }
 
