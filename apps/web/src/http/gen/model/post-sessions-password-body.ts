@@ -7,7 +7,7 @@
  */
 
 export type PostSessionsPasswordBody = {
-  username: string;
+  username: string
   /** @minLength 6 */
-  password: string;
-};
+  password: string
+}

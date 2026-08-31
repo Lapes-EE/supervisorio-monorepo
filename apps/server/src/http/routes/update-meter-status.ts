@@ -1,16 +1,16 @@
-import { db, schema } from '@repo/db'
-import { eq } from 'drizzle-orm'
-import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
-import z from 'zod'
+import { db, schema } from "@repo/db"
+import { eq } from "drizzle-orm"
+import type { FastifyPluginCallbackZod } from "fastify-type-provider-zod"
+import z from "zod"
 
 export const updateMeterStatus: FastifyPluginCallbackZod = (app) => {
   app.patch(
-    '/meter/:id',
+    "/meter/:id",
     {
       schema: {
-        summary: 'Update meter enabled status',
+        summary: "Update meter enabled status",
         security: [{ bearerAuth: [] }],
-        tags: ['Meters'],
+        tags: ["Meters"],
         params: z.object({
           id: z.coerce.number(),
         }),
@@ -18,11 +18,11 @@ export const updateMeterStatus: FastifyPluginCallbackZod = (app) => {
           enabled: z.boolean(),
         }),
         response: {
-          204: z.null().describe('Estado do medidor atualizado'),
-          400: z.null().describe('Falha ao atualizar estado do medidor'),
+          204: z.null().describe("Estado do medidor atualizado"),
+          400: z.null().describe("Falha ao atualizar estado do medidor"),
           401: z
             .object({ error: z.string() })
-            .describe('Não autorizado, necessita de login'),
+            .describe("Não autorizado, necessita de login"),
         },
       },
       preHandler: [app.authenticate],
@@ -37,7 +37,7 @@ export const updateMeterStatus: FastifyPluginCallbackZod = (app) => {
             .update(schema.meters)
             .set({
               enabled: true,
-              health: 'healthy',
+              health: "healthy",
               failureCount: 0,
               lastFailedAt: null,
             })

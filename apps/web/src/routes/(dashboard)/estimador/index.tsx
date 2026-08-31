@@ -1,8 +1,8 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { zodValidator } from '@tanstack/zod-adapter'
-import { AlertCircleIcon } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { zodValidator } from "@tanstack/zod-adapter"
+import { AlertCircleIcon } from "lucide-react"
+import { useMemo, useState } from "react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   Select,
   SelectContent,
@@ -10,19 +10,19 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Skeleton } from '@/components/ui/skeleton'
-import type { MeasurementOverride } from '@/http/estimation-api'
-import { getColumns } from './-components/columns'
-import type { LastMeasurementData } from './-components/data'
-import { DataTable } from './-components/data-table'
-import { EditVoltageDialog } from './-components/edit-voltage-dialog'
-import { MeterChart } from './-components/meter-chart'
-import { SimulationBanner } from './-components/simulation-banner'
-import { MEASURE_CONFIG, measureTypeSchema } from './-components/types'
-import { useLastMeasurements } from './-components/use-last-measurements'
+} from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
+import type { MeasurementOverride } from "@/http/estimation-api"
+import { getColumns } from "./-components/columns"
+import type { LastMeasurementData } from "./-components/data"
+import { DataTable } from "./-components/data-table"
+import { EditVoltageDialog } from "./-components/edit-voltage-dialog"
+import { MeterChart } from "./-components/meter-chart"
+import { SimulationBanner } from "./-components/simulation-banner"
+import { MEASURE_CONFIG, measureTypeSchema } from "./-components/types"
+import { useLastMeasurements } from "./-components/use-last-measurements"
 
-export const Route = createFileRoute('/(dashboard)/estimador/')({
+export const Route = createFileRoute("/(dashboard)/estimador/")({
   component: RouteComponent,
   validateSearch: zodValidator(measureTypeSchema),
 })

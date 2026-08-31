@@ -1,15 +1,15 @@
-import pino from 'pino'
-import type { Formatted } from './formatted-schema'
-import { indices } from './indices'
+import pino from "pino"
+import type { Formatted } from "./formatted-schema"
+import { indices } from "./indices"
 
-const logger = pino({ name: 'telemetry' })
+const logger = pino({ name: "telemetry" })
 
 // ponytail: calibration knob for DMI meter networks; make env-configurable if sites diverge
 const FETCH_TIMEOUT_MS = 4000
 
 interface ResponseData {
-  sucesso: boolean
   dados: number[][]
+  sucesso: boolean
 }
 
 export async function getTelemetryFromMeter(
@@ -18,27 +18,29 @@ export async function getTelemetryFromMeter(
 ): Promise<Formatted> {
   try {
     const url = new URL(`http://${ip}/sys.cgi`)
-    url.searchParams.set('readshared', '_MedicaoEnergia')
-    url.searchParams.set('type', 'V')
+    url.searchParams.set("readshared", "_MedicaoEnergia")
+    url.searchParams.set("type", "V")
 
     const response = await fetch(url.toString(), {
       signal: AbortSignal.timeout(timeoutMs),
     })
     const data = (await response.json()) as ResponseData
 
-    if (!data?.dados?.[1]) {
-      throw new Error('Resposta inválida da API externa')
+    if (!data.dados[1]) {
+      throw new Error("Resposta inválida da API externa")
     }
 
     const formatted = Object.fromEntries(
       Object.entries(indices).map(([key, idx]) => [key, data.dados[1][idx]])
     ) as Formatted
 
-    logger.debug('[telemetry-service] Telemetria coletada com sucesso.')
+    logger.debug("[telemetry-service] Telemetria coletada com sucesso.")
 
     return formatted
   } catch (err) {
-    logger.error({ ip, err }, '[telemetry-service] Erro ao coletar telemetria')
-    throw new Error(`Erro ao coletar telemetria do medidor ${ip}`)
+    logger.error({ err, ip }, "[telemetry-service] Erro ao coletar telemetria")
+    throw new Error(`Erro ao coletar telemetria do medidor ${ip}`, {
+      cause: err,
+    })
   }
 }

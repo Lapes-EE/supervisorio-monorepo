@@ -1,15 +1,16 @@
-import { useControllableState } from '@radix-ui/react-use-controllable-state'
-import { ChevronsUpDownIcon, PlusIcon } from 'lucide-react'
+import { useControllableState } from "@radix-ui/react-use-controllable-state"
+import { ChevronsUpDownIcon, PlusIcon } from "lucide-react"
 import {
   type ComponentProps,
   createContext,
   type ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useRef,
   useState,
-} from 'react'
-import { Button } from '@/components/ui/button'
+} from "react"
+import { Button } from "@/components/ui/button"
 import {
   Command,
   CommandEmpty,
@@ -18,51 +19,51 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@/components/ui/command'
+} from "@/components/ui/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
-type ComboboxData = {
+interface ComboboxData {
   label: string
   value: string
 }
 
-type ComboboxContextType = {
+interface ComboboxContextType {
   data: ComboboxData[]
-  type: string
-  value: string
+  inputValue: string
+  onOpenChange: (open: boolean) => void
   onValueChange: (value: string) => void
   open: boolean
-  onOpenChange: (open: boolean) => void
-  width: number
-  setWidth: (width: number) => void
-  inputValue: string
   setInputValue: (value: string) => void
+  setWidth: (width: number) => void
+  type: string
+  value: string
+  width: number
 }
 
 const ComboboxContext = createContext<ComboboxContextType>({
   data: [],
-  type: 'item',
-  value: '',
+  inputValue: "",
+  onOpenChange: () => {
+    /* noop */
+  },
   onValueChange: () => {
-    null
+    /* noop */
   },
   open: false,
-  onOpenChange: () => {
-    null
-  },
-  width: 200,
-  setWidth: () => {
-    null
-  },
-  inputValue: '',
   setInputValue: () => {
-    null
+    /* noop */
   },
+  setWidth: () => {
+    /* noop */
+  },
+  type: "item",
+  value: "",
+  width: 200,
 })
 
 export type ComboboxProps = ComponentProps<typeof Popover> & {
@@ -87,31 +88,31 @@ export const Combobox = ({
   ...props
 }: ComboboxProps) => {
   const [value, onValueChange] = useControllableState({
-    defaultProp: defaultValue ?? '',
-    prop: controlledValue,
+    defaultProp: defaultValue ?? "",
     onChange: controlledOnValueChange,
+    prop: controlledValue,
   })
   const [open, onOpenChange] = useControllableState({
     defaultProp: defaultOpen,
-    prop: controlledOpen,
     onChange: controlledOnOpenChange,
+    prop: controlledOpen,
   })
   const [width, setWidth] = useState(200)
-  const [inputValue, setInputValue] = useState('')
+  const [inputValue, setInputValue] = useState("")
 
   return (
     <ComboboxContext.Provider
       value={{
-        type,
-        value,
+        data,
+        inputValue,
+        onOpenChange,
         onValueChange,
         open,
-        onOpenChange,
-        data,
-        width,
-        setWidth,
-        inputValue,
         setInputValue,
+        setWidth,
+        type,
+        value,
+        width,
       }}
     >
       <Popover {...props} onOpenChange={onOpenChange} open={open} />
@@ -126,7 +127,7 @@ export const ComboboxTrigger = ({
   ...props
 }: ComboboxTriggerProps) => {
   const { value, data, type, setWidth } = useContext(ComboboxContext)
-  const ref = useRef<HTMLButtonElement>(null)
+  const ref = useRef<HTMLButtonElement | null>(null)
 
   useEffect(() => {
     // Create a ResizeObserver to detect width changes
@@ -139,6 +140,7 @@ export const ComboboxTrigger = ({
       }
     })
 
+    // biome-ignore lint/suspicious/noUnnecessaryConditions: Ref is populated by React
     if (ref.current) {
       resizeObserver.observe(ref.current)
     }
@@ -173,6 +175,7 @@ export type ComboboxContentProps = ComponentProps<typeof Command> & {
 }
 
 export const ComboboxContent = ({
+  children,
   className,
   popoverOptions,
   ...props
@@ -181,45 +184,24 @@ export const ComboboxContent = ({
 
   return (
     <PopoverContent
-      className={cn('p-0', className)}
-      style={{ width }}
+      className={cn("p-0", className)}
+      style={{ width: `${width}px` }}
       {...popoverOptions}
     >
-      <Command {...props} />
+      <Command {...props}>{children}</Command>
     </PopoverContent>
   )
 }
 
-export type ComboboxInputProps = ComponentProps<typeof CommandInput> & {
-  value?: string
-  defaultValue?: string
-  onValueChange?: (value: string) => void
-}
+export type ComboboxInputProps = ComponentProps<typeof CommandInput>
 
-export const ComboboxInput = ({
-  value: controlledValue,
-  defaultValue,
-  onValueChange: controlledOnValueChange,
-  ...props
-}: ComboboxInputProps) => {
-  const { type, inputValue, setInputValue } = useContext(ComboboxContext)
-
-  const [value, onValueChange] = useControllableState({
-    defaultProp: defaultValue ?? inputValue,
-    prop: controlledValue,
-    onChange: (newValue) => {
-      // Sync with context state
-      setInputValue(newValue)
-      // Call external onChange if provided
-      controlledOnValueChange?.(newValue)
-    },
-  })
+export const ComboboxInput = (props: ComboboxInputProps) => {
+  const { setInputValue, type } = useContext(ComboboxContext)
 
   return (
     <CommandInput
-      onValueChange={onValueChange}
-      placeholder={`Search ${type}...`}
-      value={value}
+      onValueChange={setInputValue}
+      placeholder={`Buscar ${type}...`}
       {...props}
     />
   )
@@ -233,11 +215,13 @@ export const ComboboxList = (props: ComboboxListProps) => (
 
 export type ComboboxEmptyProps = ComponentProps<typeof CommandEmpty>
 
-export const ComboboxEmpty = ({ children, ...props }: ComboboxEmptyProps) => {
+export const ComboboxEmpty = (props: ComboboxEmptyProps) => {
   const { type } = useContext(ComboboxContext)
 
   return (
-    <CommandEmpty {...props}>{children ?? `No ${type} found.`}</CommandEmpty>
+    <CommandEmpty {...props}>
+      {props.children ?? `Nenhum(a) ${type} encontrado(a).`}
+    </CommandEmpty>
   )
 }
 
@@ -252,15 +236,15 @@ export type ComboboxItemProps = ComponentProps<typeof CommandItem>
 export const ComboboxItem = (props: ComboboxItemProps) => {
   const { onValueChange, onOpenChange } = useContext(ComboboxContext)
 
-  return (
-    <CommandItem
-      onSelect={(currentValue) => {
-        onValueChange(currentValue)
-        onOpenChange(false)
-      }}
-      {...props}
-    />
+  const handleSelect = useCallback(
+    (currentValue: string) => {
+      onValueChange(currentValue)
+      onOpenChange(false)
+    },
+    [onValueChange, onOpenChange]
   )
+
+  return <CommandItem onSelect={handleSelect} {...props} />
 }
 
 export type ComboboxSeparatorProps = ComponentProps<typeof CommandSeparator>
@@ -269,10 +253,10 @@ export const ComboboxSeparator = (props: ComboboxSeparatorProps) => (
   <CommandSeparator {...props} />
 )
 
-export type ComboboxCreateNewProps = {
-  onCreateNew: (value: string) => void
+export interface ComboboxCreateNewProps {
   children?: (inputValue: string) => ReactNode
   className?: string
+  onCreateNew: (value: string) => void
 }
 
 export const ComboboxCreateNew = ({
@@ -296,7 +280,7 @@ export const ComboboxCreateNew = ({
   return (
     <button
       className={cn(
-        'relative flex w-full cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+        "relative flex w-full cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
       onClick={handleCreateNew}

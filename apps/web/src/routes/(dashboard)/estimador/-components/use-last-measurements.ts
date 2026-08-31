@@ -1,18 +1,18 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery } from "@tanstack/react-query"
 import {
   calculateEstimation,
   type EstimationItem,
   getEstimation,
   type MeasurementOverride,
-} from '@/http/estimation-api'
-import { getMeters } from '@/http/gen/endpoints/lapes-api'
-import type { LastMeasurementData } from './data'
+} from "@/http/estimation-api"
+import { getMeters } from "@/http/gen/endpoints/lapes-api"
+import type { LastMeasurementData } from "./data"
 
 export function useLastMeasurements(overrides: MeasurementOverride[] = []) {
   const isSimulated = overrides.length > 0
 
   return useQuery({
-    queryKey: ['estimation', 'latest-measurements', overrides],
+    queryKey: ["estimation", "latest-measurements", overrides],
     queryFn: async () => {
       const [estimationResponse, meters] = await Promise.all([
         isSimulated ? calculateEstimation(overrides) : getEstimation(),
@@ -41,7 +41,7 @@ export function useLastMeasurements(overrides: MeasurementOverride[] = []) {
             id: item.ID_medidor,
             meterId: item.ID_medidor,
             name: meter?.name ?? item.barra,
-            time: item.time ?? '',
+            time: item.time ?? "",
             tensaoFaseNeutroA: null,
             tensaoFaseNeutroB: null,
             tensaoFaseNeutroC: item.tensao_medida_V,

@@ -1,11 +1,11 @@
 /** biome-ignore-all lint/performance/noImgElement: I not using next*/
 
-import { type ImgHTMLAttributes, useState } from 'react'
-import { cn } from '@/lib/utils'
+import { type ImgHTMLAttributes, useCallback, useState } from "react"
+import { cn } from "@/lib/utils"
 
 interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
-  blurSrc?: string
   blurAlt?: string
+  blurSrc?: string
   containerClassName?: string
   onLoad?: (e: React.SyntheticEvent<HTMLImageElement, Event>) => void
 }
@@ -14,37 +14,42 @@ function Image({
   className,
   containerClassName,
   blurSrc,
-  blurAlt = 'blur preview',
+  blurAlt = "blur preview",
   alt,
   onLoad,
   ...props
 }: ImageProps) {
   const [isLoaded, setIsLoaded] = useState(false)
 
-  const handleLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    setIsLoaded(true)
-    onLoad?.(e)
-  }
+  const handleLoad = useCallback(
+    (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+      setIsLoaded(true)
+      onLoad?.(e)
+    },
+    [onLoad]
+  )
 
   return (
-    <div className={cn('relative', containerClassName)}>
-      {blurSrc && (
+    <div className={cn("relative", containerClassName)}>
+      {blurSrc ? (
+        // biome-ignore lint/correctness/useImageSize: dynamic preview image
         <img
           alt={blurAlt}
           aria-hidden="true"
           className={cn(
-            'absolute inset-0 h-full w-full object-cover blur-lg transition-opacity duration-500',
-            isLoaded && 'opacity-0'
+            "absolute inset-0 h-full w-full object-cover blur-lg transition-opacity duration-500",
+            isLoaded && "opacity-0"
           )}
           src={blurSrc}
         />
-      )}
-      {/* biome-ignore lint/nursery/noNoninteractiveElementInteractions: img onLoad is a valid native event */}
+      ) : null}
+      {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions: img onLoad is a valid native event */}
+      {/* biome-ignore lint/correctness/useImageSize: dynamic component */}
       <img
         alt={alt}
         className={cn(
-          'z-10 h-full w-full object-contain transition-opacity duration-500',
-          !isLoaded && 'opacity-0',
+          "z-10 h-full w-full object-contain transition-opacity duration-500",
+          !isLoaded && "opacity-0",
           className
         )}
         data-slot="image"

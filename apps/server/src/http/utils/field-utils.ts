@@ -1,6 +1,6 @@
-import type { TelemetryItemSchema } from '../types/get-database-200-response'
+import type { TelemetryItemSchema } from "../types/get-database-200-response"
 
-import type { TelemetryRecord } from '../types/telemetry-record'
+import type { TelemetryRecord } from "../types/telemetry-record"
 
 export type AggregatedMeasure = {
   time: Date
@@ -9,10 +9,10 @@ export type AggregatedMeasure = {
 
 export function isAggregatedMeasure(data: unknown): data is AggregatedMeasure {
   return (
-    typeof data === 'object' &&
+    typeof data === "object" &&
     data !== null &&
-    'time' in data &&
-    'meterId' in data
+    "time" in data &&
+    "meterId" in data
   )
 }
 

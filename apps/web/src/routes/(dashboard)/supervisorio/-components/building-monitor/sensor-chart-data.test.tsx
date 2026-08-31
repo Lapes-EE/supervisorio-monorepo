@@ -1,12 +1,12 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook, waitFor } from '@testing-library/react'
-import type React from 'react'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { getTelemetry } from '@/http/gen/endpoints/lapes-api'
-import type { ToggleSearchSchema } from '../../-types'
-import { useSensorChart } from './sensor-chart-data'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { renderHook, waitFor } from "@testing-library/react"
+import type React from "react"
+import { beforeEach, describe, expect, test, vi } from "vitest"
+import { getTelemetry } from "@/http/gen/endpoints/lapes-api"
+import type { ToggleSearchSchema } from "../../-types"
+import { useSensorChart } from "./sensor-chart-data"
 
-vi.mock('@/http/gen/endpoints/lapes-api', () => ({
+vi.mock("@/http/gen/endpoints/lapes-api", () => ({
   getTelemetry: vi.fn(),
 }))
 
@@ -19,12 +19,12 @@ const createTestQueryClient = () =>
     },
   })
 
-describe('useSensorChart Hook', () => {
+describe("useSensorChart Hook", () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  test('calls getTelemetry with correct parameters when enabled', async () => {
+  test("calls getTelemetry with correct parameters when enabled", async () => {
     const queryClient = createTestQueryClient()
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -35,8 +35,8 @@ describe('useSensorChart Hook', () => {
         {
           id: 1,
           meterId: 1,
-          time: '2026-07-02T20:00:00Z',
-          status: 'success',
+          time: "2026-07-02T20:00:00Z",
+          status: "success",
           measurements: {
             tensaoFaseNeutroA: 220,
             tensaoFaseNeutroB: 221,
@@ -46,21 +46,25 @@ describe('useSensorChart Hook', () => {
       ],
       total: 1,
       period: {
-        startDate: '2026-07-02T20:00:00Z',
-        endDate: '2026-07-02T20:00:00Z',
+        startDate: "2026-07-02T20:00:00Z",
+        endDate: "2026-07-02T20:00:00Z",
       },
       nullCount: 0,
-      aggregation: 'raw',
+      aggregation: "raw",
     }
 
-    // biome-ignore lint/suspicious/noExplicitAny: Mock data doesn't match full type
-    vi.mocked(getTelemetry).mockResolvedValue(mockData as any)
+    vi.mocked(getTelemetry).mockResolvedValue(
+      mockData as unknown as Parameters<
+        typeof vi.mocked<typeof getTelemetry>
+      >[0] extends (...args: never[]) => Promise<infer R>
+        ? R
+        : never
+    )
 
-    // biome-ignore lint/suspicious/noExplicitAny: Mock filter
-    const filter: ToggleSearchSchema = { type: 'voltage' } as any
+    const filter = { type: "voltage" } as unknown as ToggleSearchSchema
 
     const { result } = renderHook(
-      () => useSensorChart(1, 'last_5_minutes', filter),
+      () => useSensorChart(1, "last_5_minutes", filter),
       {
         wrapper,
       }
@@ -69,15 +73,15 @@ describe('useSensorChart Hook', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(getTelemetry).toHaveBeenCalledWith({
-      period: 'last_5_minutes',
+      period: "last_5_minutes",
       meterId: 1,
-      aggregation: 'raw',
+      aggregation: "raw",
     })
 
     expect(result.current.history).toEqual({
       phases: [
         {
-          time: '2026-07-02T20:00:00Z',
+          time: "2026-07-02T20:00:00Z",
           phaseA: 220,
           phaseB: 221,
           phaseC: 222,
@@ -86,17 +90,16 @@ describe('useSensorChart Hook', () => {
     })
   })
 
-  test('is disabled when meterId is undefined', () => {
+  test("is disabled when meterId is undefined", () => {
     const queryClient = createTestQueryClient()
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     )
 
-    // biome-ignore lint/suspicious/noExplicitAny: Mock filter
-    const filter: ToggleSearchSchema = { type: 'voltage' } as any
+    const filter = { type: "voltage" } as unknown as ToggleSearchSchema
 
     const { result } = renderHook(
-      () => useSensorChart(undefined, 'last_5_minutes', filter),
+      () => useSensorChart(undefined, "last_5_minutes", filter),
       {
         wrapper,
       }

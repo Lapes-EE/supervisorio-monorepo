@@ -1,11 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
-import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item'
+import { createFileRoute } from "@tanstack/react-router"
+import type { GetMeters200Item } from "@/http/gen/model/get-meters200-item"
 
-export const Route = createFileRoute('/(dashboard)/settings/$meterId')({
+export const Route = createFileRoute("/(dashboard)/settings/$meterId")({
   component: RouteComponent,
   loader: ({ context, location }) => {
     const meters: GetMeters200Item[] = context.meters
-    const meterId = Number(location.pathname.split('/').at(-1))
+    const meterId = Number(location.pathname.split("/").at(-1))
 
     return meters.find((meter) => meter.id === meterId)
   },
@@ -24,9 +24,9 @@ function RouteComponent() {
       <ul>
         {Object.entries(meter).map(([key, value]) => (
           <li key={key}>
-            <strong>{key}:</strong>{' '}
-            {value && typeof value === 'object' ? (
-              <pre style={{ display: 'inline', margin: 0 }}>
+            <strong>{key}:</strong>{" "}
+            {value && typeof value === "object" ? (
+              <pre style={{ display: "inline", margin: 0 }}>
                 {JSON.stringify(value, null, 2)}
               </pre>
             ) : (

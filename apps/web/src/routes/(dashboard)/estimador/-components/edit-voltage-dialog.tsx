@@ -1,6 +1,6 @@
-import { Check, RotateCcw } from 'lucide-react'
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { Check, RotateCcw } from "lucide-react"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -8,28 +8,28 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import type { MeasurementOverride } from '@/http/estimation-api'
-import type { LastMeasurementData } from './data'
-import { MEASURE_CONFIG, type MeasureTypeSearch } from './types'
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import type { MeasurementOverride } from "@/http/estimation-api"
+import type { LastMeasurementData } from "./data"
+import { MEASURE_CONFIG, type MeasureTypeSearch } from "./types"
 
 interface EditVoltageDialogProps {
+  measureType: MeasureTypeSearch["type"]
   meter: LastMeasurementData | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  measureType: MeasureTypeSearch['type']
-  onSave: (override: MeasurementOverride) => void
   onClear: (meterId: number) => void
+  onOpenChange: (open: boolean) => void
+  onSave: (override: MeasurementOverride) => void
+  open: boolean
 }
 
 interface DialogContentProps {
+  measureType: MeasureTypeSearch["type"]
   meter: LastMeasurementData
-  onOpenChange: (open: boolean) => void
-  measureType: MeasureTypeSearch['type']
-  onSave: (override: MeasurementOverride) => void
   onClear: (meterId: number) => void
+  onOpenChange: (open: boolean) => void
+  onSave: (override: MeasurementOverride) => void
 }
 
 function EditVoltageDialogContent({
@@ -42,7 +42,7 @@ function EditVoltageDialogContent({
   const config = MEASURE_CONFIG[measureType]
   const currentVal = meter[config.measuredKey]
   const [inputValue, setInputValue] = useState(
-    currentVal !== null ? String(currentVal.toFixed(2)) : ''
+    currentVal === null ? "" : String(currentVal.toFixed(2))
   )
 
   const handleApply = () => {
@@ -87,7 +87,7 @@ function EditVoltageDialogContent({
               id="measurement-value"
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   handleApply()
                 }
               }}
@@ -126,7 +126,7 @@ function EditVoltageDialogContent({
             </Button>
           </div>
           <div className="flex gap-1.5">
-            {config.unit === 'V' && (
+            {config.unit === "V" && (
               <>
                 <Button
                   onClick={() => handleDirectPreset(240)}
@@ -151,7 +151,7 @@ function EditVoltageDialogContent({
       </div>
 
       <DialogFooter className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-        {meter.isOverridden && (
+        {meter.isOverridden ? (
           <Button
             className="text-destructive hover:text-destructive"
             onClick={() => {
@@ -165,7 +165,7 @@ function EditVoltageDialogContent({
             <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
             Restaurar Original
           </Button>
-        )}
+        ) : null}
         <div className="flex gap-2 sm:ml-auto">
           <Button
             onClick={() => onOpenChange(false)}

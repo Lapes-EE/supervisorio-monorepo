@@ -1,15 +1,15 @@
-import { db, schema, sql } from '@repo/db'
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { api } from '@/app'
-import { sseConnectionManager } from '../sse/connection-manager'
+import { db, schema, sql } from "@repo/db"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
+import { api } from "@/app"
+import { sseConnectionManager } from "../sse/connection-manager"
 import {
   startTelemetryListener,
   stopTelemetryListener,
-} from '../sse/telemetry-listener'
-import { makeMeters } from '../tests/factories/make-meters'
-import { makeTelemetry } from '../tests/factories/make-telemetry'
+} from "../sse/telemetry-listener"
+import { makeMeters } from "../tests/factories/make-meters"
+import { makeTelemetry } from "../tests/factories/make-telemetry"
 
-describe('SSE Telemetry Route Tests', () => {
+describe("SSE Telemetry Route Tests", () => {
   beforeEach(async () => {
     await api.ready()
     await db.delete(schema.measures).execute()
@@ -22,15 +22,15 @@ describe('SSE Telemetry Route Tests', () => {
     sseConnectionManager.clear()
   })
 
-  test('GET /sse/telemetry registers client in sseConnectionManager', async () => {
-    const addSpy = vi.spyOn(sseConnectionManager, 'add')
+  test("GET /sse/telemetry registers client in sseConnectionManager", async () => {
+    const addSpy = vi.spyOn(sseConnectionManager, "add")
     const controller = new AbortController()
 
     const injectPromise = api.inject({
-      method: 'GET',
-      url: '/sse/telemetry',
+      method: "GET",
+      url: "/sse/telemetry",
       headers: {
-        accept: 'text/event-stream',
+        accept: "text/event-stream",
       },
       signal: controller.signal,
     })
@@ -50,25 +50,25 @@ describe('SSE Telemetry Route Tests', () => {
     addSpy.mockRestore()
   })
 
-  test('GET /sse/telemetry returns 503 if capacity limit is reached', async () => {
+  test("GET /sse/telemetry returns 503 if capacity limit is reached", async () => {
     // Mock connection manager size
     const sizeSpy = vi
-      .spyOn(sseConnectionManager, 'size', 'get')
+      .spyOn(sseConnectionManager, "size", "get")
       .mockReturnValue(100)
 
     const response = await api.inject({
-      method: 'GET',
-      url: '/sse/telemetry',
+      method: "GET",
+      url: "/sse/telemetry",
     })
 
     expect(response.statusCode).toBe(503)
-    expect(response.body).toContain('Server at capacity')
+    expect(response.body).toContain("Server at capacity")
 
     sizeSpy.mockRestore()
   })
 
-  test('telemetry-listener triggers broadcast on DB notify', async () => {
-    const broadcastSpy = vi.spyOn(sseConnectionManager, 'broadcast')
+  test("telemetry-listener triggers broadcast on DB notify", async () => {
+    const broadcastSpy = vi.spyOn(sseConnectionManager, "broadcast")
     const meter = await makeMeters()
 
     // Seed initial measurement
@@ -88,13 +88,13 @@ describe('SSE Telemetry Route Tests', () => {
     await new Promise((resolve) => setTimeout(resolve, 150))
 
     expect(broadcastSpy).toHaveBeenCalledWith(
-      'telemetry-update',
+      "telemetry-update",
       expect.objectContaining({
         total: 1,
         data: expect.arrayContaining([
           expect.objectContaining({
             meterId: meter.id,
-            status: 'success',
+            status: "success",
           }),
         ]),
       })

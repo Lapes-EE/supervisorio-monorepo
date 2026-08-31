@@ -1,7 +1,7 @@
-import NumberFlow from '@number-flow/react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
+import NumberFlow from "@number-flow/react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import type { GetTelemetry200DataItem } from "@/http/gen/model/get-telemetry200-data-item"
 
 interface FrequencyCardProps {
   telemetryData: GetTelemetry200DataItem | undefined

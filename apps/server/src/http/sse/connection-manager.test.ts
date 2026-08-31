@@ -1,9 +1,9 @@
-import type { FastifyReply } from 'fastify'
-import { describe, expect, test, vi } from 'vitest'
-import { SSEConnectionManager } from './connection-manager'
+import type { FastifyReply } from "fastify"
+import { describe, expect, test, vi } from "vitest"
+import { SSEConnectionManager } from "./connection-manager"
 
-describe('SSEConnectionManager', () => {
-  test('should register a connection successfully', () => {
+describe("SSEConnectionManager", () => {
+  test("should register a connection successfully", () => {
     const manager = new SSEConnectionManager()
     const mockReply = {
       sse: {
@@ -16,9 +16,9 @@ describe('SSEConnectionManager', () => {
     expect(manager.size).toBe(1)
   })
 
-  test('should enforce MAX_CONNECTIONS capacity limit', () => {
+  test("should enforce MAX_CONNECTIONS capacity limit", () => {
     const manager = new SSEConnectionManager()
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 100; i += 1) {
       const mockReply = {
         sse: { send: vi.fn() },
       } as unknown as FastifyReply
@@ -32,7 +32,7 @@ describe('SSEConnectionManager', () => {
     expect(manager.size).toBe(100)
   })
 
-  test('should remove a connection successfully', () => {
+  test("should remove a connection successfully", () => {
     const manager = new SSEConnectionManager()
     const mockReply = {
       sse: { send: vi.fn() },
@@ -43,7 +43,7 @@ describe('SSEConnectionManager', () => {
     expect(manager.size).toBe(0)
   })
 
-  test('should broadcast telemetry updates to all active clients', async () => {
+  test("should broadcast telemetry updates to all active clients", async () => {
     const manager = new SSEConnectionManager()
     const send1 = vi.fn().mockResolvedValue(undefined)
     const send2 = vi.fn().mockResolvedValue(undefined)
@@ -54,25 +54,25 @@ describe('SSEConnectionManager', () => {
     manager.add(reply1)
     manager.add(reply2)
 
-    await manager.broadcast('telemetry-update', { meterId: 1 })
+    await manager.broadcast("telemetry-update", { meterId: 1 })
 
     expect(send1).toHaveBeenCalledWith(
       expect.objectContaining({
-        event: 'telemetry-update',
         data: { meterId: 1 },
+        event: "telemetry-update",
       })
     )
     expect(send2).toHaveBeenCalledWith(
       expect.objectContaining({
-        event: 'telemetry-update',
         data: { meterId: 1 },
+        event: "telemetry-update",
       })
     )
   })
 
-  test('should remove dead clients if broadcasting to them fails', async () => {
+  test("should remove dead clients if broadcasting to them fails", async () => {
     const manager = new SSEConnectionManager()
-    const send1 = vi.fn().mockRejectedValue(new Error('Connection lost'))
+    const send1 = vi.fn().mockRejectedValue(new Error("Connection lost"))
     const send2 = vi.fn().mockResolvedValue(undefined)
 
     const reply1 = { sse: { send: send1 } } as unknown as FastifyReply
@@ -81,7 +81,7 @@ describe('SSEConnectionManager', () => {
     manager.add(reply1)
     manager.add(reply2)
 
-    await manager.broadcast('telemetry-update', { meterId: 1 })
+    await manager.broadcast("telemetry-update", { meterId: 1 })
 
     expect(send1).toHaveBeenCalled()
     expect(send2).toHaveBeenCalled()

@@ -1,16 +1,16 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { zodValidator } from '@tanstack/zod-adapter'
-import { useEffect, useRef, useState } from 'react'
-import { useEventSource } from '@/hooks/use-event-source'
-import { BuildingLayout } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/building-layout'
-import { SensorDetailsModal } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/sensor-details-modal'
-import type { Sensor } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/types'
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { zodValidator } from "@tanstack/zod-adapter"
+import { useEffect, useRef, useState } from "react"
+import { useEventSource } from "@/hooks/use-event-source"
+import { BuildingLayout } from "@/routes/(dashboard)/supervisorio/-components/building-monitor/building-layout"
+import { SensorDetailsModal } from "@/routes/(dashboard)/supervisorio/-components/building-monitor/sensor-details-modal"
+import type { Sensor } from "@/routes/(dashboard)/supervisorio/-components/building-monitor/types"
 import {
   toggleSearchSchema,
   typeOption,
-} from './(dashboard)/supervisorio/-types'
+} from "./(dashboard)/supervisorio/-types"
 
-export const Route = createFileRoute('/full-plan')({
+export const Route = createFileRoute("/full-plan")({
   component: SupervisorioFullPlan,
   validateSearch: zodValidator(toggleSearchSchema),
 })
@@ -28,7 +28,7 @@ function SupervisorioFullPlan() {
       const nextType = typeOption[indexRef.current]
 
       navigate({
-        to: '.',
+        to: ".",
         search: (prev) => ({
           ...prev,
           type: nextType,

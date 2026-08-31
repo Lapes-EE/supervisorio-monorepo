@@ -2,57 +2,62 @@ import {
   createRouteMask,
   createRouter,
   RouterProvider,
-} from '@tanstack/react-router'
-import { StrictMode } from 'react'
-import ReactDOM from 'react-dom/client'
+} from "@tanstack/react-router"
+import { StrictMode } from "react"
+import ReactDOM from "react-dom/client"
+
+import { ErrorComponent } from "./components/errors/error-component"
+import { NotFoundComponent } from "./components/errors/not-found"
 
 import {
   getContext,
   Provider,
-} from './integrations/tanstack-query/root-provider.tsx'
+} from "./integrations/tanstack-query/root-provider.tsx"
 
 // Import the generated route tree
-import { routeTree } from './routeTree.gen'
+import { routeTree } from "./routeTree.gen"
 
-import './styles.css'
+import "./styles.css"
 
 const meterEditMask = createRouteMask({
-  routeTree,
-  from: '/telemetria/$meterId/edit',
-  to: '/telemetria',
+  from: "/telemetria/$meterId/edit",
   params: true,
+  routeTree,
+  to: "/telemetria",
 })
 
 const meterDeleteMask = createRouteMask({
-  routeTree,
-  from: '/telemetria/$meterId/delete',
-  to: '/telemetria',
+  from: "/telemetria/$meterId/delete",
   params: true,
+  routeTree,
+  to: "/telemetria",
 })
 
 // Create a new router instance
 const router = createRouter({
-  routeTree,
   context: {
     ...getContext(),
     meters: [],
   },
-  defaultPreload: 'intent',
-  scrollRestoration: true,
-  defaultStructuralSharing: true,
+  defaultErrorComponent: ErrorComponent,
+  defaultNotFoundComponent: NotFoundComponent,
+  defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
+  defaultStructuralSharing: true,
   routeMasks: [meterEditMask, meterDeleteMask],
+  routeTree,
+  scrollRestoration: true,
 })
 
 // Register the router instance for type safety
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router
   }
 }
 
 // Render the app
-const rootElement = document.getElementById('app')
+const rootElement = document.getElementById("app")
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(

@@ -6,10 +6,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetTelemetry200DataItemStatus = typeof GetTelemetry200DataItemStatus[keyof typeof GetTelemetry200DataItemStatus];
-
+export type GetTelemetry200DataItemStatus =
+  (typeof GetTelemetry200DataItemStatus)[keyof typeof GetTelemetry200DataItemStatus]
 
 export const GetTelemetry200DataItemStatus = {
-  success: 'success',
-  error: 'error',
-} as const;
+  error: "error",
+  success: "success",
+} as const

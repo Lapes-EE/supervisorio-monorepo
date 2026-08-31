@@ -1,28 +1,28 @@
 // Tipos de dados dos sensores
 export interface Sensor {
-  id: number
-  name: string
   description: string
-  value: number[]
-  unit: string
   // status: string
   enabled: boolean
   health?: string | null
-  position: { x: number; y: number } // Posição em porcentagem
-  lastUpdate: string
-  // limits: { min: number; max: number }
-  trend: 'up' | 'down' | 'stable'
   history: History
+  id: number
+  lastUpdate: string
+  name: string
+  position: { x: number; y: number } // Posição em porcentagem
+  // limits: { min: number; max: number }
+  trend: "up" | "down" | "stable"
+  unit: string
+  value: number[]
 }
 
-export type PhasePoint = {
-  time: string
+export interface PhasePoint {
   phaseA: number | null
   phaseB: number | null
   phaseC: number | null
+  time: string
 }
 
-export type History = {
+export interface History {
   phases: PhasePoint[]
 }
 
@@ -33,18 +33,18 @@ export interface Position {
 }
 
 export interface Limits {
-  min: number
   max: number
+  min: number
 }
 
 export interface Meter {
-  id: number
-  name: string
-  ip: string
+  description?: string | null
   enabled: boolean
   health?: string | null
-  description?: string | null
-  unit: string
+  id: number
+  ip: string
+  name: string
   position: Position
+  unit: string
   // limits: Limits
 }

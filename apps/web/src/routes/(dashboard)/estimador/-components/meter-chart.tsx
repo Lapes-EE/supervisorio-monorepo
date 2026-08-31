@@ -1,6 +1,6 @@
-import { Activity, Gauge } from 'lucide-react'
-import type { CSSProperties } from 'react'
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
+import { Activity, Gauge } from "lucide-react"
+import type { CSSProperties } from "react"
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 import {
   Card,
   CardContent,
@@ -8,39 +8,39 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from "@/components/ui/card"
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart'
+} from "@/components/ui/chart"
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from '@/components/ui/empty'
-import type { EstimationItem } from '@/http/estimation-api'
-import { MEASURE_CONFIG, type MeasureTypeSearch } from './types'
-import { useMeasureChartData, useMeterNames } from './use-measure-chart'
+} from "@/components/ui/empty"
+import type { EstimationItem } from "@/http/estimation-api"
+import { MEASURE_CONFIG, type MeasureTypeSearch } from "./types"
+import { useMeasureChartData, useMeterNames } from "./use-measure-chart"
 
 const chartConfig = {
   actual: {
-    label: 'Medido',
-    color: 'var(--chart-2)',
+    label: "Medido",
+    color: "var(--chart-2)",
   },
   estimated: {
-    label: 'Estimado',
-    color: 'var(--chart-4)',
+    label: "Estimado",
+    color: "var(--chart-4)",
   },
 } satisfies ChartConfig
 
 interface MeterChartProps {
-  selectedMeterId?: number
-  selectedMeasure: MeasureTypeSearch['type']
   history?: EstimationItem[]
+  selectedMeasure: MeasureTypeSearch["type"]
+  selectedMeterId?: number
 }
 
 export function MeterChart({
@@ -55,11 +55,11 @@ export function MeterChart({
 
   const selectedMeter = meters?.find((m) => m.id === selectedMeterId)
 
-  let cardDescription = 'Selecione um medidor para visualizar o histórico'
+  let cardDescription = "Selecione um medidor para visualizar o histórico"
   if (selectedMeter?.description) {
     cardDescription = selectedMeter.description
   } else if (selectedMeter) {
-    cardDescription = 'Últimos 5 minutos'
+    cardDescription = "Últimos 5 minutos"
   }
 
   return (
@@ -67,7 +67,7 @@ export function MeterChart({
       <CardHeader>
         <CardTitle>
           Medido vs Estimação
-          {selectedMeter ? ` - ${selectedMeter.name}` : ''}
+          {selectedMeter ? ` - ${selectedMeter.name}` : ""}
         </CardTitle>
         <CardDescription className="min-h-5">{cardDescription}</CardDescription>
       </CardHeader>
@@ -95,7 +95,7 @@ export function MeterChart({
               />
               <YAxis
                 axisLine={false}
-                domain={['auto', 'auto']}
+                domain={["auto", "auto"]}
                 tickFormatter={(value) => `${value}${config.unit}`}
                 tickLine={false}
                 tickMargin={8}
@@ -109,14 +109,14 @@ export function MeterChart({
                           className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-(--color-bg)"
                           style={
                             {
-                              '--color-bg': `var(--color-${name})`,
+                              "--color-bg": `var(--color-${name})`,
                             } as CSSProperties
                           }
                         />
                         {chartConfig[name as keyof typeof chartConfig]?.label ??
                           name}
                         <div className="ml-auto flex items-baseline gap-0.5 font-medium font-mono text-foreground tabular-nums">
-                          {typeof value === 'number' ? value.toFixed(2) : '—'}
+                          {typeof value === "number" ? value.toFixed(2) : "—"}
                           <span className="font-normal text-muted-foreground">
                             {config.unit}
                           </span>
@@ -134,7 +134,7 @@ export function MeterChart({
                 }}
                 dataKey="actual"
                 dot={{
-                  fill: 'var(--color-actual)',
+                  fill: "var(--color-actual)",
                   strokeWidth: 2,
                   r: 4,
                 }}
@@ -149,7 +149,7 @@ export function MeterChart({
                 }}
                 dataKey="estimated"
                 dot={{
-                  fill: 'var(--color-estimated)',
+                  fill: "var(--color-estimated)",
                   strokeWidth: 2,
                   r: 4,
                 }}

@@ -6,17 +6,17 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from 'recharts'
+} from "recharts"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { type ChartConfig, ChartContainer } from '@/components/ui/chart'
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
-import { formatTime } from '../../-utils/format-time'
+} from "@/components/ui/card"
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart"
+import type { GetTelemetry200DataItem } from "@/http/gen/model/get-telemetry200-data-item"
+import { formatTime } from "../../-utils/format-time"
 
 interface PowerFactorChartProps {
   data: GetTelemetry200DataItem[] | undefined
@@ -24,9 +24,9 @@ interface PowerFactorChartProps {
 }
 
 const chartConfig = {
-  pfA: { label: 'Fase A', color: 'hsl(var(--chart-1))' },
-  pfB: { label: 'Fase B', color: 'hsl(var(--chart-2))' },
-  pfC: { label: 'Fase C', color: 'hsl(var(--chart-3))' },
+  pfA: { label: "Fase A", color: "hsl(var(--chart-1))" },
+  pfB: { label: "Fase B", color: "hsl(var(--chart-2))" },
+  pfC: { label: "Fase C", color: "hsl(var(--chart-3))" },
 } satisfies ChartConfig
 
 export function PowerFactorChart({ data, isLoading }: PowerFactorChartProps) {

@@ -1,33 +1,33 @@
-import fastifyCors from '@fastify/cors'
-import fastifyJwt from '@fastify/jwt'
-import fastifySSE from '@fastify/sse'
-import fastifySwagger from '@fastify/swagger'
-import { env } from '@repo/env'
-import fastifyApiReference from '@scalar/fastify-api-reference'
-import { fastify } from 'fastify'
+import fastifyCors from "@fastify/cors"
+import fastifyJwt from "@fastify/jwt"
+import fastifySSE from "@fastify/sse"
+import fastifySwagger from "@fastify/swagger"
+import { env } from "@repo/env"
+import fastifyApiReference from "@scalar/fastify-api-reference"
+import { fastify } from "fastify"
 import {
   jsonSchemaTransform,
   serializerCompiler,
   validatorCompiler,
   type ZodTypeProvider,
-} from 'fastify-type-provider-zod'
-import { createMeters } from './http/routes/create-meters'
-import { deleteMeter } from './http/routes/delete-meters'
-import { getDatabaseTelemetry } from './http/routes/get-database-telemetry'
-import { getMeters } from './http/routes/get-meters'
-import { login } from './http/routes/login'
-import { sseTelemetry } from './http/routes/sse-telemetry'
-import { updateMeterStatus } from './http/routes/update-meter-status'
-import { updateMeter } from './http/routes/update-meters'
-import { auth } from './http/utils/middleware.auth'
+} from "fastify-type-provider-zod"
+import { createMeters } from "./http/routes/create-meters"
+import { deleteMeter } from "./http/routes/delete-meters"
+import { getDatabaseTelemetry } from "./http/routes/get-database-telemetry"
+import { getMeters } from "./http/routes/get-meters"
+import { login } from "./http/routes/login"
+import { sseTelemetry } from "./http/routes/sse-telemetry"
+import { updateMeterStatus } from "./http/routes/update-meter-status"
+import { updateMeter } from "./http/routes/update-meters"
+import { auth } from "./http/utils/middleware.auth"
 
 const api = fastify({
   logger: true,
 }).withTypeProvider<ZodTypeProvider>()
 
 api.register(fastifyCors, {
-  origin: [env.WEB_URL, 'http://localhost:3000'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  origin: [env.WEB_URL, "http://localhost:3000"],
 })
 api.register(fastifyJwt, {
   secret: env.JWT_SECRET,
@@ -41,34 +41,32 @@ api.setValidatorCompiler(validatorCompiler)
 
 api.register(fastifySwagger, {
   openapi: {
-    info: {
-      title: 'LAPES - API',
-      description: 'API for supervisory control and data acquisition',
-      version: '1.0.0',
-    },
     components: {
       securitySchemes: {
         bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
+          bearerFormat: "JWT",
+          scheme: "bearer",
+          type: "http",
         },
       },
+    },
+    info: {
+      description: "API for supervisory control and data acquisition",
+      title: "LAPES - API",
+      version: "1.0.0",
     },
   },
   transform: jsonSchemaTransform,
 })
 
 api.register(fastifyApiReference, {
-  routePrefix: '/docs',
   configuration: {
-    theme: 'deepSpace',
+    theme: "deepSpace",
   },
+  routePrefix: "/docs",
 })
 
-api.get('/health', () => {
-  return { status: 'ok' }
-})
+api.get("/health", () => ({ status: "ok" }))
 
 api.register(login) // Ensure login route is registered early for authentication
 api.register(auth) // Register auth plugin globally
@@ -81,7 +79,7 @@ api.register(deleteMeter)
 api.register(getDatabaseTelemetry)
 api.register(sseTelemetry)
 
-api.get('/openapi.json', (_, reply) => {
+api.get("/openapi.json", (_, reply) => {
   const spec = api.swagger()
   reply.send(spec)
 })

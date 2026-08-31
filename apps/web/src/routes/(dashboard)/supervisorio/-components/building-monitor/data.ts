@@ -1,12 +1,12 @@
-import { useQueries, useQuery } from '@tanstack/react-query'
-import { getMeters, getTelemetry } from '@/http/gen/endpoints/lapes-api'
-import type { GetTelemetryAggregation } from '@/http/gen/model/get-telemetry-aggregation'
-import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period'
-import type { GetTelemetry200 } from '@/http/gen/model/get-telemetry200'
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
-import { dayjs } from '@/lib/dayjs'
-import type { ToggleSearchSchema } from '../../-types'
-import type { History, Meter, PhasePoint, Sensor } from './types'
+import { useQueries, useQuery } from "@tanstack/react-query"
+import { getMeters, getTelemetry } from "@/http/gen/endpoints/lapes-api"
+import type { GetTelemetryAggregation } from "@/http/gen/model/get-telemetry-aggregation"
+import type { GetTelemetryPeriod } from "@/http/gen/model/get-telemetry-period"
+import type { GetTelemetry200 } from "@/http/gen/model/get-telemetry200"
+import type { GetTelemetry200DataItem } from "@/http/gen/model/get-telemetry200-data-item"
+import { dayjs } from "@/lib/dayjs"
+import type { ToggleSearchSchema } from "../../-types"
+import type { History, Meter, PhasePoint, Sensor } from "./types"
 
 export const fixedPositions: Array<{ id: number; x: number; y: number }> = [
   // Primeiro andar
@@ -36,7 +36,7 @@ export const fixedPositions: Array<{ id: number; x: number; y: number }> = [
   { id: 14, x: 96, y: 79 },
 ]
 
-import { parameterUnits, type TypeOption } from './constants'
+import { parameterUnits, type TypeOption } from "./constants"
 
 async function getMetersFull(filter: ToggleSearchSchema): Promise<Meter[]> {
   const data = await getMeters()
@@ -69,29 +69,29 @@ export function getSensorHistory(
       return { time: item.time, phaseA: 0, phaseB: 0, phaseC: 0 }
     }
     const m = item.measurements as Required<
-      NonNullable<GetTelemetry200DataItem['measurements']>
+      NonNullable<GetTelemetry200DataItem["measurements"]>
     >
 
     switch (filter.type) {
-      case 'voltage_fn':
+      case "voltage_fn":
         phaseAValue = Number(m.tensaoFaseNeutroA.toFixed(2))
         phaseBValue = Number(m.tensaoFaseNeutroB.toFixed(2))
         phaseCValue = Number(m.tensaoFaseNeutroC.toFixed(2))
         break
 
-      case 'voltage_ff':
+      case "voltage_ff":
         phaseAValue = Number(m.tensaoFaseFaseAB.toFixed(2))
         phaseBValue = Number(m.tensaoFaseFaseBC.toFixed(2))
         phaseCValue = Number(m.tensaoFaseFaseCA.toFixed(2))
         break
 
-      case 'current':
+      case "current":
         phaseAValue = Number(m.correnteA.toFixed(2))
         phaseBValue = Number(m.correnteB.toFixed(2))
         phaseCValue = Number(m.correnteC.toFixed(2))
         break
 
-      case 'current_neutral': {
+      case "current_neutral": {
         const neutralValue = Number(m.correnteNeutroMedido.toFixed(2))
         phaseAValue = neutralValue
         phaseBValue = neutralValue
@@ -99,25 +99,25 @@ export function getSensorHistory(
         break
       }
 
-      case 'power_active':
+      case "power_active":
         phaseAValue = Number((m.potenciaAtivaFundamentalA / 1000).toFixed(2))
         phaseBValue = Number((m.potenciaAtivaFundamentalB / 1000).toFixed(2))
         phaseCValue = Number((m.potenciaAtivaFundamentalC / 1000).toFixed(2))
         break
 
-      case 'power_reactive':
+      case "power_reactive":
         phaseAValue = Number((m.potenciaReativaA / 1000).toFixed(2))
         phaseBValue = Number((m.potenciaReativaB / 1000).toFixed(2))
         phaseCValue = Number((m.potenciaReativaC / 1000).toFixed(2))
         break
 
-      case 'power_apparent':
+      case "power_apparent":
         phaseAValue = Number((m.potenciaAparenteA / 1000).toFixed(2))
         phaseBValue = Number((m.potenciaAparenteB / 1000).toFixed(2))
         phaseCValue = Number((m.potenciaAparenteC / 1000).toFixed(2))
         break
 
-      case 'frequency': {
+      case "frequency": {
         const frequencyValue = Number(m.frequencia.toFixed(2))
         phaseAValue = frequencyValue
         phaseBValue = frequencyValue
@@ -168,66 +168,66 @@ export function getSensorHistory(
 function calculateSensorTrend(
   last?: { value: number; time?: string },
   prev?: { value: number; time?: string }
-): Sensor['trend'] {
+): Sensor["trend"] {
   const threshold = 0.5
   if (!(last && prev)) {
-    return 'stable'
+    return "stable"
   }
 
   const diff = last.value - prev.value
 
   if (diff > threshold) {
-    return 'up'
+    return "up"
   }
 
   if (diff < -threshold) {
-    return 'down'
+    return "down"
   }
 
-  return 'stable'
+  return "stable"
 }
 
 export function getAggregationConfig(period: GetTelemetryPeriod): {
   aggregation: GetTelemetryAggregation
   refetchInterval: number | false
 } {
-  switch (period) {
-    case 'last_measurement':
-      return { aggregation: 'raw', refetchInterval: false }
-    case 'last_5_minutes':
-      return { aggregation: 'raw', refetchInterval: 10_000 } // 10s
-    case 'last_30_minutes':
-      return { aggregation: '30 seconds', refetchInterval: 30_000 } // 30s
-    case 'last_hour':
-      return { aggregation: '1 minute', refetchInterval: 60_000 } // 1min
-    case 'last_6_hours':
-      return { aggregation: '5 minute', refetchInterval: 300_000 } // 5min
-    case 'last_12_hours':
-      return { aggregation: '10 minute', refetchInterval: 600_000 } // 10min
-    case 'last_24_hours':
-      return { aggregation: '20 minute', refetchInterval: 1_200_000 } // 20min
-    case 'today':
-      return { aggregation: '30 minute', refetchInterval: 1_800_000 } // 30min
-    case 'last_7_days':
-      return { aggregation: '1 hour', refetchInterval: 3_600_000 } // 1h
-    case 'this_month':
-    case 'last_30_days':
-      return { aggregation: '3 hours', refetchInterval: 10_800_000 } // 3h
-    case 'this_year':
-      return { aggregation: '1 day', refetchInterval: 86_400_000 } // 24h
+  switch (period as string) {
+    case "last_measurement":
+      return { aggregation: "raw", refetchInterval: false }
+    case "last_5_minutes":
+      return { aggregation: "raw", refetchInterval: 10_000 } // 10s
+    case "last_30_minutes":
+      return { aggregation: "30 seconds", refetchInterval: 30_000 } // 30s
+    case "last_hour":
+      return { aggregation: "1 minute", refetchInterval: 60_000 } // 1min
+    case "last_6_hours":
+      return { aggregation: "5 minute", refetchInterval: 300_000 } // 5min
+    case "last_12_hours":
+      return { aggregation: "10 minute", refetchInterval: 600_000 } // 10min
+    case "last_24_hours":
+      return { aggregation: "20 minute", refetchInterval: 1_200_000 } // 20min
+    case "today":
+      return { aggregation: "30 minute", refetchInterval: 1_800_000 } // 30min
+    case "last_7_days":
+      return { aggregation: "1 hour", refetchInterval: 3_600_000 } // 1h
+    case "this_month":
+    case "last_30_days":
+      return { aggregation: "3 hours", refetchInterval: 10_800_000 } // 3h
+    case "this_year":
+      return { aggregation: "1 day", refetchInterval: 86_400_000 } // 24h
     default:
-      return { aggregation: 'raw', refetchInterval: 30_000 } // 30s
+      return { aggregation: "raw", refetchInterval: 30_000 } // 30s
   }
 }
 
 export function useSensors(filter: ToggleSearchSchema) {
-  const period = filter.period
+  const { period } = filter
   const {
     data: meters,
     isLoading: metersLoading,
     error: metersError,
   } = useQuery({
-    queryKey: ['Meters', filter.type],
+    queryKey: ["Meters", filter.type],
     queryFn: () => getMetersFull(filter),
   })
 
@@ -237,14 +237,13 @@ export function useSensors(filter: ToggleSearchSchema) {
     queries:
       meters?.map((meter) => ({
         refetchInterval: false,
-        queryKey: ['Telemetry', meter.id, period],
-        queryFn: async (): Promise<GetTelemetry200> => {
-          return await getTelemetry({
+        queryKey: ["Telemetry", meter.id, period],
+        queryFn: async (): Promise<GetTelemetry200> =>
+          await getTelemetry({
             period,
             meterId: meter.id,
             aggregation,
-          })
-        },
+          }),
         enabled: !!meters,
       })) ?? [],
   })
@@ -275,12 +274,12 @@ export function useSensors(filter: ToggleSearchSchema) {
         prevValue.reduce((acc, v) => acc + v, 0) / prevValue.length
       const trend = calculateSensorTrend(
         { value: avgCurrentValue, time: lastMeasure.time },
-        { value: avgPrevValue, time: prevMeasure?.time ?? '' }
+        { value: avgPrevValue, time: prevMeasure?.time ?? "" }
       )
 
       return {
         id: meter.id,
-        description: meter.description || '',
+        description: meter.description || "",
         name: meter.name,
         position: meter.position,
         unit: meter.unit,
@@ -288,7 +287,7 @@ export function useSensors(filter: ToggleSearchSchema) {
         health: meter.health,
         trend,
         value,
-        lastUpdate: lastMeasure.time ?? dayjs().format('HH:mm'),
+        lastUpdate: lastMeasure.time ?? dayjs().format("HH:mm"),
         history,
       } satisfies Sensor
     }
@@ -296,15 +295,15 @@ export function useSensors(filter: ToggleSearchSchema) {
     // Fallback para quando não há dados
     return {
       id: meter.id,
-      description: meter.description || '',
+      description: meter.description || "",
       name: meter.name,
       position: meter.position,
       unit: meter.unit,
       enabled: meter.enabled,
       health: meter.health,
-      trend: 'stable' as const,
+      trend: "stable" as const,
       value: [0, 0, 0],
-      lastUpdate: dayjs().format('HH:mm'),
+      lastUpdate: dayjs().format("HH:mm"),
       history,
     } satisfies Sensor
   })

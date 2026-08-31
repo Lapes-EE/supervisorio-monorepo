@@ -1,4 +1,4 @@
-type DataEntry = {
+interface DataEntry {
   time: string
   [key: string]: number | string
 }

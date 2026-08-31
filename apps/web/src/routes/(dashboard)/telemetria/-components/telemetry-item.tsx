@@ -1,15 +1,15 @@
-import NumberFlow from '@number-flow/react'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
+import NumberFlow from "@number-flow/react"
+import { Label } from "@/components/ui/label"
+import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 
-type ItemProps = {
-  label: string
-  value: number | null | undefined
-  isLoading?: boolean
-  suffix?: string
+interface ItemProps {
   className?: string
+  isLoading?: boolean
+  label: string
   style?: React.CSSProperties
+  suffix?: string
+  value: number | null | undefined
 }
 
 export default function TelemetryItem({
@@ -30,7 +30,7 @@ export default function TelemetryItem({
           className={className}
           format={{ minimumFractionDigits: 2 }}
           style={style}
-          suffix={suffix ? ` ${suffix}` : ''}
+          suffix={suffix ? ` ${suffix}` : ""}
           value={value ?? 0}
         />
       )}

@@ -8,10 +8,10 @@
     "test": "dotenv -e ../../.env.test.local vitest run"
   },
   "dependencies": {
-    "drizzle-orm": "^0.45.2",
-    "postgres": "^3.4.4",
     "@repo/env": "workspace:*",
-    "@repo/telemetry": "workspace:*"
+    "@repo/telemetry": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.4"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",

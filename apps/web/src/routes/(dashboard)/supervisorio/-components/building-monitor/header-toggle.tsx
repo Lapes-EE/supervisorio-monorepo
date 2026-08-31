@@ -1,9 +1,9 @@
-import { Link, useNavigate, useSearch } from '@tanstack/react-router'
-import { Maximize } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
+import { Link, useNavigate, useSearch } from "@tanstack/react-router"
+import { Maximize } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -12,20 +12,20 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import type { ToggleSearchSchema } from '../../-types'
-import { toggleSearchSchema } from '../../-types'
-import { getPhaseLabels, isSingleValue, parameterGroups } from './constants'
+} from "@/components/ui/select"
+import type { ToggleSearchSchema } from "../../-types"
+import { toggleSearchSchema } from "../../-types"
+import { getPhaseLabels, isSingleValue, parameterGroups } from "./constants"
 
 export function HeaderToggle() {
-  const search = useSearch({ from: '/(dashboard)/supervisorio/' })
+  const search = useSearch({ from: "/(dashboard)/supervisorio/" })
   const { type, phase } = search
   const navigate = useNavigate()
   const phaseOptions = toggleSearchSchema.shape.phase.def.defaultValue
   const phaseLabels = getPhaseLabels(type)
   const hidePhases = isSingleValue(type)
 
-  const togglePhase = (faseToToggle: 'A' | 'B' | 'C') => {
+  const togglePhase = (faseToToggle: "A" | "B" | "C") => {
     const currentPhases = phase || []
 
     if (currentPhases.includes(faseToToggle)) {
@@ -36,10 +36,10 @@ export function HeaderToggle() {
 
   const handleTypeChange = (value: string) => {
     navigate({
-      to: '.',
+      to: ".",
       search: (prev) => ({
         ...prev,
-        type: value as ToggleSearchSchema['type'],
+        type: value as ToggleSearchSchema["type"],
       }),
     })
   }

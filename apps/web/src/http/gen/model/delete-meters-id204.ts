@@ -9,4 +9,4 @@
 /**
  * Sucesso
  */
-export type DeleteMetersId204 = { [key: string]: unknown };
+export type DeleteMetersId204 = { [key: string]: unknown }

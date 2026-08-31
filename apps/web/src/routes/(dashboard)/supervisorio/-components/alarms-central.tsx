@@ -1,7 +1,7 @@
-import { Activity, AlertTriangle, CheckCircle } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Activity, AlertTriangle, CheckCircle } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
 export default function AlarmsCentral() {
   const activeAlarms = 3
@@ -16,11 +16,11 @@ export default function AlarmsCentral() {
         </h2>
         <div className="flex space-x-2">
           <Badge variant="destructive">
-            {criticalAlarms} Crítico{criticalAlarms !== 1 ? 's' : ''}
+            {criticalAlarms} Crítico{criticalAlarms === 1 ? "" : "s"}
           </Badge>
           <Badge variant="secondary">
             {activeAlarms - criticalAlarms} Ativo
-            {activeAlarms - criticalAlarms !== 1 ? 's' : ''}
+            {activeAlarms - criticalAlarms === 1 ? "" : "s"}
           </Badge>
         </div>
       </div>

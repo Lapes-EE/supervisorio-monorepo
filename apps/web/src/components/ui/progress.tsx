@@ -1,9 +1,9 @@
 import {
   Indicator as ProgressPrimitiveIndicator,
   Root as ProgressPrimitiveRoot,
-} from '@radix-ui/react-progress'
+} from "@radix-ui/react-progress"
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils"
 
 function Progress({
   className,
@@ -13,7 +13,7 @@ function Progress({
   return (
     <ProgressPrimitiveRoot
       className={cn(
-        'relative h-2 w-full overflow-hidden rounded-full bg-primary/20',
+        "relative h-2 w-full overflow-hidden rounded-full bg-primary/20",
         className
       )}
       data-slot="progress"

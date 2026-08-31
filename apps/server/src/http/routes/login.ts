@@ -1,29 +1,29 @@
-import { db, schema } from '@repo/db'
-import { verify } from 'argon2'
-import { eq } from 'drizzle-orm'
-import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
-import z from 'zod'
+import { db, schema } from "@repo/db"
+import { verify } from "argon2"
+import { eq } from "drizzle-orm"
+import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod"
+import z from "zod"
 
 export const login: FastifyPluginAsyncZod = async (server) => {
   await server.post(
-    '/sessions/password',
+    "/sessions/password",
     {
       schema: {
-        tags: ['Auth'],
-        summary: 'Authenticate with e-mail & password',
+        tags: ["Auth"],
+        summary: "Authenticate with e-mail & password",
         body: z.object({
           username: z.string(),
           password: z
             .string()
-            .min(6, { message: 'Password must be at least 6 characters long' }),
+            .min(6, { message: "Password must be at least 6 characters long" }),
         }),
         response: {
           201: z
             .object({
               token: z.string(),
             })
-            .describe('Login realizado, token JWT enviado'),
-          400: z.string().describe('Credenciais inválidas'),
+            .describe("Login realizado, token JWT enviado"),
+          400: z.string().describe("Credenciais inválidas"),
         },
       },
     },
@@ -36,13 +36,13 @@ export const login: FastifyPluginAsyncZod = async (server) => {
         .where(eq(schema.user.username, username))
 
       if (!user) {
-        return reply.status(400).send('Credenciais inválidas')
+        return reply.status(400).send("Credenciais inválidas")
       }
 
       const doesPasswordMatch = await verify(user.password, password)
 
       if (!doesPasswordMatch) {
-        return reply.status(400).send('Credenciais inválidas')
+        return reply.status(400).send("Credenciais inválidas")
       }
 
       const token = await reply.jwtSign(
@@ -51,7 +51,7 @@ export const login: FastifyPluginAsyncZod = async (server) => {
         },
         {
           sign: {
-            expiresIn: '10s',
+            expiresIn: "10s",
           },
         }
       )

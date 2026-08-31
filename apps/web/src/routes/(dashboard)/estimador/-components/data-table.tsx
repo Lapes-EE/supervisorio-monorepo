@@ -3,7 +3,7 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-} from '@tanstack/react-table'
+} from "@tanstack/react-table"
 
 import {
   Table,
@@ -12,7 +12,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from "@/components/ui/table"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -39,18 +39,16 @@ export function DataTable<TData, TValue>({
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                )
-              })}
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </TableHead>
+              ))}
             </TableRow>
           ))}
         </TableHeader>
@@ -63,16 +61,16 @@ export function DataTable<TData, TValue>({
               }
               const isSelected =
                 selectedRowId !== undefined &&
-                (rowData?.meterId === selectedRowId ||
-                  rowData?.id === selectedRowId)
+                (rowData.meterId === selectedRowId ||
+                  rowData.id === selectedRowId)
 
               return (
                 <TableRow
                   className={
-                    onRowClick ? 'cursor-pointer hover:bg-muted/50' : ''
+                    onRowClick ? "cursor-pointer hover:bg-muted/50" : ""
                   }
                   data-selected={isSelected}
-                  data-state={isSelected ? 'selected' : undefined}
+                  data-state={isSelected ? "selected" : undefined}
                   key={row.id}
                   onClick={() => onRowClick?.(row.original)}
                 >

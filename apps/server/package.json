@@ -2,20 +2,19 @@
   "name": "@repo/server",
   "version": "1.0.0",
   "scripts": {
-    "dev": "pnpm env:load tsx watch src/server.ts",
-    "start": "pnpm env:load tsx src/server.ts",
-    "env:load": "dotenv -e ../../.env --",
-    "test": "dotenv -e ../../.env.test.local vitest run --coverage",
     "build": "tsup src/server.ts && tsc",
     "db:generate": "pnpm env:load drizzle-kit generate",
     "db:migrate": "pnpm env:load drizzle-kit migrate",
     "db:migrate:test": "dotenv -e ../../.env.test.local -- drizzle-kit migrate",
     "db:studio": "pnpm env:load drizzle-kit studio",
-    "test:db:up": "docker-compose -f ../../docker-compose-test.yml up -d --wait",
+    "dev": "pnpm env:load tsx watch src/server.ts",
+    "env:load": "dotenv -e ../../.env --",
+    "start": "pnpm env:load tsx src/server.ts",
+    "test": "dotenv -e ../../.env.test.local vitest run --coverage",
     "test:db:down": "docker-compose -f ../../docker-compose-test.yml down -v",
-    "test:db:reset": "pnpm test:db:down && pnpm test:db:up && pnpm db:migrate:test"
+    "test:db:reset": "pnpm test:db:down && pnpm test:db:up && pnpm db:migrate:test",
+    "test:db:up": "docker-compose -f ../../docker-compose-test.yml up -d --wait"
   },
-  "packageManager": "pnpm@9.4.0",
   "dependencies": {
     "@faker-js/faker": "^9.9.0",
     "@fastify/cors": "^11.0.1",
@@ -46,5 +45,6 @@
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "vitest": "^3.0.5"
-  }
+  },
+  "packageManager": "pnpm@9.4.0"
 }

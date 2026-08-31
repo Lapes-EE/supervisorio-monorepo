@@ -6,19 +6,19 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetTelemetryAggregation = typeof GetTelemetryAggregation[keyof typeof GetTelemetryAggregation];
-
+export type GetTelemetryAggregation =
+  (typeof GetTelemetryAggregation)[keyof typeof GetTelemetryAggregation]
 
 export const GetTelemetryAggregation = {
-  raw: 'raw',
-  '30_seconds': '30 seconds',
-  '1_minute': '1 minute',
-  '2_minute': '2 minute',
-  '5_minute': '5 minute',
-  '10_minute': '10 minute',
-  '20_minute': '20 minute',
-  '30_minute': '30 minute',
-  '1_hour': '1 hour',
-  '3_hours': '3 hours',
-  '1_day': '1 day',
-} as const;
+  "1_day": "1 day",
+  "1_hour": "1 hour",
+  "1_minute": "1 minute",
+  "2_minute": "2 minute",
+  "3_hours": "3 hours",
+  "5_minute": "5 minute",
+  "10_minute": "10 minute",
+  "20_minute": "20 minute",
+  "30_minute": "30 minute",
+  "30_seconds": "30 seconds",
+  raw: "raw",
+} as const

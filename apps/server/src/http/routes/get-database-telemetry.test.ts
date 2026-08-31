@@ -1,28 +1,28 @@
-import { db, schema } from '@repo/db'
-import request from 'supertest'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { api } from '@/app'
-import { makeMeters } from '../tests/factories/make-meters'
-import { makeTelemetry } from '../tests/factories/make-telemetry'
-import { availableFields } from '../utils/field-mapping'
-import { getPeriodDates } from '../utils/period-utils'
-import { telemetryQueryBuilder } from '../utils/telemetry-query-builder'
+import { db, schema } from "@repo/db"
+import request from "supertest"
+import { beforeEach, describe, expect, test, vi } from "vitest"
+import { api } from "@/app"
+import { makeMeters } from "../tests/factories/make-meters"
+import { makeTelemetry } from "../tests/factories/make-telemetry"
+import { availableFields } from "../utils/field-mapping"
+import { getPeriodDates } from "../utils/period-utils"
+import { telemetryQueryBuilder } from "../utils/telemetry-query-builder"
 
-describe('Telemetry API Tests', () => {
+describe("Telemetry API Tests", () => {
   beforeEach(async () => {
     await api.ready()
     await db.delete(schema.measures).execute()
   })
 
-  describe('Period Query Parameter Tests', () => {
-    test('Get telemetry for last_5_minutes period', async () => {
+  describe("Period Query Parameter Tests", () => {
+    test("Get telemetry for last_5_minutes period", async () => {
       const meter = await makeMeters()
       const fiveMinutesAgo = new Date(Date.now() - 4 * 60 * 1000).toISOString()
       await makeTelemetry({ meterId: meter.id, time: fiveMinutesAgo })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter.id, period: 'last_5_minutes' })
+        .get("/telemetry")
+        .query({ meterId: meter.id, period: "last_5_minutes" })
 
       expect(response.status).toBe(200)
       expect(response.body).toEqual(
@@ -30,7 +30,7 @@ describe('Telemetry API Tests', () => {
           data: expect.arrayContaining([
             expect.objectContaining({
               meterId: meter.id,
-              status: 'success',
+              status: "success",
               measurements: expect.objectContaining({
                 frequencia: expect.any(Number),
               }),
@@ -46,7 +46,7 @@ describe('Telemetry API Tests', () => {
       )
     })
 
-    test('Get telemetry for last_30_minutes period', async () => {
+    test("Get telemetry for last_30_minutes period", async () => {
       const meter = await makeMeters()
       const twentyFiveMinutesAgo = new Date(
         Date.now() - 25 * 60 * 1000
@@ -54,28 +54,28 @@ describe('Telemetry API Tests', () => {
       await makeTelemetry({ meterId: meter.id, time: twentyFiveMinutesAgo })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter.id, period: 'last_30_minutes' })
+        .get("/telemetry")
+        .query({ meterId: meter.id, period: "last_30_minutes" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(1)
     })
 
-    test('Get telemetry for last_hour period', async () => {
+    test("Get telemetry for last_hour period", async () => {
       const meter = await makeMeters()
       const oneHourAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString()
       await makeTelemetry({ meterId: meter.id, time: oneHourAgo })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter.id, period: 'last_hour' })
+        .get("/telemetry")
+        .query({ meterId: meter.id, period: "last_hour" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(1)
       expect(response.body.total).toBe(1)
     })
 
-    test('Get telemetry for last_6_hours period', async () => {
+    test("Get telemetry for last_6_hours period", async () => {
       const meter = await makeMeters()
       const sixHoursAgo = new Date(
         Date.now() - 3 * 60 * 60 * 1000
@@ -83,14 +83,14 @@ describe('Telemetry API Tests', () => {
       await makeTelemetry({ meterId: meter.id, time: sixHoursAgo })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter.id, period: 'last_6_hours' })
+        .get("/telemetry")
+        .query({ meterId: meter.id, period: "last_6_hours" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(1)
     })
 
-    test('Get telemetry for last_12_hours period', async () => {
+    test("Get telemetry for last_12_hours period", async () => {
       const meter = await makeMeters()
       const twelveHoursAgo = new Date(
         Date.now() - 6 * 60 * 60 * 1000
@@ -98,20 +98,20 @@ describe('Telemetry API Tests', () => {
       await makeTelemetry({ meterId: meter.id, time: twelveHoursAgo })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter.id, period: 'last_12_hours' })
+        .get("/telemetry")
+        .query({ meterId: meter.id, period: "last_12_hours" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(1)
     })
 
-    test('Get telemetry for last_24_hours period', async () => {
+    test("Get telemetry for last_24_hours period", async () => {
       const meter = await makeMeters()
       await makeTelemetry({ meterId: meter.id })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter.id, period: 'last_24_hours' })
+        .get("/telemetry")
+        .query({ meterId: meter.id, period: "last_24_hours" })
 
       expect(response.status).toBe(200)
       expect(response.body).toEqual(
@@ -119,7 +119,7 @@ describe('Telemetry API Tests', () => {
           data: expect.arrayContaining([
             expect.objectContaining({
               meterId: meter.id,
-              status: 'success',
+              status: "success",
               measurements: expect.objectContaining({
                 frequencia: expect.any(Number),
               }),
@@ -135,21 +135,21 @@ describe('Telemetry API Tests', () => {
       )
     })
 
-    test('Get telemetry for today period', async () => {
+    test("Get telemetry for today period", async () => {
       const meter = await makeMeters()
       const today = new Date()
       today.setHours(12, 0, 0, 0) // Set to noon today
       await makeTelemetry({ meterId: meter.id, time: today.toISOString() })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter.id, period: 'today' })
+        .get("/telemetry")
+        .query({ meterId: meter.id, period: "today" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(1)
     })
 
-    test('Get telemetry for last_7_days period', async () => {
+    test("Get telemetry for last_7_days period", async () => {
       const meter = await makeMeters()
       const threeDaysAgo = new Date(
         Date.now() - 3 * 24 * 60 * 60 * 1000
@@ -157,28 +157,28 @@ describe('Telemetry API Tests', () => {
       await makeTelemetry({ meterId: meter.id, time: threeDaysAgo })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter.id, period: 'last_7_days' })
+        .get("/telemetry")
+        .query({ meterId: meter.id, period: "last_7_days" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(1)
     })
 
-    test('Get telemetry for this_month period', async () => {
+    test("Get telemetry for this_month period", async () => {
       const meter = await makeMeters()
       const thisMonth = new Date()
       thisMonth.setDate(2) // Set to early in current month (must be <= today)
       await makeTelemetry({ meterId: meter.id, time: thisMonth.toISOString() })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter.id, period: 'this_month' })
+        .get("/telemetry")
+        .query({ meterId: meter.id, period: "this_month" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(1)
     })
 
-    test('Get telemetry for last_30_days period', async () => {
+    test("Get telemetry for last_30_days period", async () => {
       const meter = await makeMeters()
       const tenDaysAgo = new Date(
         Date.now() - 10 * 24 * 60 * 60 * 1000
@@ -186,48 +186,48 @@ describe('Telemetry API Tests', () => {
       await makeTelemetry({ meterId: meter.id, time: tenDaysAgo })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter.id, period: 'last_30_days' })
+        .get("/telemetry")
+        .query({ meterId: meter.id, period: "last_30_days" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(1)
     })
 
-    test('Get telemetry for this_year period', async () => {
+    test("Get telemetry for this_year period", async () => {
       const meter = await makeMeters()
       const thisYear = new Date()
       thisYear.setMonth(0, 1) // Set to Jan 1st
       await makeTelemetry({ meterId: meter.id, time: thisYear.toISOString() })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter.id, period: 'this_year' })
+        .get("/telemetry")
+        .query({ meterId: meter.id, period: "this_year" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(1)
     })
 
-    test('Get telemetry with invalid period returns 200', async () => {
+    test("Get telemetry with invalid period returns 200", async () => {
       const meter = await makeMeters()
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter.id, period: 'invalid_period' })
+        .get("/telemetry")
+        .query({ meterId: meter.id, period: "invalid_period" })
 
       expect(response.status).toBe(400)
     })
   })
 
-  describe('StartDate and EndDate Query Parameter Tests', () => {
-    test('Get telemetry with custom startDate and endDate', async () => {
+  describe("StartDate and EndDate Query Parameter Tests", () => {
+    test("Get telemetry with custom startDate and endDate", async () => {
       const meter = await makeMeters()
-      const startDate = new Date('2024-01-01T00:00:00.000Z').toISOString()
-      const endDate = new Date('2024-01-02T00:00:00.000Z').toISOString()
-      const testTime = new Date('2024-01-01T12:00:00.000Z').toISOString()
+      const startDate = new Date("2024-01-01T00:00:00.000Z").toISOString()
+      const endDate = new Date("2024-01-02T00:00:00.000Z").toISOString()
+      const testTime = new Date("2024-01-01T12:00:00.000Z").toISOString()
 
       await makeTelemetry({ meterId: meter.id, time: testTime })
 
-      const response = await request(api.server).get('/telemetry').query({
+      const response = await request(api.server).get("/telemetry").query({
         meterId: meter.id,
         startDate,
         endDate,
@@ -239,12 +239,12 @@ describe('Telemetry API Tests', () => {
       expect(response.body.period.endDate).toBe(testTime)
     })
 
-    test('Get telemetry with only startDate', async () => {
+    test("Get telemetry with only startDate", async () => {
       const meter = await makeMeters()
       const startDate = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() // 2 hours ago
       await makeTelemetry({ meterId: meter.id }) // Creates with current time
 
-      const response = await request(api.server).get('/telemetry').query({
+      const response = await request(api.server).get("/telemetry").query({
         meterId: meter.id,
         startDate,
       })
@@ -253,12 +253,12 @@ describe('Telemetry API Tests', () => {
       expect(response.body.data).toHaveLength(1)
     })
 
-    test('Get telemetry with only endDate', async () => {
+    test("Get telemetry with only endDate", async () => {
       const meter = await makeMeters()
       const endDate = new Date(Date.now() + 60 * 60 * 1000).toISOString() // 1 hour from now
       await makeTelemetry({ meterId: meter.id })
 
-      const response = await request(api.server).get('/telemetry').query({
+      const response = await request(api.server).get("/telemetry").query({
         meterId: meter.id,
         endDate,
       })
@@ -267,12 +267,12 @@ describe('Telemetry API Tests', () => {
       expect(response.body.data).toHaveLength(1)
     })
 
-    test('Get telemetry with startDate after endDate returns empty', async () => {
+    test("Get telemetry with startDate after endDate returns empty", async () => {
       const meter = await makeMeters()
-      const startDate = new Date('2024-01-02T00:00:00.000Z').toISOString()
-      const endDate = new Date('2024-01-01T00:00:00.000Z').toISOString()
+      const startDate = new Date("2024-01-02T00:00:00.000Z").toISOString()
+      const endDate = new Date("2024-01-01T00:00:00.000Z").toISOString()
 
-      const response = await request(api.server).get('/telemetry').query({
+      const response = await request(api.server).get("/telemetry").query({
         meterId: meter.id,
         startDate,
         endDate,
@@ -284,8 +284,8 @@ describe('Telemetry API Tests', () => {
     })
   })
 
-  describe('MeterId Query Parameter Tests', () => {
-    test('Get telemetry for specific meterId', async () => {
+  describe("MeterId Query Parameter Tests", () => {
+    test("Get telemetry for specific meterId", async () => {
       const meter1 = await makeMeters()
       const meter2 = await makeMeters()
 
@@ -293,8 +293,8 @@ describe('Telemetry API Tests', () => {
       await makeTelemetry({ meterId: meter2.id, frequencia: 75 })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter1.id, period: 'last_24_hours' })
+        .get("/telemetry")
+        .query({ meterId: meter1.id, period: "last_24_hours" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(1)
@@ -302,7 +302,7 @@ describe('Telemetry API Tests', () => {
       expect(response.body.data[0].measurements.frequencia).toBe(50)
     })
 
-    test('Get telemetry without meterId returns all meters data', async () => {
+    test("Get telemetry without meterId returns all meters data", async () => {
       const meter1 = await makeMeters()
       const meter2 = await makeMeters()
 
@@ -310,17 +310,17 @@ describe('Telemetry API Tests', () => {
       await makeTelemetry({ meterId: meter2.id })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ period: 'last_24_hours' })
+        .get("/telemetry")
+        .query({ period: "last_24_hours" })
 
       expect(response.status).toBe(200)
       expect(response.body.data.length).toBeGreaterThanOrEqual(2)
     })
 
-    test('Get telemetry with non-existent meterId returns empty array', async () => {
+    test("Get telemetry with non-existent meterId returns empty array", async () => {
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: 99_999, period: 'last_24_hours' })
+        .get("/telemetry")
+        .query({ meterId: 99_999, period: "last_24_hours" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toEqual([])
@@ -328,8 +328,8 @@ describe('Telemetry API Tests', () => {
     })
   })
 
-  describe('Last Measurement Period Tests', () => {
-    test('Get last_measurement for specific meterId', async () => {
+  describe("Last Measurement Period Tests", () => {
+    test("Get last_measurement for specific meterId", async () => {
       const meter = await makeMeters()
       const olderTime = new Date(Date.now() - 60 * 60 * 1000).toISOString()
       const newerTime = new Date().toISOString()
@@ -346,8 +346,8 @@ describe('Telemetry API Tests', () => {
       })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter.id, period: 'last_measurement' })
+        .get("/telemetry")
+        .query({ meterId: meter.id, period: "last_measurement" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(1)
@@ -356,7 +356,7 @@ describe('Telemetry API Tests', () => {
       expect(response.body.total).toBe(1)
     })
 
-    test('Get last_measurement for all meters without meterId', async () => {
+    test("Get last_measurement for all meters without meterId", async () => {
       const meter1 = await makeMeters()
       const meter2 = await makeMeters()
 
@@ -364,8 +364,8 @@ describe('Telemetry API Tests', () => {
       await makeTelemetry({ meterId: meter2.id, frequencia: 60 })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ period: 'last_measurement' })
+        .get("/telemetry")
+        .query({ period: "last_measurement" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(2)
@@ -378,17 +378,17 @@ describe('Telemetry API Tests', () => {
       expect(meterIds).toContain(meter2.id)
     })
 
-    test('Get last_measurement without meterId returns empty when no data', async () => {
+    test("Get last_measurement without meterId returns empty when no data", async () => {
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ period: 'last_measurement' })
+        .get("/telemetry")
+        .query({ period: "last_measurement" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toEqual([])
       expect(response.body.total).toBe(0)
     })
 
-    test('Get last_measurement returns only last row per meter', async () => {
+    test("Get last_measurement returns only last row per meter", async () => {
       const meter = await makeMeters()
       const olderTime = new Date(Date.now() - 60 * 60 * 1000).toISOString()
       const newerTime = new Date().toISOString()
@@ -405,8 +405,8 @@ describe('Telemetry API Tests', () => {
       })
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ period: 'last_measurement' })
+        .get("/telemetry")
+        .query({ period: "last_measurement" })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(1)
@@ -414,87 +414,87 @@ describe('Telemetry API Tests', () => {
     })
   })
 
-  describe('Invalid Query Parameter Tests', () => {
-    test('Get telemetry with invalid period returns 400', async () => {
+  describe("Invalid Query Parameter Tests", () => {
+    test("Get telemetry with invalid period returns 400", async () => {
       const meter = await makeMeters()
 
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: meter.id, period: 'invalid_period' })
+        .get("/telemetry")
+        .query({ meterId: meter.id, period: "invalid_period" })
 
       expect(response.status).toBe(400)
     })
 
-    test('Get telemetry with invalid meterId format returns 400', async () => {
+    test("Get telemetry with invalid meterId format returns 400", async () => {
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: 'not_a_number', period: 'last_24_hours' })
+        .get("/telemetry")
+        .query({ meterId: "not_a_number", period: "last_24_hours" })
 
       expect(response.status).toBe(400)
     })
 
-    test('Get telemetry with invalid startDate format returns 400', async () => {
+    test("Get telemetry with invalid startDate format returns 400", async () => {
       const meter = await makeMeters()
 
-      const response = await request(api.server).get('/telemetry').query({
+      const response = await request(api.server).get("/telemetry").query({
         meterId: meter.id,
-        startDate: 'invalid-date-format',
+        startDate: "invalid-date-format",
       })
 
       expect(response.status).toBe(400)
     })
 
-    test('Get telemetry with invalid endDate format returns 400', async () => {
+    test("Get telemetry with invalid endDate format returns 400", async () => {
       const meter = await makeMeters()
 
-      const response = await request(api.server).get('/telemetry').query({
+      const response = await request(api.server).get("/telemetry").query({
         meterId: meter.id,
-        endDate: 'not-iso-datetime',
+        endDate: "not-iso-datetime",
       })
 
       expect(response.status).toBe(400)
     })
 
-    test('Get telemetry with negative meterId returns 400', async () => {
+    test("Get telemetry with negative meterId returns 400", async () => {
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: -1, period: 'last_24_hours' })
+        .get("/telemetry")
+        .query({ meterId: -1, period: "last_24_hours" })
 
       expect(response.status).toBe(400)
     })
 
-    test('Get telemetry with zero meterId returns 400', async () => {
+    test("Get telemetry with zero meterId returns 400", async () => {
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: 0, period: 'last_24_hours' })
+        .get("/telemetry")
+        .query({ meterId: 0, period: "last_24_hours" })
 
       expect(response.status).toBe(400)
     })
   })
 
-  describe('Combined Query Parameter Tests', () => {
-    test('Get telemetry with meterId and period combination', async () => {
+  describe("Combined Query Parameter Tests", () => {
+    test("Get telemetry with meterId and period combination", async () => {
       const meter = await makeMeters()
       await makeTelemetry({ meterId: meter.id })
 
-      const response = await request(api.server).get('/telemetry').query({
+      const response = await request(api.server).get("/telemetry").query({
         meterId: meter.id,
-        period: 'last_24_hours',
+        period: "last_24_hours",
       })
 
       expect(response.status).toBe(200)
       expect(response.body.data).toHaveLength(1)
     })
 
-    test('Get telemetry with meterId and custom date range', async () => {
+    test("Get telemetry with meterId and custom date range", async () => {
       const meter = await makeMeters()
-      const startDate = new Date('2024-01-01T00:00:00.000Z').toISOString()
-      const endDate = new Date('2024-01-02T00:00:00.000Z').toISOString()
-      const testTime = new Date('2024-01-01T12:00:00.000Z').toISOString()
+      const startDate = new Date("2024-01-01T00:00:00.000Z").toISOString()
+      const endDate = new Date("2024-01-02T00:00:00.000Z").toISOString()
+      const testTime = new Date("2024-01-01T12:00:00.000Z").toISOString()
 
       await makeTelemetry({ meterId: meter.id, time: testTime })
 
-      const response = await request(api.server).get('/telemetry').query({
+      const response = await request(api.server).get("/telemetry").query({
         meterId: meter.id,
         startDate,
         endDate,
@@ -505,16 +505,16 @@ describe('Telemetry API Tests', () => {
       expect(response.body.data[0].meterId).toBe(meter.id)
     })
 
-    test('Period parameter should override startDate/endDate', async () => {
+    test("Period parameter should override startDate/endDate", async () => {
       const meter = await makeMeters()
-      const startDate = new Date('2020-01-01T00:00:00.000Z').toISOString()
-      const endDate = new Date('2020-01-02T00:00:00.000Z').toISOString()
+      const startDate = new Date("2020-01-01T00:00:00.000Z").toISOString()
+      const endDate = new Date("2020-01-02T00:00:00.000Z").toISOString()
 
       await makeTelemetry({ meterId: meter.id }) // Creates with current time
 
-      const response = await request(api.server).get('/telemetry').query({
+      const response = await request(api.server).get("/telemetry").query({
         meterId: meter.id,
-        period: 'last_24_hours',
+        period: "last_24_hours",
         startDate,
         endDate,
       })
@@ -525,27 +525,27 @@ describe('Telemetry API Tests', () => {
     })
   })
 
-  describe('Edge Cases', () => {
-    test('Get telemetry with no query parameters', async () => {
-      const response = await request(api.server).get('/telemetry')
+  describe("Edge Cases", () => {
+    test("Get telemetry with no query parameters", async () => {
+      const response = await request(api.server).get("/telemetry")
 
       expect(response.status).toBe(200)
-      expect(response.body).toHaveProperty('data')
-      expect(response.body).toHaveProperty('total')
+      expect(response.body).toHaveProperty("data")
+      expect(response.body).toHaveProperty("total")
     })
 
-    test('Get telemetry with empty query values', async () => {
+    test("Get telemetry with empty query values", async () => {
       const response = await request(api.server)
-        .get('/telemetry')
-        .query({ meterId: '', period: '', startDate: '', endDate: '' })
+        .get("/telemetry")
+        .query({ meterId: "", period: "", startDate: "", endDate: "" })
 
       // Depending on your validation, this might return 400 or handle empty strings
       expect([200, 400]).toContain(response.status)
     })
   })
 
-  describe('Aggregation Tests', () => {
-    test('Get aggregated telemetry', async () => {
+  describe("Aggregation Tests", () => {
+    test("Get aggregated telemetry", async () => {
       const meter = await makeMeters()
       const now = new Date()
       const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000)
@@ -562,22 +562,22 @@ describe('Telemetry API Tests', () => {
         frequencia: 60,
       })
 
-      const response = await request(api.server).get('/telemetry').query({
+      const response = await request(api.server).get("/telemetry").query({
         meterId: meter.id,
-        period: 'last_24_hours',
-        aggregation: '1 hour',
+        period: "last_24_hours",
+        aggregation: "1 hour",
       })
 
       expect(response.status).toBe(200)
-      expect(response.body.aggregation).toBe('1 hour')
+      expect(response.body.aggregation).toBe("1 hour")
       expect(response.body.data.length).toBeGreaterThan(0)
       // Verify structure of aggregated data
-      expect(response.body.data[0]).toHaveProperty('measurements')
-      expect(response.body.data[0].measurements).toHaveProperty('frequencia')
-      expect(response.body.data[0]).not.toHaveProperty('id') // Aggregated data shouldn't have ID
+      expect(response.body.data[0]).toHaveProperty("measurements")
+      expect(response.body.data[0].measurements).toHaveProperty("frequencia")
+      expect(response.body.data[0]).not.toHaveProperty("id") // Aggregated data shouldn't have ID
     })
 
-    test('Get aggregated telemetry without meterId', async () => {
+    test("Get aggregated telemetry without meterId", async () => {
       const meter = await makeMeters()
       await makeTelemetry({
         meterId: meter.id,
@@ -585,9 +585,9 @@ describe('Telemetry API Tests', () => {
         frequencia: 60,
       })
 
-      const response = await request(api.server).get('/telemetry').query({
-        period: 'last_24_hours',
-        aggregation: '1 hour',
+      const response = await request(api.server).get("/telemetry").query({
+        period: "last_24_hours",
+        aggregation: "1 hour",
       })
 
       expect(response.status).toBe(200)
@@ -596,17 +596,18 @@ describe('Telemetry API Tests', () => {
   })
 })
 
-describe('getPeriodDates', () => {
-  test('should throw error for invalid period', () => {
-    // biome-ignore lint/suspicious/noExplicitAny: This function is typed, so i have to pass 'as any' to force a invalid period
-    expect(() => getPeriodDates('invalid_period' as any)).toThrow(
-      'Invalid period'
-    )
+describe("getPeriodDates", () => {
+  test("should throw error for invalid period", () => {
+    expect(() =>
+      getPeriodDates(
+        "invalid_period" as unknown as Parameters<typeof getPeriodDates>[0]
+      )
+    ).toThrow("Invalid period")
   })
 })
 
-describe('Field Test', () => {
-  test('should return only selected fields for raw aggregation', async () => {
+describe("Field Test", () => {
+  test("should return only selected fields for raw aggregation", async () => {
     await api.ready()
     const meter = await makeMeters()
     await makeTelemetry({
@@ -616,30 +617,30 @@ describe('Field Test', () => {
       correnteA: 10,
     })
 
-    const response = await request(api.server).get('/telemetry').query({
+    const response = await request(api.server).get("/telemetry").query({
       meterId: meter.id,
-      period: 'last_24_hours',
-      aggregation: 'raw',
+      period: "last_24_hours",
+      aggregation: "raw",
       fields: '["frequencia","correnteA"]',
     })
 
     expect(response.status).toBe(200)
     expect(response.body.data).toHaveLength(1)
-    const telemetryData = response.body.data[0]
+    const [telemetryData] = response.body.data
 
-    expect(telemetryData.measurements).toHaveProperty('frequencia', 60)
-    expect(telemetryData.measurements).toHaveProperty('correnteA', 10)
+    expect(telemetryData.measurements).toHaveProperty("frequencia", 60)
+    expect(telemetryData.measurements).toHaveProperty("correnteA", 10)
 
     // Ensure required fields are present
-    expect(telemetryData).toHaveProperty('id')
-    expect(telemetryData).toHaveProperty('meterId', meter.id)
-    expect(telemetryData).toHaveProperty('time')
+    expect(telemetryData).toHaveProperty("id")
+    expect(telemetryData).toHaveProperty("meterId", meter.id)
+    expect(telemetryData).toHaveProperty("time")
 
-    expect(telemetryData.measurements).not.toHaveProperty('tensaoFaseNeutroA')
-    expect(telemetryData.measurements).not.toHaveProperty('potenciaReativaB')
+    expect(telemetryData.measurements).not.toHaveProperty("tensaoFaseNeutroA")
+    expect(telemetryData.measurements).not.toHaveProperty("potenciaReativaB")
   })
 
-  test('should return only selected fields for aggregated data', async () => {
+  test("should return only selected fields for aggregated data", async () => {
     const meter = await makeMeters()
     const now = new Date()
     // Set to 5 and 15 minutes of the previous hour to ensure they are in the same 1h bucket and in the past
@@ -663,30 +664,30 @@ describe('Field Test', () => {
       tensaoFaseNeutroA: 240,
     })
 
-    const response = await request(api.server).get('/telemetry').query({
+    const response = await request(api.server).get("/telemetry").query({
       meterId: meter.id,
-      period: 'last_24_hours',
-      aggregation: '1 hour',
+      period: "last_24_hours",
+      aggregation: "1 hour",
       fields: '["frequencia"]',
     })
 
     expect(response.status).toBe(200)
     expect(response.body.data).toHaveLength(1) // Aggregated into one hour
-    const telemetryData = response.body.data[0]
+    const [telemetryData] = response.body.data
 
-    expect(telemetryData.measurements).toHaveProperty('frequencia')
+    expect(telemetryData.measurements).toHaveProperty("frequencia")
     expect(telemetryData.measurements.frequencia).toBeCloseTo(60) // Average of 50 and 70
 
     // Ensure required fields are present
-    expect(telemetryData).toHaveProperty('meterId', meter.id)
-    expect(telemetryData).toHaveProperty('time')
-    expect(telemetryData).not.toHaveProperty('id') // Aggregated data shouldn't have ID
+    expect(telemetryData).toHaveProperty("meterId", meter.id)
+    expect(telemetryData).toHaveProperty("time")
+    expect(telemetryData).not.toHaveProperty("id") // Aggregated data shouldn't have ID
 
-    expect(telemetryData.measurements).not.toHaveProperty('tensaoFaseNeutroA')
-    expect(telemetryData.measurements).not.toHaveProperty('correnteA')
+    expect(telemetryData.measurements).not.toHaveProperty("tensaoFaseNeutroA")
+    expect(telemetryData.measurements).not.toHaveProperty("correnteA")
   })
 
-  test('should return all fields if no fields are specified (raw)', async () => {
+  test("should return all fields if no fields are specified (raw)", async () => {
     const meter = await makeMeters()
     await makeTelemetry({
       meterId: meter.id,
@@ -694,25 +695,25 @@ describe('Field Test', () => {
       tensaoFaseNeutroA: 220,
     })
 
-    const response = await request(api.server).get('/telemetry').query({
+    const response = await request(api.server).get("/telemetry").query({
       meterId: meter.id,
-      period: 'last_24_hours',
-      aggregation: 'raw',
+      period: "last_24_hours",
+      aggregation: "raw",
     })
 
     expect(response.status).toBe(200)
     expect(response.body.data).toHaveLength(1)
-    const telemetryData = response.body.data[0]
+    const [telemetryData] = response.body.data
 
-    expect(telemetryData).toHaveProperty('id')
-    expect(telemetryData).toHaveProperty('meterId', meter.id)
-    expect(telemetryData).toHaveProperty('time')
+    expect(telemetryData).toHaveProperty("id")
+    expect(telemetryData).toHaveProperty("meterId", meter.id)
+    expect(telemetryData).toHaveProperty("time")
 
     for (const field of availableFields) {
       expect(telemetryData.measurements).toHaveProperty(field)
-      if (field === 'frequencia') {
+      if (field === "frequencia") {
         expect(telemetryData.measurements[field]).toBe(60)
-      } else if (field === 'tensaoFaseNeutroA') {
+      } else if (field === "tensaoFaseNeutroA") {
         expect(telemetryData.measurements[field]).toBe(220)
       } else {
         expect(telemetryData.measurements[field]).toBe(0)
@@ -720,7 +721,7 @@ describe('Field Test', () => {
     }
   })
 
-  test('should return all fields if no fields are specified (aggregated)', async () => {
+  test("should return all fields if no fields are specified (aggregated)", async () => {
     const meter = await makeMeters()
     await makeTelemetry({
       meterId: meter.id,
@@ -728,25 +729,25 @@ describe('Field Test', () => {
       tensaoFaseNeutroA: 220,
     })
 
-    const response = await request(api.server).get('/telemetry').query({
+    const response = await request(api.server).get("/telemetry").query({
       meterId: meter.id,
-      period: 'last_24_hours',
-      aggregation: '1 hour',
+      period: "last_24_hours",
+      aggregation: "1 hour",
     })
 
     expect(response.status).toBe(200)
     expect(response.body.data).toHaveLength(1)
-    const telemetryData = response.body.data[0]
+    const [telemetryData] = response.body.data
 
-    expect(telemetryData).not.toHaveProperty('id')
-    expect(telemetryData).toHaveProperty('meterId', meter.id)
-    expect(telemetryData).toHaveProperty('time')
+    expect(telemetryData).not.toHaveProperty("id")
+    expect(telemetryData).toHaveProperty("meterId", meter.id)
+    expect(telemetryData).toHaveProperty("time")
 
     for (const field of availableFields) {
       expect(telemetryData.measurements).toHaveProperty(field)
-      if (field === 'frequencia') {
+      if (field === "frequencia") {
         expect(telemetryData.measurements[field]).toBeCloseTo(60)
-      } else if (field === 'tensaoFaseNeutroA') {
+      } else if (field === "tensaoFaseNeutroA") {
         expect(telemetryData.measurements[field]).toBeCloseTo(220)
       } else {
         expect(telemetryData.measurements[field]).toBe(0)
@@ -754,7 +755,7 @@ describe('Field Test', () => {
     }
   })
 
-  test('returns error status for rows with all-null measurements', async () => {
+  test("returns error status for rows with all-null measurements", async () => {
     const meter = await makeMeters()
 
     // Insert a row with all measurement fields null (simulating worker failure)
@@ -771,21 +772,21 @@ describe('Field Test', () => {
     })
 
     const response = await request(api.server)
-      .get('/telemetry')
-      .query({ meterId: meter.id, period: 'last_24_hours' })
+      .get("/telemetry")
+      .query({ meterId: meter.id, period: "last_24_hours" })
 
     expect(response.status).toBe(200)
     expect(response.body.data).toHaveLength(1)
     expect(response.body.data[0].meterId).toBe(meter.id)
-    expect(response.body.data[0].status).toBe('error')
+    expect(response.body.data[0].status).toBe("error")
     expect(response.body.data[0].message).toBe(
-      'Timeout na comunicação com o medidor'
+      "Timeout na comunicação com o medidor"
     )
     expect(response.body.data[0].measurements).toBeNull()
     expect(response.body.nullCount).toBe(1)
   })
 
-  test('should be return one measurements', async () => {
+  test("should be return one measurements", async () => {
     const meter = await makeMeters()
     await makeTelemetry({
       meterId: meter.id,
@@ -793,14 +794,14 @@ describe('Field Test', () => {
     })
 
     const response = await request(api.server)
-      .get('/telemetry')
-      .query({ meterId: meter.id, period: 'last_24_hours' })
+      .get("/telemetry")
+      .query({ meterId: meter.id, period: "last_24_hours" })
 
     expect(response.status).toBe(200)
     expect(response.body.data).toHaveLength(1)
   })
 
-  test('should be return measurement with one field', async () => {
+  test("should be return measurement with one field", async () => {
     const meter = await makeMeters()
     await makeTelemetry({
       meterId: meter.id,
@@ -808,46 +809,46 @@ describe('Field Test', () => {
       tensaoFaseNeutroA: 220,
     })
 
-    const response = await request(api.server).get('/telemetry').query({
+    const response = await request(api.server).get("/telemetry").query({
       meterId: meter.id,
-      period: 'last_24_hours',
+      period: "last_24_hours",
       fields: '["frequencia"]',
     })
 
     expect(response.status).toBe(200)
     expect(response.body.data).toHaveLength(1)
-    const telemetryData = response.body.data[0]
-    expect(telemetryData.measurements).toHaveProperty('frequencia', 60)
-    expect(telemetryData.measurements).not.toHaveProperty('tensaoFaseNeutroA')
+    const [telemetryData] = response.body.data
+    expect(telemetryData.measurements).toHaveProperty("frequencia", 60)
+    expect(telemetryData.measurements).not.toHaveProperty("tensaoFaseNeutroA")
   })
 
-  test('should cover normalizeTime with Date object and invalid date value', async () => {
+  test("should cover normalizeTime with Date object and invalid date value", async () => {
     const spy = vi
-      .spyOn(telemetryQueryBuilder, 'fetchRawData')
+      .spyOn(telemetryQueryBuilder, "fetchRawData")
       .mockResolvedValueOnce({
         data: [
           {
             id: 1,
             meterId: 1,
-            time: new Date('2024-01-01T12:00:00.000Z') as unknown as string,
+            time: new Date("2024-01-01T12:00:00.000Z") as unknown as string,
           },
           {
             id: 2,
             meterId: 1,
-            time: 'invalid-date',
+            time: "invalid-date",
           },
         ],
         total: 2,
       })
 
-    const response = await request(api.server).get('/telemetry').query({
+    const response = await request(api.server).get("/telemetry").query({
       meterId: 1,
-      aggregation: 'raw',
+      aggregation: "raw",
     })
 
     expect(response.status).toBe(200)
-    expect(response.body.data[0].time).toBe('2024-01-01T12:00:00.000Z')
-    expect(response.body.data[1].time).toBe('invalid-date')
+    expect(response.body.data[0].time).toBe("2024-01-01T12:00:00.000Z")
+    expect(response.body.data[1].time).toBe("invalid-date")
 
     spy.mockRestore()
   })

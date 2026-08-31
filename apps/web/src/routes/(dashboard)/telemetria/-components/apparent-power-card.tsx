@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
-import TelemetryItem from './telemetry-item'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import type { GetTelemetry200DataItem } from "@/http/gen/model/get-telemetry200-data-item"
+import TelemetryItem from "./telemetry-item"
 
 export function ApparentPowerCard({
   telemetryData,

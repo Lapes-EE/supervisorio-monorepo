@@ -1,10 +1,10 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate, useParams, useRouteContext } from '@tanstack/react-router'
-import { isIP } from 'is-ip'
-import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-import { z } from 'zod'
-import { Button } from '@/components/ui/button'
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useNavigate, useParams, useRouteContext } from "@tanstack/react-router"
+import { isIP } from "is-ip"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { z } from "zod"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogClose,
@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
+} from "@/components/ui/dialog"
 import {
   Form,
   FormControl,
@@ -20,48 +20,48 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { usePutMetersId } from '@/http/gen/endpoints/lapes-api'
-import { meterKeys } from '@/lib/query-keys'
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { usePutMetersId } from "@/http/gen/endpoints/lapes-api"
+import { meterKeys } from "@/lib/query-keys"
 
 const ISSO_SERIAL_REGEX = /^[A-Z0-9]{3}(?:-[A-Z0-9]{3}){3}$/
 
 const formEditMeterSchema = z.object({
-  name: z.string().min(1, 'O nome do medidor é requerido'),
+  name: z.string().min(1, "O nome do medidor é requerido"),
   ip: z
     .string()
-    .min(1, 'O IP do medidor é requerido')
+    .min(1, "O IP do medidor é requerido")
     .refine((val) => isIP(val), {
-      error: 'IP inválido',
+      error: "IP inválido",
     }),
   description: z.string().optional(),
   issoSerial: z
     .string()
-    .min(1, 'Serial is required')
+    .min(1, "Serial is required")
     .refine((val) => ISSO_SERIAL_REGEX.test(val), {
-      message: 'Serial inválido. Formato esperado: 258-A17-39C-D6A',
+      message: "Serial inválido. Formato esperado: 258-A17-39C-D6A",
     }),
 })
 
 export function TelemetryEditForm() {
   const { meterId } = useParams({
-    from: '/(dashboard)/telemetria/$meterId/edit',
+    from: "/(dashboard)/telemetria/$meterId/edit",
   })
-  const { meters, queryClient } = useRouteContext({ from: '__root__' })
+  const { meters, queryClient } = useRouteContext({ from: "__root__" })
   const mutation = usePutMetersId()
   const navigate = useNavigate()
 
   const meterIndex = meters.findIndex((m) => m.id.toString() === meterId)
-  const meter = meterIndex !== -1 ? meters[meterIndex] : null
+  const meter = meterIndex === -1 ? null : meters[meterIndex]
 
   const form = useForm<z.infer<typeof formEditMeterSchema>>({
     resolver: zodResolver(formEditMeterSchema),
     defaultValues: {
-      name: meter?.name ?? '',
-      ip: meter?.ip ?? '',
-      description: meter?.description ?? '',
-      issoSerial: meter?.issoSerial ?? '',
+      name: meter?.name ?? "",
+      ip: meter?.ip ?? "",
+      description: meter?.description ?? "",
+      issoSerial: meter?.issoSerial ?? "",
     },
   })
 
@@ -70,20 +70,20 @@ export function TelemetryEditForm() {
       { id: Number(meterId), data },
       {
         onSuccess: () => {
-          toast('Medidor editado com sucesso')
+          toast("Medidor editado com sucesso")
           form.reset()
           queryClient.invalidateQueries({ queryKey: meterKeys.all })
           navigate({
-            to: '/telemetria',
-            from: '/telemetria',
+            to: "/telemetria",
+            from: "/telemetria",
           })
         },
         onError: (error) => {
-          toast('Erro ao editar', {
+          toast("Erro ao editar", {
             description: `${error}, é necessário estar logado`,
             action: {
-              label: 'Login',
-              onClick: () => navigate({ to: '/login' }),
+              label: "Login",
+              onClick: () => navigate({ to: "/login" }),
             },
           })
         },
@@ -96,8 +96,8 @@ export function TelemetryEditForm() {
       onOpenChange={(open) => {
         if (!open) {
           navigate({
-            to: '/telemetria',
-            from: '/telemetria',
+            to: "/telemetria",
+            from: "/telemetria",
           })
         }
       }}

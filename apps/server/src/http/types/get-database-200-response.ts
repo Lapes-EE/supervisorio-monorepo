@@ -1,5 +1,5 @@
-import z from 'zod'
-import { availableFields } from '../utils/field-mapping'
+import z from "zod"
+import { availableFields } from "../utils/field-mapping"
 
 export const telemetryMeasurementsSchema = z
   .object(
@@ -9,22 +9,22 @@ export const telemetryMeasurementsSchema = z
 
 export const telemetryItemSchema = z.object({
   id: z.number().optional(),
-  meterId: z.number(),
-  time: z.string(),
-  status: z.enum(['success', 'error']),
-  message: z.string().nullable(),
   measurements: telemetryMeasurementsSchema.nullable(),
+  message: z.string().nullable(),
+  meterId: z.number(),
+  status: z.enum(["success", "error"]),
+  time: z.string(),
 })
 
 export const getDatabase200ResponseSchema = z.object({
-  data: z.array(telemetryItemSchema),
-  total: z.number(),
-  period: z.object({
-    startDate: z.string(),
-    endDate: z.string(),
-  }),
-  nullCount: z.number(),
   aggregation: z.string(),
+  data: z.array(telemetryItemSchema),
+  nullCount: z.number(),
+  period: z.object({
+    endDate: z.string(),
+    startDate: z.string(),
+  }),
+  total: z.number(),
 })
 
 export type TelemetryMeasurementsSchema = z.infer<

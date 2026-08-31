@@ -5,10 +5,7 @@
  * API for supervisory control and data acquisition
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -21,9 +18,10 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
-
+  UseQueryResult,
+} from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { customInstance } from "../../custom-instance"
 import type {
   DeleteMetersId401,
   DeleteMetersId404,
@@ -40,508 +38,649 @@ import type {
   PutMetersId200,
   PutMetersId401,
   PutMetersId404,
-  PutMetersIdBody
-} from '../model';
-
-import { customInstance } from '../../custom-instance';
+  PutMetersIdBody,
+} from "../model"
 /**
  * @summary Authenticate with e-mail & password
  */
 export const postSessionsPassword = (
-    postSessionsPasswordBody: PostSessionsPasswordBody,
- signal?: AbortSignal
-) => {
+  postSessionsPasswordBody: PostSessionsPasswordBody,
+  signal?: AbortSignal
+) =>
+  customInstance<PostSessionsPassword201>({
+    data: postSessionsPasswordBody,
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+    signal,
+    url: "/sessions/password",
+  })
 
+export const getPostSessionsPasswordMutationOptions = <
+  TError = string,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postSessionsPassword>>,
+    TError,
+    { data: PostSessionsPasswordBody },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postSessionsPassword>>,
+  TError,
+  { data: PostSessionsPasswordBody },
+  TContext
+> => {
+  const mutationKey = ["postSessionsPassword"]
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } }
 
-      return customInstance<PostSessionsPassword201>(
-      {url: `/sessions/password`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: postSessionsPasswordBody, signal
-    },
-      );
-    }
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postSessionsPassword>>,
+    { data: PostSessionsPasswordBody }
+  > = (props) => {
+    const { data } = props ?? {}
 
+    return postSessionsPassword(data)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-export const getPostSessionsPasswordMutationOptions = <TError = string,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSessionsPassword>>, TError,{data: PostSessionsPasswordBody}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postSessionsPassword>>, TError,{data: PostSessionsPasswordBody}, TContext> => {
+export type PostSessionsPasswordMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postSessionsPassword>>
+>
+export type PostSessionsPasswordMutationBody = PostSessionsPasswordBody
+export type PostSessionsPasswordMutationError = string
 
-const mutationKey = ['postSessionsPassword'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postSessionsPassword>>, {data: PostSessionsPasswordBody}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postSessionsPassword(data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostSessionsPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof postSessionsPassword>>>
-    export type PostSessionsPasswordMutationBody = PostSessionsPasswordBody
-    export type PostSessionsPasswordMutationError = string
-
-    /**
+/**
  * @summary Authenticate with e-mail & password
  */
-export const usePostSessionsPassword = <TError = string,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSessionsPassword>>, TError,{data: PostSessionsPasswordBody}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postSessionsPassword>>,
-        TError,
-        {data: PostSessionsPasswordBody},
-        TContext
-      > => {
-      return useMutation(getPostSessionsPasswordMutationOptions(options), queryClient);
-    }
+export const usePostSessionsPassword = <TError = string, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postSessionsPassword>>,
+      TError,
+      { data: PostSessionsPasswordBody },
+      TContext
+    >
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof postSessionsPassword>>,
+  TError,
+  { data: PostSessionsPasswordBody },
+  TContext
+> => useMutation(getPostSessionsPasswordMutationOptions(options), queryClient)
 
 /**
  * @summary Register a new meter
  */
 export const postMeters = (
-    postMetersBody: PostMetersBody,
- signal?: AbortSignal
-) => {
+  postMetersBody: PostMetersBody,
+  signal?: AbortSignal
+) =>
+  customInstance<PostMeters201>({
+    data: postMetersBody,
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+    signal,
+    url: "/meters",
+  })
 
+export const getPostMetersMutationOptions = <
+  TError = PostMeters401,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postMeters>>,
+    TError,
+    { data: PostMetersBody },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postMeters>>,
+  TError,
+  { data: PostMetersBody },
+  TContext
+> => {
+  const mutationKey = ["postMeters"]
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } }
 
-      return customInstance<PostMeters201>(
-      {url: `/meters`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: postMetersBody, signal
-    },
-      );
-    }
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postMeters>>,
+    { data: PostMetersBody }
+  > = (props) => {
+    const { data } = props ?? {}
 
+    return postMeters(data)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-export const getPostMetersMutationOptions = <TError = PostMeters401,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postMeters>>, TError,{data: PostMetersBody}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postMeters>>, TError,{data: PostMetersBody}, TContext> => {
+export type PostMetersMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postMeters>>
+>
+export type PostMetersMutationBody = PostMetersBody
+export type PostMetersMutationError = PostMeters401
 
-const mutationKey = ['postMeters'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postMeters>>, {data: PostMetersBody}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postMeters(data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostMetersMutationResult = NonNullable<Awaited<ReturnType<typeof postMeters>>>
-    export type PostMetersMutationBody = PostMetersBody
-    export type PostMetersMutationError = PostMeters401
-
-    /**
+/**
  * @summary Register a new meter
  */
-export const usePostMeters = <TError = PostMeters401,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postMeters>>, TError,{data: PostMetersBody}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postMeters>>,
-        TError,
-        {data: PostMetersBody},
-        TContext
-      > => {
-      return useMutation(getPostMetersMutationOptions(options), queryClient);
-    }
+export const usePostMeters = <TError = PostMeters401, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postMeters>>,
+      TError,
+      { data: PostMetersBody },
+      TContext
+    >
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof postMeters>>,
+  TError,
+  { data: PostMetersBody },
+  TContext
+> => useMutation(getPostMetersMutationOptions(options), queryClient)
 
 /**
  * @summary Get all meters
  */
-export const getMeters = (
+export const getMeters = (signal?: AbortSignal) =>
+  customInstance<GetMeters200Item[]>({ method: "GET", signal, url: "/meters" })
 
- signal?: AbortSignal
-) => {
+export const getGetMetersQueryKey = () => ["/meters"] as const
 
+export const getGetMetersQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeters>>,
+  TError = unknown,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>
+  >
+}) => {
+  const { query: queryOptions } = options ?? {}
 
-      return customInstance<GetMeters200Item[]>(
-      {url: `/meters`, method: 'GET', signal
-    },
-      );
-    }
+  const queryKey = queryOptions?.queryKey ?? getGetMetersQueryKey()
 
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMeters>>> = ({
+    signal,
+  }) => getMeters(signal)
 
-
-
-export const getGetMetersQueryKey = () => {
-    return [
-    `/meters`
-    ] as const;
-    }
-
-
-export const getGetMetersQueryOptions = <TData = Awaited<ReturnType<typeof getMeters>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetMetersQueryKey();
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMeters>>> = ({ signal }) => getMeters(signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+  return { queryFn, queryKey, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeters>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetMetersQueryResult = NonNullable<Awaited<ReturnType<typeof getMeters>>>
+export type GetMetersQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeters>>
+>
 export type GetMetersQueryError = unknown
 
-
-export function useGetMeters<TData = Awaited<ReturnType<typeof getMeters>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>> & Pick<
+export function useGetMeters<
+  TData = Awaited<ReturnType<typeof getMeters>>,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getMeters>>,
           TError,
           Awaited<ReturnType<typeof getMeters>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetMeters<TData = Awaited<ReturnType<typeof getMeters>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetMeters<
+  TData = Awaited<ReturnType<typeof getMeters>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getMeters>>,
           TError,
           Awaited<ReturnType<typeof getMeters>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetMeters<TData = Awaited<ReturnType<typeof getMeters>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetMeters<
+  TData = Awaited<ReturnType<typeof getMeters>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>
+    >
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
 /**
  * @summary Get all meters
  */
 
-export function useGetMeters<TData = Awaited<ReturnType<typeof getMeters>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
+export function useGetMeters<
+  TData = Awaited<ReturnType<typeof getMeters>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getMeters>>, TError, TData>
+    >
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
   const queryOptions = getGetMetersQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  return { ...query, queryKey: queryOptions.queryKey };
+  return { ...query, queryKey: queryOptions.queryKey }
 }
-
-
-
-
-
-
 
 /**
  * @summary Update meter enabled status
  */
 export const patchMeterId = (
-    id: number,
-    patchMeterIdBody: PatchMeterIdBody,
- signal?: AbortSignal
-) => {
+  id: number,
+  patchMeterIdBody: PatchMeterIdBody,
+  signal?: AbortSignal
+) =>
+  customInstance<void>({
+    data: patchMeterIdBody,
+    headers: { "Content-Type": "application/json" },
+    method: "PATCH",
+    signal,
+    url: `/meter/${id}`,
+  })
 
+export const getPatchMeterIdMutationOptions = <
+  TError = void | PatchMeterId401,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMeterId>>,
+    TError,
+    { id: number; data: PatchMeterIdBody },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchMeterId>>,
+  TError,
+  { id: number; data: PatchMeterIdBody },
+  TContext
+> => {
+  const mutationKey = ["patchMeterId"]
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } }
 
-      return customInstance<void>(
-      {url: `/meter/${id}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: patchMeterIdBody, signal
-    },
-      );
-    }
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchMeterId>>,
+    { id: number; data: PatchMeterIdBody }
+  > = (props) => {
+    const { id, data } = props ?? {}
 
+    return patchMeterId(id, data)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-export const getPatchMeterIdMutationOptions = <TError = void | PatchMeterId401,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchMeterId>>, TError,{id: number;data: PatchMeterIdBody}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof patchMeterId>>, TError,{id: number;data: PatchMeterIdBody}, TContext> => {
+export type PatchMeterIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchMeterId>>
+>
+export type PatchMeterIdMutationBody = PatchMeterIdBody
+export type PatchMeterIdMutationError = void | PatchMeterId401
 
-const mutationKey = ['patchMeterId'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchMeterId>>, {id: number;data: PatchMeterIdBody}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  patchMeterId(id,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PatchMeterIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchMeterId>>>
-    export type PatchMeterIdMutationBody = PatchMeterIdBody
-    export type PatchMeterIdMutationError = void | PatchMeterId401
-
-    /**
+/**
  * @summary Update meter enabled status
  */
-export const usePatchMeterId = <TError = void | PatchMeterId401,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchMeterId>>, TError,{id: number;data: PatchMeterIdBody}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchMeterId>>,
-        TError,
-        {id: number;data: PatchMeterIdBody},
-        TContext
-      > => {
-      return useMutation(getPatchMeterIdMutationOptions(options), queryClient);
-    }
+export const usePatchMeterId = <
+  TError = void | PatchMeterId401,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof patchMeterId>>,
+      TError,
+      { id: number; data: PatchMeterIdBody },
+      TContext
+    >
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof patchMeterId>>,
+  TError,
+  { id: number; data: PatchMeterIdBody },
+  TContext
+> => useMutation(getPatchMeterIdMutationOptions(options), queryClient)
 
 /**
  * @summary Update an existing meter
  */
 export const putMetersId = (
-    id: number,
-    putMetersIdBody: PutMetersIdBody,
- signal?: AbortSignal
-) => {
+  id: number,
+  putMetersIdBody: PutMetersIdBody,
+  signal?: AbortSignal
+) =>
+  customInstance<PutMetersId200>({
+    data: putMetersIdBody,
+    headers: { "Content-Type": "application/json" },
+    method: "PUT",
+    signal,
+    url: `/meters/${id}`,
+  })
 
+export const getPutMetersIdMutationOptions = <
+  TError = PutMetersId401 | PutMetersId404,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putMetersId>>,
+    TError,
+    { id: number; data: PutMetersIdBody },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putMetersId>>,
+  TError,
+  { id: number; data: PutMetersIdBody },
+  TContext
+> => {
+  const mutationKey = ["putMetersId"]
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } }
 
-      return customInstance<PutMetersId200>(
-      {url: `/meters/${id}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: putMetersIdBody, signal
-    },
-      );
-    }
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putMetersId>>,
+    { id: number; data: PutMetersIdBody }
+  > = (props) => {
+    const { id, data } = props ?? {}
 
+    return putMetersId(id, data)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-export const getPutMetersIdMutationOptions = <TError = PutMetersId401 | PutMetersId404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putMetersId>>, TError,{id: number;data: PutMetersIdBody}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof putMetersId>>, TError,{id: number;data: PutMetersIdBody}, TContext> => {
+export type PutMetersIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putMetersId>>
+>
+export type PutMetersIdMutationBody = PutMetersIdBody
+export type PutMetersIdMutationError = PutMetersId401 | PutMetersId404
 
-const mutationKey = ['putMetersId'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putMetersId>>, {id: number;data: PutMetersIdBody}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  putMetersId(id,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PutMetersIdMutationResult = NonNullable<Awaited<ReturnType<typeof putMetersId>>>
-    export type PutMetersIdMutationBody = PutMetersIdBody
-    export type PutMetersIdMutationError = PutMetersId401 | PutMetersId404
-
-    /**
+/**
  * @summary Update an existing meter
  */
-export const usePutMetersId = <TError = PutMetersId401 | PutMetersId404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putMetersId>>, TError,{id: number;data: PutMetersIdBody}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putMetersId>>,
-        TError,
-        {id: number;data: PutMetersIdBody},
-        TContext
-      > => {
-      return useMutation(getPutMetersIdMutationOptions(options), queryClient);
-    }
+export const usePutMetersId = <
+  TError = PutMetersId401 | PutMetersId404,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof putMetersId>>,
+      TError,
+      { id: number; data: PutMetersIdBody },
+      TContext
+    >
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof putMetersId>>,
+  TError,
+  { id: number; data: PutMetersIdBody },
+  TContext
+> => useMutation(getPutMetersIdMutationOptions(options), queryClient)
 
 /**
  * @summary Delete a meter
  */
-export const deleteMetersId = (
-    id: number,
- signal?: AbortSignal
-) => {
+export const deleteMetersId = (id: number, signal?: AbortSignal) =>
+  customInstance<void>({ method: "DELETE", signal, url: `/meters/${id}` })
 
+export const getDeleteMetersIdMutationOptions = <
+  TError = DeleteMetersId401 | DeleteMetersId404,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMetersId>>,
+    TError,
+    { id: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteMetersId>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["deleteMetersId"]
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } }
 
-      return customInstance<void>(
-      {url: `/meters/${id}`, method: 'DELETE', signal
-    },
-      );
-    }
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteMetersId>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {}
 
+    return deleteMetersId(id)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-export const getDeleteMetersIdMutationOptions = <TError = DeleteMetersId401 | DeleteMetersId404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMetersId>>, TError,{id: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof deleteMetersId>>, TError,{id: number}, TContext> => {
+export type DeleteMetersIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteMetersId>>
+>
 
-const mutationKey = ['deleteMetersId'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+export type DeleteMetersIdMutationError = DeleteMetersId401 | DeleteMetersId404
 
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteMetersId>>, {id: number}> = (props) => {
-          const {id} = props ?? {};
-
-          return  deleteMetersId(id,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteMetersIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteMetersId>>>
-
-    export type DeleteMetersIdMutationError = DeleteMetersId401 | DeleteMetersId404
-
-    /**
+/**
  * @summary Delete a meter
  */
-export const useDeleteMetersId = <TError = DeleteMetersId401 | DeleteMetersId404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMetersId>>, TError,{id: number}, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteMetersId>>,
-        TError,
-        {id: number},
-        TContext
-      > => {
-      return useMutation(getDeleteMetersIdMutationOptions(options), queryClient);
-    }
+export const useDeleteMetersId = <
+  TError = DeleteMetersId401 | DeleteMetersId404,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteMetersId>>,
+      TError,
+      { id: number },
+      TContext
+    >
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteMetersId>>,
+  TError,
+  { id: number },
+  TContext
+> => useMutation(getDeleteMetersIdMutationOptions(options), queryClient)
 
 /**
  * Search for measurements with temporal filters
  * @summary Obtain time telemetry data
  */
 export const getTelemetry = (
-    params?: GetTelemetryParams,
- signal?: AbortSignal
+  params?: GetTelemetryParams,
+  signal?: AbortSignal
+) =>
+  customInstance<GetTelemetry200>({
+    method: "GET",
+    params,
+    signal,
+    url: "/telemetry",
+  })
+
+export const getGetTelemetryQueryKey = (params?: GetTelemetryParams) =>
+  ["/telemetry", ...(params ? [params] : [])] as const
+
+export const getGetTelemetryQueryOptions = <
+  TData = Awaited<ReturnType<typeof getTelemetry>>,
+  TError = unknown,
+>(
+  params?: GetTelemetryParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getTelemetry>>, TError, TData>
+    >
+  }
 ) => {
+  const { query: queryOptions } = options ?? {}
 
+  const queryKey = queryOptions?.queryKey ?? getGetTelemetryQueryKey(params)
 
-      return customInstance<GetTelemetry200>(
-      {url: `/telemetry`, method: 'GET',
-        params, signal
-    },
-      );
-    }
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getTelemetry>>> = ({
+    signal,
+  }) => getTelemetry(params, signal)
 
-
-
-
-export const getGetTelemetryQueryKey = (params?: GetTelemetryParams,) => {
-    return [
-    `/telemetry`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getGetTelemetryQueryOptions = <TData = Awaited<ReturnType<typeof getTelemetry>>, TError = unknown>(params?: GetTelemetryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTelemetry>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetTelemetryQueryKey(params);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTelemetry>>> = ({ signal }) => getTelemetry(params, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTelemetry>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+  return { queryFn, queryKey, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getTelemetry>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetTelemetryQueryResult = NonNullable<Awaited<ReturnType<typeof getTelemetry>>>
+export type GetTelemetryQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getTelemetry>>
+>
 export type GetTelemetryQueryError = unknown
 
-
-export function useGetTelemetry<TData = Awaited<ReturnType<typeof getTelemetry>>, TError = unknown>(
- params: undefined |  GetTelemetryParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTelemetry>>, TError, TData>> & Pick<
+export function useGetTelemetry<
+  TData = Awaited<ReturnType<typeof getTelemetry>>,
+  TError = unknown,
+>(
+  params: undefined | GetTelemetryParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getTelemetry>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getTelemetry>>,
           TError,
           Awaited<ReturnType<typeof getTelemetry>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetTelemetry<TData = Awaited<ReturnType<typeof getTelemetry>>, TError = unknown>(
- params?: GetTelemetryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTelemetry>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetTelemetry<
+  TData = Awaited<ReturnType<typeof getTelemetry>>,
+  TError = unknown,
+>(
+  params?: GetTelemetryParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getTelemetry>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getTelemetry>>,
           TError,
           Awaited<ReturnType<typeof getTelemetry>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetTelemetry<TData = Awaited<ReturnType<typeof getTelemetry>>, TError = unknown>(
- params?: GetTelemetryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTelemetry>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetTelemetry<
+  TData = Awaited<ReturnType<typeof getTelemetry>>,
+  TError = unknown,
+>(
+  params?: GetTelemetryParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getTelemetry>>, TError, TData>
+    >
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
 /**
  * @summary Obtain time telemetry data
  */
 
-export function useGetTelemetry<TData = Awaited<ReturnType<typeof getTelemetry>>, TError = unknown>(
- params?: GetTelemetryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTelemetry>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetTelemetry<
+  TData = Awaited<ReturnType<typeof getTelemetry>>,
+  TError = unknown,
+>(
+  params?: GetTelemetryParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getTelemetry>>, TError, TData>
+    >
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getGetTelemetryQueryOptions(params, options)
 
-  const queryOptions = getGetTelemetryQueryOptions(params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return { ...query, queryKey: queryOptions.queryKey };
+  return { ...query, queryKey: queryOptions.queryKey }
 }

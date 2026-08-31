@@ -1,7 +1,7 @@
-export type MeterState = {
+export interface MeterState {
   enabled: boolean
-  health: 'healthy' | 'failing' | 'cooldown'
   failureCount: number
+  health: "healthy" | "failing" | "cooldown"
   lastFailedAt: string | null
 }
 
@@ -25,15 +25,15 @@ export function isMeterEligible(
     return false
   }
 
-  if (meter.health === 'healthy') {
+  if (meter.health === "healthy") {
     return true
   }
 
-  if (meter.health === 'failing') {
+  if (meter.health === "failing") {
     return false
   }
 
-  if (meter.health === 'cooldown') {
+  if (meter.health === "cooldown") {
     if (!meter.lastFailedAt) {
       return true
     }

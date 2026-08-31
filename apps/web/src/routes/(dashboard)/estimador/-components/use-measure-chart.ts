@@ -1,30 +1,30 @@
-import { useQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
-import type { EstimationItem } from '@/http/estimation-api'
-import { getMeters } from '@/http/gen/endpoints/lapes-api'
-import type { MeasureTypeSearch } from './types'
-import { MEASURE_CONFIG } from './types'
+import { useQuery } from "@tanstack/react-query"
+import { useMemo } from "react"
+import type { EstimationItem } from "@/http/estimation-api"
+import { getMeters } from "@/http/gen/endpoints/lapes-api"
+import type { MeasureTypeSearch } from "./types"
+import { MEASURE_CONFIG } from "./types"
 
 export interface EstimatorBarChartPoint {
+  actual: number | null
+  error: number | null
+  estimated: number | null
   label: string
   time: string
-  actual: number | null
-  estimated: number | null
-  error: number | null
 }
 
 export function buildMeasureChartData(
   history: EstimationItem[],
-  selectedMeasure: MeasureTypeSearch['type']
+  selectedMeasure: MeasureTypeSearch["type"]
 ): EstimatorBarChartPoint[] {
   const config = MEASURE_CONFIG[selectedMeasure]
 
   return history.map((item) => ({
-    label: new Date(item.time ?? '').toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
+    label: new Date(item.time ?? "").toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
     }),
-    time: item.time ?? '',
+    time: item.time ?? "",
     actual: item[config.measuredApiKey],
     estimated: item[config.estimatedApiKey],
     error: item[config.errorApiKey],
@@ -32,7 +32,7 @@ export function buildMeasureChartData(
 }
 
 export function useMeasureChartData(
-  selectedMeasure: MeasureTypeSearch['type'],
+  selectedMeasure: MeasureTypeSearch["type"],
   history: EstimationItem[]
 ) {
   return {
@@ -45,7 +45,7 @@ export function useMeasureChartData(
 
 export function useMeterNames() {
   return useQuery({
-    queryKey: ['meters'],
+    queryKey: ["meters"],
     queryFn: () => getMeters(),
     staleTime: 60_000,
   })

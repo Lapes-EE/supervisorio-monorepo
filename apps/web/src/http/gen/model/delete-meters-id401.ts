@@ -10,5 +10,5 @@
  * Não autorizado, necessita de login
  */
 export type DeleteMetersId401 = {
-  error: string;
-};
+  error: string
+}

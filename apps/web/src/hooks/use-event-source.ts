@@ -1,22 +1,22 @@
-import { webEnv } from '@repo/env/web'
-import type { QueryClient } from '@tanstack/react-query'
-import { useQueryClient } from '@tanstack/react-query'
-import { useEffect } from 'react'
-import type { GetTelemetry200 } from '@/http/gen/model/get-telemetry200'
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
+import { webEnv } from "@repo/env/web"
+import type { QueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
+import { useEffect } from "react"
+import type { GetTelemetry200 } from "@/http/gen/model/get-telemetry200"
+import type { GetTelemetry200DataItem } from "@/http/gen/model/get-telemetry200-data-item"
 
 const PERIOD_DURATIONS: Record<string, number> = {
   last_5_minutes: 5 * 60 * 1000,
-  last_30_minutes: 30 * 60 * 1000,
-  last_hour: 60 * 60 * 1000,
   last_6_hours: 6 * 60 * 60 * 1000,
+  last_7_days: 7 * 24 * 60 * 60 * 1000,
   last_12_hours: 12 * 60 * 60 * 1000,
   last_24_hours: 24 * 60 * 60 * 1000,
-  today: 24 * 60 * 60 * 1000,
-  last_7_days: 7 * 24 * 60 * 60 * 1000,
-  this_month: 30 * 24 * 60 * 60 * 1000,
   last_30_days: 30 * 24 * 60 * 60 * 1000,
+  last_30_minutes: 30 * 60 * 1000,
+  last_hour: 60 * 60 * 1000,
+  this_month: 30 * 24 * 60 * 60 * 1000,
   this_year: 365 * 24 * 60 * 60 * 1000,
+  today: 24 * 60 * 60 * 1000,
 }
 
 function mergeAndPruneItems(
@@ -45,13 +45,13 @@ function updateHistoricalQueries(
   meterId: number | string
 ) {
   const queries = queryClient.getQueryCache().findAll({
-    queryKey: ['Telemetry', meterId],
+    queryKey: ["Telemetry", meterId],
   })
 
   for (const query of queries) {
     const key = query.queryKey
-    const period = typeof key[2] === 'string' ? key[2] : undefined
-    if (!period || period === 'last_measurement') {
+    const period = typeof key[2] === "string" ? key[2] : undefined
+    if (!period || period === "last_measurement") {
       continue
     }
 
@@ -77,7 +77,7 @@ export function updateTelemetryCache(
     return
   }
 
-  const firstItem = telemetryItems[0]
+  const [firstItem] = telemetryItems
   const meterId = firstItem?.meterId
   if (meterId === undefined || meterId === null) {
     return
@@ -87,11 +87,11 @@ export function updateTelemetryCache(
   const meterIdStr = String(meterId)
 
   queryClient.setQueryData(
-    ['Telemetry', meterIdNum, 'last_measurement'],
+    ["Telemetry", meterIdNum, "last_measurement"],
     payload
   )
   queryClient.setQueryData(
-    ['Telemetry', meterIdStr, 'last_measurement'],
+    ["Telemetry", meterIdStr, "last_measurement"],
     payload
   )
 
@@ -121,7 +121,7 @@ export function useEventSource() {
         refCount: 0,
       }
 
-      es.addEventListener('telemetry-update', (event) => {
+      es.addEventListener("telemetry-update", (event) => {
         for (const cb of state.listeners) {
           try {
             cb(event)
@@ -135,7 +135,7 @@ export function useEventSource() {
     }
 
     const state = activeSSEState
-    state.refCount++
+    state.refCount += 1
 
     const handleTelemetryUpdate = (event: MessageEvent) => {
       try {
@@ -150,7 +150,7 @@ export function useEventSource() {
 
     return () => {
       state.listeners.delete(handleTelemetryUpdate)
-      state.refCount--
+      state.refCount -= 1
 
       if (state.refCount <= 0) {
         state.es.close()

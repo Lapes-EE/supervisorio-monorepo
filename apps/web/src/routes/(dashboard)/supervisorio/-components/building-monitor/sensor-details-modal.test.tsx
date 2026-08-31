@@ -1,17 +1,17 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
-import { beforeAll, describe, expect, test, vi } from 'vitest'
-import { SensorDetailsModal } from './sensor-details-modal'
-import type { Sensor } from './types'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { render, screen } from "@testing-library/react"
+import { beforeAll, describe, expect, test, vi } from "vitest"
+import { SensorDetailsModal } from "./sensor-details-modal"
+import type { Sensor } from "./types"
 
 const SENSOR_DESC_REGEX = /Medidor Principal/
 
-vi.mock('@tanstack/react-router', () => ({
+vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => vi.fn(),
   useSearch: () => ({
-    period: 'last_5_minutes',
-    type: 'voltage_fn',
-    phase: ['A', 'B', 'C'],
+    period: "last_5_minutes",
+    type: "voltage_fn",
+    phase: ["A", "B", "C"],
   }),
   useRouteContext: () => ({ queryClient: new QueryClient() }),
   Link: ({ children }: { children: React.ReactNode }) => (
@@ -19,13 +19,13 @@ vi.mock('@tanstack/react-router', () => ({
   ),
 }))
 
-vi.mock('@/http/gen/endpoints/lapes-api', () => ({
+vi.mock("@/http/gen/endpoints/lapes-api", () => ({
   getTelemetry: vi.fn().mockResolvedValue({
     data: [],
     total: 0,
-    period: { startDate: '', endDate: '' },
+    period: { startDate: "", endDate: "" },
     nullCount: 0,
-    aggregation: 'raw',
+    aggregation: "raw",
   }),
 }))
 
@@ -43,21 +43,21 @@ beforeAll(() => {
   }
 })
 
-describe('SensorDetailsModal Component', () => {
+describe("SensorDetailsModal Component", () => {
   const dummySensor: Sensor = {
     id: 1,
-    name: 'Sensor Teste',
-    description: 'Medidor Principal',
-    lastUpdate: '10:00:00',
-    unit: 'V',
+    name: "Sensor Teste",
+    description: "Medidor Principal",
+    lastUpdate: "10:00:00",
+    unit: "V",
     value: [220, 221, 222],
     enabled: true,
-    trend: 'stable',
+    trend: "stable",
     position: { x: 50, y: 50 },
     history: { phases: [] },
   }
 
-  test('renders dialog content when sensor is provided without requiring queryClient or search props', () => {
+  test("renders dialog content when sensor is provided without requiring queryClient or search props", () => {
     const queryClient = new QueryClient()
     render(
       <QueryClientProvider client={queryClient}>
@@ -65,12 +65,12 @@ describe('SensorDetailsModal Component', () => {
       </QueryClientProvider>
     )
 
-    expect(screen.getByText('Sensor Teste')).toBeDefined()
+    expect(screen.getByText("Sensor Teste")).toBeDefined()
     expect(screen.getByText(SENSOR_DESC_REGEX)).toBeDefined()
-    expect(screen.getByText('Histórico')).toBeDefined()
+    expect(screen.getByText("Histórico")).toBeDefined()
   })
 
-  test('does not render content when sensor is null', () => {
+  test("does not render content when sensor is null", () => {
     const queryClient = new QueryClient()
     render(
       <QueryClientProvider client={queryClient}>
@@ -78,6 +78,6 @@ describe('SensorDetailsModal Component', () => {
       </QueryClientProvider>
     )
 
-    expect(screen.queryByText('Sensor Teste')).toBeNull()
+    expect(screen.queryByText("Sensor Teste")).toBeNull()
   })
 })

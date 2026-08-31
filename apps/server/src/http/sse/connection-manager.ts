@@ -1,7 +1,7 @@
-import type { FastifyReply } from 'fastify'
+import type { FastifyReply } from "fastify"
 
 export class SSEConnectionManager {
-  private clients = new Set<FastifyReply>()
+  private readonly clients = new Set<FastifyReply>()
   readonly MAX_CONNECTIONS = 100
 
   add(reply: FastifyReply): boolean {
@@ -24,11 +24,11 @@ export class SSEConnectionManager {
     const deadClients: FastifyReply[] = []
     const promises = Array.from(this.clients).map(async (reply) => {
       try {
-        if (reply.sse && typeof reply.sse.send === 'function') {
+        if (reply.sse && typeof reply.sse.send === "function") {
           await reply.sse.send({
-            id: Date.now().toString(),
-            event,
             data,
+            event,
+            id: Date.now().toString(),
           })
         } else {
           deadClients.push(reply)

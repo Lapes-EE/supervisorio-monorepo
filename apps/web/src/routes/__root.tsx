@@ -1,18 +1,20 @@
-import { TanStackDevtools } from '@tanstack/react-devtools'
-import type { QueryClient } from '@tanstack/react-query'
-import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { NewAppSidebar } from '@/components/app-sidebar-new.tsx'
-import { ThemeProvider } from '@/components/theme-provider.tsx'
-import { Toaster } from '@/components/ui/sonner'
-import { useEventSource } from '@/hooks/use-event-source'
-import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item'
-import { meterQueries } from '@/lib/query-keys'
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
+import { TanStackDevtools } from "@tanstack/react-devtools"
+import type { QueryClient } from "@tanstack/react-query"
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router"
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
+import { NewAppSidebar } from "@/components/app-sidebar-new.tsx"
+import { ErrorComponent } from "@/components/errors/error-component"
+import { NotFoundComponent } from "@/components/errors/not-found"
+import { ThemeProvider } from "@/components/theme-provider.tsx"
+import { Toaster } from "@/components/ui/sonner"
+import { useEventSource } from "@/hooks/use-event-source"
+import type { GetMeters200Item } from "@/http/gen/model/get-meters200-item"
+import { meterQueries } from "@/lib/query-keys"
+import TanStackQueryDevtools from "../integrations/tanstack-query/devtools"
 
 interface MyRouterContext {
-  queryClient: QueryClient
   meters: GetMeters200Item[]
+  queryClient: QueryClient
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
@@ -26,6 +28,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     }
   },
   component: RootComponent,
+  notFoundComponent: NotFoundComponent,
+  errorComponent: ErrorComponent,
 })
 
 function RootComponent() {
@@ -49,11 +53,11 @@ function RootComponent() {
       <Toaster />
       <TanStackDevtools
         config={{
-          position: 'bottom-left',
+          position: "bottom-left",
         }}
         plugins={[
           {
-            name: 'Tanstack Router',
+            name: "Tanstack Router",
             render: <TanStackRouterDevtoolsPanel />,
           },
           TanStackQueryDevtools,

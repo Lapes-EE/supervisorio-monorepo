@@ -1,8 +1,8 @@
-import type { PeriodType } from './telemetry-schema'
+import type { PeriodType } from "./telemetry-schema"
 
 export interface PeriodDates {
-  startDate: Date
   endDate: Date
+  startDate: Date
 }
 
 export function getPeriodDates(period: PeriodType): PeriodDates {
@@ -22,67 +22,67 @@ export function getPeriodDates(period: PeriodType): PeriodDates {
   const startOfYear = new Date(now.getFullYear(), 0, 1)
 
   switch (period) {
-    case 'last_measurement':
+    case "last_measurement":
       return {
+        endDate: now,
         startDate: new Date(0),
-        endDate: now,
       }
-    case 'last_5_minutes':
+    case "last_5_minutes":
       return {
+        endDate: now,
         startDate: new Date(now.getTime() - 5 * 60 * 1000),
-        endDate: now,
       }
-    case 'last_30_minutes':
+    case "last_30_minutes":
       return {
+        endDate: now,
         startDate: new Date(now.getTime() - 30 * 60 * 1000),
-        endDate: now,
       }
-    case 'last_hour':
+    case "last_hour":
       return {
+        endDate: now,
         startDate: new Date(now.getTime() - 60 * 60 * 1000),
-        endDate: now,
       }
-    case 'last_6_hours':
+    case "last_6_hours":
       return {
+        endDate: now,
         startDate: new Date(now.getTime() - 6 * 60 * 60 * 1000),
-        endDate: now,
       }
-    case 'last_12_hours':
+    case "last_12_hours":
       return {
+        endDate: now,
         startDate: new Date(now.getTime() - 12 * 60 * 60 * 1000),
-        endDate: now,
       }
-    case 'last_24_hours':
+    case "last_24_hours":
       return {
+        endDate: now,
         startDate: new Date(now.getTime() - 24 * 60 * 60 * 1000),
-        endDate: now,
       }
-    case 'today':
+    case "today":
       return {
-        startDate: startOfDay,
         endDate: endOfDay,
+        startDate: startOfDay,
       }
-    case 'last_7_days':
+    case "last_7_days":
       return {
+        endDate: now,
         startDate: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
-        endDate: now,
       }
-    case 'this_month':
+    case "this_month":
       return {
+        endDate: now,
         startDate: startOfMonth,
-        endDate: now,
       }
-    case 'last_30_days':
+    case "last_30_days":
       return {
+        endDate: now,
         startDate: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
-        endDate: now,
       }
-    case 'this_year':
+    case "this_year":
       return {
-        startDate: startOfYear,
         endDate: now,
+        startDate: startOfYear,
       }
     default:
-      throw new Error('Invalid period')
+      throw new Error("Invalid period")
   }
 }

@@ -10,5 +10,5 @@
  * Criação de medidor bem sucedida
  */
 export type PostMeters201 = {
-  createdAt: string;
-};
+  createdAt: string
+}

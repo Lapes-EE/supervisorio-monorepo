@@ -6,17 +6,17 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from 'recharts'
+} from "recharts"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { type ChartConfig, ChartContainer } from '@/components/ui/chart'
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
-import { formatTime } from '../../-utils/format-time'
+} from "@/components/ui/card"
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart"
+import type { GetTelemetry200DataItem } from "@/http/gen/model/get-telemetry200-data-item"
+import { formatTime } from "../../-utils/format-time"
 
 interface PowerChartProps {
   data: GetTelemetry200DataItem[] | undefined
@@ -24,7 +24,7 @@ interface PowerChartProps {
 }
 
 const chartConfig = {
-  activePower: { label: 'Potência Ativa', color: 'hsl(var(--chart-1))' },
+  activePower: { label: "Potência Ativa", color: "hsl(var(--chart-1))" },
 } satisfies ChartConfig
 
 export function PowerChart({ data, isLoading }: PowerChartProps) {
@@ -53,7 +53,7 @@ export function PowerChart({ data, isLoading }: PowerChartProps) {
               <YAxis
                 axisLine={false}
                 fontSize={12}
-                label={{ value: 'kW', angle: -90, position: 'insideLeft' }}
+                label={{ value: "kW", angle: -90, position: "insideLeft" }}
                 tickLine={false}
               />
               <Tooltip />

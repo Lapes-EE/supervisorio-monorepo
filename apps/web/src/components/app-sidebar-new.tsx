@@ -1,45 +1,45 @@
-import { Link, type ToOptions, useMatchRoute } from '@tanstack/react-router'
+import { Link, type ToOptions, useMatchRoute } from "@tanstack/react-router"
 import {
   ChartArea,
   ClipboardList,
   Home,
   type LucideIcon,
   Settings,
-} from 'lucide-react'
-import { ModeToggle } from './mode-toggle'
+} from "lucide-react"
+import { ModeToggle } from "./mode-toggle"
 
-type SidebarItem = {
+interface SidebarItem {
+  icon: LucideIcon
   title: string
   url: ToOptions
-  icon: LucideIcon
 }
 
 // Menu items.
 const items: SidebarItem[] = [
   {
-    title: 'Supervisório',
-    url: { to: '/supervisorio' },
     icon: Home,
+    title: "Supervisório",
+    url: { to: "/supervisorio" },
   },
   {
-    title: 'Telemetria',
-    url: { to: '/telemetria' },
     icon: ClipboardList,
+    title: "Telemetria",
+    url: { to: "/telemetria" },
   },
   {
-    title: 'Gráficos',
-    url: { to: '/gráficos' },
     icon: ChartArea,
+    title: "Gráficos",
+    url: { to: "/gráficos" },
   },
   {
-    title: 'Configurações',
-    url: { to: '/settings' },
     icon: Settings,
+    title: "Configurações",
+    url: { to: "/settings" },
   },
   {
-    title: 'Estimador',
-    url: { to: '/estimador' },
     icon: ChartArea,
+    title: "Estimador",
+    url: { to: "/estimador" },
   },
 ]
 
@@ -50,8 +50,8 @@ export function NewAppSidebar() {
       <div className="flex flex-row gap-4">
         {items.map((item, index) => {
           const isActive =
-            typeof item.url.to === 'string' &&
-            !!matchRoute({ to: item.url.to, fuzzy: true })
+            typeof item.url.to === "string" &&
+            !!matchRoute({ fuzzy: true, to: item.url.to })
 
           const middleIndex = Math.floor(items.length / 2)
 

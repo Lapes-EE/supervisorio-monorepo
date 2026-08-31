@@ -1,5 +1,5 @@
-import { useQueryClient } from '@tanstack/react-query'
-import { useNavigate, useSearch } from '@tanstack/react-router'
+import { useQueryClient } from "@tanstack/react-query"
+import { useNavigate, useSearch } from "@tanstack/react-router"
 import {
   Select,
   SelectContent,
@@ -8,34 +8,34 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period'
-import { sensorKeys } from '@/lib/query-keys'
-import type { ToggleSearchSchema } from '../../-types'
+} from "@/components/ui/select"
+import { GetTelemetryPeriod } from "@/http/gen/model/get-telemetry-period"
+import { sensorKeys } from "@/lib/query-keys"
+import type { ToggleSearchSchema } from "../../-types"
 
 export function SelectPeriod() {
   const search = useSearch({ strict: false }) as ToggleSearchSchema
-  const period = search.period ?? 'last_5_minutes'
+  const period = search.period ?? "last_5_minutes"
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
   const periodLabels: Record<string, string> = {
-    last_5_minutes: 'Últimos 5 minutos',
-    last_30_minutes: 'Últimos 30 minutos',
-    last_hour: 'Última hora',
-    last_6_hours: 'Últimas 6 horas',
-    last_12_hours: 'Últimas 12 horas',
-    last_24_hours: 'Últimas 24 horas',
-    today: 'Hoje',
-    last_7_days: 'Últimos 7 dias',
-    this_month: 'Este mês',
-    last_30_days: 'Últimos 30 dias',
-    this_year: 'Este ano',
+    last_5_minutes: "Últimos 5 minutos",
+    last_30_minutes: "Últimos 30 minutos",
+    last_hour: "Última hora",
+    last_6_hours: "Últimas 6 horas",
+    last_12_hours: "Últimas 12 horas",
+    last_24_hours: "Últimas 24 horas",
+    today: "Hoje",
+    last_7_days: "Últimos 7 dias",
+    this_month: "Este mês",
+    last_30_days: "Últimos 30 dias",
+    this_year: "Este ano",
   }
 
   const handleChange = (value: GetTelemetryPeriod) => {
     navigate({
-      to: '.',
+      to: ".",
       search: (prev) => ({ ...prev, period: value }),
     })
     queryClient.invalidateQueries({ queryKey: sensorKeys.all })
@@ -50,7 +50,7 @@ export function SelectPeriod() {
         <SelectGroup>
           <SelectLabel>Períodos</SelectLabel>
           {Object.values(GetTelemetryPeriod)
-            .filter((periodKey) => periodKey !== 'last_measurement')
+            .filter((periodKey) => periodKey !== "last_measurement")
             .map((periodKey) => (
               <SelectItem key={periodKey} value={periodKey}>
                 {periodLabels[periodKey] ?? periodKey}
