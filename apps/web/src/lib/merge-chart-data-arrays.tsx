@@ -14,7 +14,6 @@ export function mergeDataArrays(...arrays: DataEntry[][]): DataEntry[] {
     }
   }
 
-  // Retorna os dados ordenados pelo campo `time`, se quiser
   return Array.from(mergedMap.values()).sort((a, b) =>
     a.time.localeCompare(b.time)
   )

@@ -14,7 +14,6 @@ interface SidebarItem {
   url: ToOptions
 }
 
-// Menu items.
 const items: SidebarItem[] = [
   {
     icon: Home,
