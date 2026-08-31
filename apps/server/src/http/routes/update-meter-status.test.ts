@@ -18,7 +18,6 @@ beforeEach(async () => {
 })
 
 test("PATCH /meter/:id with { enabled: true } resets health", async () => {
-  // Seed a meter first
   const [seededMeter] = await db
     .insert(schema.meters)
     .values({

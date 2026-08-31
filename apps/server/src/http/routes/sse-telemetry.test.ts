@@ -13,7 +13,6 @@ describe("SSE Telemetry Route Tests", () => {
   beforeEach(async () => {
     await api.ready()
     await db.delete(schema.measures).execute()
-    // Reset connection manager clients
     sseConnectionManager.clear()
   })
 
@@ -51,7 +50,6 @@ describe("SSE Telemetry Route Tests", () => {
   })
 
   test("GET /sse/telemetry returns 503 if capacity limit is reached", async () => {
-    // Mock connection manager size
     const sizeSpy = vi
       .spyOn(sseConnectionManager, "size", "get")
       .mockReturnValue(100)
@@ -71,17 +69,14 @@ describe("SSE Telemetry Route Tests", () => {
     const broadcastSpy = vi.spyOn(sseConnectionManager, "broadcast")
     const meter = await makeMeters()
 
-    // Seed initial measurement
     await makeTelemetry({
       meterId: meter.id,
       frequencia: 60,
       tensaoFaseNeutroA: 220,
     })
 
-    // Start listener
     await startTelemetryListener()
 
-    // Trigger NOTIFY
     await sql`SELECT pg_notify('telemetry_changes', ${JSON.stringify({ meterId: meter.id })})`
 
     // Wait briefly for LISTEN callback to fetch and broadcast
