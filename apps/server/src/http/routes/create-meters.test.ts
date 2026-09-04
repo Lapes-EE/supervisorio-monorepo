@@ -1,30 +1,30 @@
-import { fakerPT_BR as faker } from '@faker-js/faker'
-import request from 'supertest'
-import { beforeEach, expect, test } from 'vitest'
-import { api } from '@/app'
+import { fakerPT_BR as faker } from "@faker-js/faker"
+import request from "supertest"
+import { beforeEach, expect, test } from "vitest"
+import { api } from "@/app"
 
-let token = ''
+let token = ""
 
 beforeEach(async () => {
   await api.ready()
   const loginResponse = await request(api.server)
-    .post('/sessions/password')
+    .post("/sessions/password")
     .send({
-      username: 'lapes',
-      password: 't2festado327',
+      username: "lapes",
+      password: "t2festado327",
     })
-  token = loginResponse.body.token
+  ;({ token } = loginResponse.body)
 })
 
-test('Create a meter', async () => {
+test("Create a meter", async () => {
   const response = await request(api.server)
-    .post('/meters')
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
+    .post("/meters")
+    .set("Authorization", `Bearer ${token}`)
+    .set("Content-Type", "application/json")
     .send({
       name: faker.lorem.words(2),
       ip: faker.internet.ipv4(),
-      issoSerial: 'ABC-123-DEF-456',
+      issoSerial: "ABC-123-DEF-456",
       description: faker.lorem.sentence(),
     })
 
@@ -34,16 +34,16 @@ test('Create a meter', async () => {
   })
 })
 
-test('Create a meter without authorization', async () => {
+test("Create a meter without authorization", async () => {
   const response = await request(api.server)
-    .post('/meters')
+    .post("/meters")
     .send({
       name: faker.lorem.words(2),
       ip: faker.internet.ipv4(),
-      issoSerial: 'ABC-123-DEF-456',
+      issoSerial: "ABC-123-DEF-456",
       description: faker.lorem.sentence(),
     })
 
   expect(response.status).toBe(401)
-  expect(response.body).toEqual({ error: 'Token inválido ou ausente' })
+  expect(response.body).toEqual({ error: "Token inválido ou ausente" })
 })

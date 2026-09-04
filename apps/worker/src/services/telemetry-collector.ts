@@ -1,27 +1,28 @@
-import { insertMeasure, notifyTelemetryChange } from '@repo/db'
-import { workerEnv } from '@repo/env/worker'
-import { getTelemetryFromMeter } from '@repo/telemetry'
-import cron from 'node-cron'
-import PQueue from 'p-queue'
-import pRetry, { AbortError } from 'p-retry'
-import pino from 'pino'
+import { insertMeasure, notifyTelemetryChange } from "@repo/db"
+import { workerEnv } from "@repo/env/worker"
+import { getTelemetryFromMeter } from "@repo/telemetry"
+import cron from "node-cron"
+import PQueue from "p-queue"
+import pRetry, { AbortError } from "p-retry"
+import pino from "pino"
 import {
   checkMeterEnabled,
   getEligibleMeters,
   updateMeterFailure,
   updateMeterSuccess,
-} from '../db/queries'
-import { isMeterEligible, type MeterState } from './state-machine'
+} from "../db/queries"
+import { isMeterEligible, type MeterState } from "./state-machine"
 
 class MeterDisabledError extends Error {
   constructor(message: string) {
     super(message)
-    this.name = 'MeterDisabledError'
+    this.name = "MeterDisabledError"
   }
 }
 
-const logger = pino({ name: 'worker:collector' })
+const logger = pino({ name: "worker:collector" })
 const queue = new PQueue({ concurrency: 14 })
+const inFlightMeters = new Set<string>()
 
 async function collectFromMeter(ip: string, failureCount: number) {
   try {
@@ -30,19 +31,20 @@ async function collectFromMeter(ip: string, failureCount: number) {
         const isEnabled = await checkMeterEnabled(ip)
         if (!isEnabled) {
           throw new AbortError(
-            new MeterDisabledError('Meter disabled during retry')
+            new MeterDisabledError("Meter disabled during retry")
           )
         }
         return await getTelemetryFromMeter(ip)
       },
       {
-        retries: 5,
-        minTimeout: 0,
+        factor: 2,
+        minTimeout: 500,
         onFailedAttempt: (error) => {
           logger.warn(
             `Attempt ${error.attemptNumber} failed for meter ${ip}. ${error.retriesLeft} retries left.`
           )
         },
+        retries: 3,
       }
     )
 
@@ -87,7 +89,15 @@ export function startTelemetryCollector() {
   const schedule = `*/${workerEnv.COLLECT_INTERVAL_SECONDS} * * * * *`
 
   cron.schedule(schedule, async () => {
-    logger.debug('Running scheduled telemetry collection...')
+    logger.debug("Running scheduled telemetry collection...")
+
+    if (queue.size > queue.concurrency) {
+      logger.warn(
+        { pending: queue.pending, queueSize: queue.size },
+        "Fila congestionada. Pulando ciclo de coleta."
+      )
+      return
+    }
 
     try {
       const allEnabledMeters = await getEligibleMeters()
@@ -104,10 +114,25 @@ export function startTelemetryCollector() {
       logger.info(`Queueing collection for ${eligibleMeters.length} meters`)
 
       for (const meter of eligibleMeters) {
-        queue.add(() => collectFromMeter(meter.ip, meter.failureCount))
+        // ponytail: sync has+add is the race guard — do not extract an async helper
+        if (inFlightMeters.has(meter.ip)) {
+          continue
+        }
+        inFlightMeters.add(meter.ip)
+        queue
+          .add(async () => {
+            try {
+              await collectFromMeter(meter.ip, meter.failureCount)
+            } finally {
+              inFlightMeters.delete(meter.ip)
+            }
+          })
+          .catch((err) =>
+            logger.error(err, "Unhandled error in collection task")
+          )
       }
     } catch (error) {
-      logger.error(error, 'Error in telemetry collector loop')
+      logger.error(error, "Error in telemetry collector loop")
     }
   })
 
@@ -117,11 +142,11 @@ export function startTelemetryCollector() {
 }
 
 const shutdown = async () => {
-  logger.info('Shutting down worker...')
+  logger.info("Shutting down worker...")
   queue.pause()
   await queue.onIdle()
   process.exit(0)
 }
 
-process.on('SIGINT', shutdown)
-process.on('SIGTERM', shutdown)
+process.on("SIGINT", shutdown)
+process.on("SIGTERM", shutdown)

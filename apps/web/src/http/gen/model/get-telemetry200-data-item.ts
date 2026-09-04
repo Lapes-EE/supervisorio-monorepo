@@ -5,14 +5,14 @@
  * API for supervisory control and data acquisition
  * OpenAPI spec version: 1.0.0
  */
-import type { GetTelemetry200DataItemMeasurements } from './get-telemetry200-data-item-measurements';
-import type { GetTelemetry200DataItemStatus } from './get-telemetry200-data-item-status';
+import type { GetTelemetry200DataItemMeasurements } from "./get-telemetry200-data-item-measurements"
+import type { GetTelemetry200DataItemStatus } from "./get-telemetry200-data-item-status"
 
 export type GetTelemetry200DataItem = {
-  id?: number;
-  meterId: number;
-  time: string;
-  status: GetTelemetry200DataItemStatus;
-  message: string | null;
-  measurements: GetTelemetry200DataItemMeasurements;
-};
+  id?: number
+  meterId: number
+  time: string
+  status: GetTelemetry200DataItemStatus
+  message: string | null
+  measurements: GetTelemetry200DataItemMeasurements
+}

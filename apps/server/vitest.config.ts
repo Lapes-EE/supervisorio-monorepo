@@ -1,19 +1,19 @@
-import { resolve } from 'node:path'
-import { defineConfig } from 'vitest/config'
+import { resolve } from "node:path"
+import { defineConfig } from "vitest/config"
 
 export default defineConfig({
+  resolve: {
+    alias: [{ find: "@", replacement: resolve(import.meta.dirname, "./src") }],
+  },
   test: {
-    fileParallelism: false,
-    setupFiles: ['./src/http/tests/setup.ts'],
     coverage: {
       enabled: true,
-      provider: 'v8',
-      reporter: ['text-summary', 'text', 'json', 'html'],
-      include: ['src/http/routes/*.ts'],
-      exclude: ['**/*.text.ts', 'src/tests/**'],
+      exclude: ["**/*.text.ts", "src/tests/**"],
+      include: ["src/http/routes/*.ts"],
+      provider: "v8",
+      reporter: ["text-summary", "text", "json", "html"],
     },
-  },
-  resolve: {
-    alias: [{ find: '@', replacement: resolve(__dirname, './src') }],
+    fileParallelism: false,
+    setupFiles: ["./src/http/tests/setup.ts"],
   },
 })

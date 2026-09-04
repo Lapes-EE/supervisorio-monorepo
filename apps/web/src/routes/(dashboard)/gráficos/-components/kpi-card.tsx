@@ -1,14 +1,14 @@
-import type { LucideIcon } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import type { LucideIcon } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface KpiCardProps {
-  title: string
-  value: string | number
-  unit: string
-  icon: LucideIcon
   description?: string
+  icon: LucideIcon
   isLoading?: boolean
+  title: string
+  unit: string
+  value: string | number
 }
 
 export function KpiCard({
@@ -34,9 +34,9 @@ export function KpiCard({
             <span className="text-muted-foreground text-sm">{unit}</span>
           </div>
         )}
-        {description && (
+        {description ? (
           <p className="text-muted-foreground text-xs">{description}</p>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   )

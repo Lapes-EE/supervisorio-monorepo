@@ -6,20 +6,20 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetTelemetryPeriod = typeof GetTelemetryPeriod[keyof typeof GetTelemetryPeriod];
-
+export type GetTelemetryPeriod =
+  (typeof GetTelemetryPeriod)[keyof typeof GetTelemetryPeriod]
 
 export const GetTelemetryPeriod = {
-  last_measurement: 'last_measurement',
-  last_5_minutes: 'last_5_minutes',
-  last_30_minutes: 'last_30_minutes',
-  last_hour: 'last_hour',
-  last_6_hours: 'last_6_hours',
-  last_12_hours: 'last_12_hours',
-  last_24_hours: 'last_24_hours',
-  today: 'today',
-  last_7_days: 'last_7_days',
-  this_month: 'this_month',
-  last_30_days: 'last_30_days',
-  this_year: 'this_year',
-} as const;
+  last_5_minutes: "last_5_minutes",
+  last_6_hours: "last_6_hours",
+  last_7_days: "last_7_days",
+  last_12_hours: "last_12_hours",
+  last_24_hours: "last_24_hours",
+  last_30_days: "last_30_days",
+  last_30_minutes: "last_30_minutes",
+  last_hour: "last_hour",
+  last_measurement: "last_measurement",
+  this_month: "this_month",
+  this_year: "this_year",
+  today: "today",
+} as const

@@ -1,11 +1,11 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Eye, EyeOff } from 'lucide-react'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-import { z } from 'zod'
-import { Button } from '@/components/ui/button'
+import { zodResolver } from "@hookform/resolvers/zod"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { Eye, EyeOff } from "lucide-react"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { z } from "zod"
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -13,17 +13,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { usePostSessionsPassword } from '@/http/gen/endpoints/lapes-api'
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { usePostSessionsPassword } from "@/http/gen/endpoints/lapes-api"
 
-export const Route = createFileRoute('/login/')({
+export const Route = createFileRoute("/login/")({
   component: LoginComponent,
 })
 
 const loginSchema = z.object({
-  username: z.string('Usuário inválido'),
-  password: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres'),
+  username: z.string("Usuário inválido"),
+  password: z.string().min(6, "A senha deve ter no mínimo 6 caracteres"),
 })
 
 function LoginComponent() {
@@ -34,8 +34,8 @@ function LoginComponent() {
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: '',
-      password: '',
+      username: "",
+      password: "",
     },
   })
 
@@ -44,15 +44,15 @@ function LoginComponent() {
       { data },
       {
         onSuccess: (response) => {
-          const token = response.token
-          localStorage.setItem('token', token)
-          toast('Login bem-sucedido!')
-          navigate({ to: '/telemetria' })
+          const { token } = response
+          localStorage.setItem("token", token)
+          toast("Login bem-sucedido!")
+          navigate({ to: "/telemetria" })
         },
         onError: (error) => {
-          toast('Erro ao fazer login', {
+          toast("Erro ao fazer login", {
             description:
-              typeof error === 'string' ? error : 'Erro desconhecido',
+              typeof error === "string" ? error : "Erro desconhecido",
           })
         },
       }
@@ -88,12 +88,12 @@ function LoginComponent() {
                     <FormControl>
                       <Input
                         placeholder="******"
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         {...field}
                       />
                     </FormControl>
                     <Button
-                      className="-translate-y-1/2 absolute top-1/2 right-2"
+                      className="absolute top-1/2 right-2 -translate-y-1/2"
                       onClick={() => setShowPassword(!showPassword)}
                       size="icon"
                       type="button"

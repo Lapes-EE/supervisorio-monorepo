@@ -4,15 +4,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
+} from "@/components/ui/card"
+import type { GetTelemetry200DataItem } from "@/http/gen/model/get-telemetry200-data-item"
 
 export interface Phasor {
-  name: string
   angle: number | null | undefined
-  magnitude: number
   color: string
   label: string | null | undefined
+  magnitude: number
+  name: string
 }
 
 interface PhasorChartProps {
@@ -43,20 +43,20 @@ export default function PhasorChart({
 
   const phaseData = [
     {
-      name: 'Fase A',
-      color: 'var(--chart-1)',
+      name: "Fase A",
+      color: "var(--chart-1)",
       angle: telemetryData?.measurements?.anguloFaseA,
       phi: telemetryData?.measurements?.phiFaseA,
     },
     {
-      name: 'Fase B',
-      color: 'var(--chart-2)',
+      name: "Fase B",
+      color: "var(--chart-2)",
       angle: telemetryData?.measurements?.anguloFaseB,
       phi: telemetryData?.measurements?.phiFaseB,
     },
     {
-      name: 'Fase C',
-      color: 'var(--chart-3)',
+      name: "Fase C",
+      color: "var(--chart-3)",
       angle: telemetryData?.measurements?.anguloFaseC,
       phi: telemetryData?.measurements?.phiFaseC,
     },
@@ -79,7 +79,7 @@ export default function PhasorChart({
                 key={ratio}
                 r={maxRadius * ratio}
                 stroke="#e2e8f0"
-                strokeDasharray={ratio === 1 ? 'none' : '2,2'}
+                strokeDasharray={ratio === 1 ? "none" : "2,2"}
                 strokeWidth="1"
               />
             ))}
@@ -140,9 +140,9 @@ export default function PhasorChart({
               className="flex w-40 justify-end gap-4 font-mono text-sm"
               key={phase.name}
             >
-              <span>{phase.angle?.toFixed(1) ?? '0.0'}°</span>
+              <span>{phase.angle?.toFixed(1) ?? "0.0"}°</span>
               <span className="text-gray-500">
-                φ {phase.phi?.toFixed(1) ?? '0.0'}°
+                φ {phase.phi?.toFixed(1) ?? "0.0"}°
               </span>
             </div>
           ))}

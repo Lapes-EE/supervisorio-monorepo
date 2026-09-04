@@ -1,6 +1,6 @@
-import { Link, useNavigate } from '@tanstack/react-router'
-import { Activity, Pencil, Settings, Trash2, Wifi, WifiOff } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Link, useNavigate } from "@tanstack/react-router"
+import { Activity, Pencil, Settings, Trash2, Wifi, WifiOff } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardAction,
@@ -8,8 +8,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item'
+} from "@/components/ui/card"
+import type { GetMeters200Item } from "@/http/gen/model/get-meters200-item"
 
 export function TelemetryList({
   id,
@@ -24,23 +24,23 @@ export function TelemetryList({
 
   function handleClick(e: React.MouseEvent<HTMLDivElement>) {
     const target = e.target as HTMLElement
-    if (target.closest('button, a')) {
+    if (target.closest("button, a")) {
       return
     }
     navigate({
-      to: '/telemetria/$meterId',
+      to: "/telemetria/$meterId",
       params: { meterId: id.toString() },
     })
   }
 
-  const isOnline = enabled && health === 'healthy'
+  const isOnline = enabled && health === "healthy"
 
   return (
     <Card
-      className={`group hover:-translate-y-1 relative cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-xl ${
+      className={`group relative cursor-pointer overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
         enabled
-          ? 'border-l-3 border-l-green-500/30 hover:border-l-green-600'
-          : 'border-l-3 border-l-red-500/30 opacity-75 hover:border-l-red-600'
+          ? "border-l-3 border-l-green-500/30 hover:border-l-green-600"
+          : "border-l-3 border-l-red-500/30 opacity-75 hover:border-l-red-600"
       }`}
     >
       <CardHeader onClick={handleClick}>
@@ -48,8 +48,8 @@ export function TelemetryList({
           <div
             className={`rounded-lg p-2 ${
               enabled
-                ? 'bg-green-100 text-green-600'
-                : 'bg-gray-100 text-gray-400'
+                ? "bg-green-100 text-green-600"
+                : "bg-gray-100 text-gray-400"
             }`}
           >
             <Activity className="h-5 w-5" />
@@ -103,8 +103,8 @@ export function TelemetryList({
           <div
             className={`flex items-center gap-2 rounded-full px-3 py-1 font-medium text-xs backdrop-blur-sm ${
               isOnline
-                ? 'border border-green-500/30 bg-green-500/20 text-green-700'
-                : 'border border-red-500/30 bg-red-500/20 text-red-700'
+                ? "border border-green-500/30 bg-green-500/20 text-green-700"
+                : "border border-red-500/30 bg-red-500/20 text-red-700"
             }`}
           >
             {isOnline ? (
@@ -115,7 +115,7 @@ export function TelemetryList({
             ) : (
               <>
                 <WifiOff className="h-3 w-3" />
-                <span>{enabled ? 'Failing' : 'Disabled'}</span>
+                <span>{enabled ? "Failing" : "Disabled"}</span>
               </>
             )}
           </div>

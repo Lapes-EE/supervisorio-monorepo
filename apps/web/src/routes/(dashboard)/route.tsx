@@ -1,10 +1,10 @@
-import { createFileRoute, Outlet, useRouterState } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import { Label } from '@/components/ui/label'
-import { dayjs } from '@/lib/dayjs'
-import { formatPathname } from '@/lib/format-pathname'
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router"
+import { useEffect, useState } from "react"
+import { Label } from "@/components/ui/label"
+import { dayjs } from "@/lib/dayjs"
+import { formatPathname } from "@/lib/format-pathname"
 
-export const Route = createFileRoute('/(dashboard)')({
+export const Route = createFileRoute("/(dashboard)")({
   component: RouteComponent,
 })
 
@@ -32,7 +32,7 @@ function RouteComponent() {
           <Label className="font-bold">{formattedPath}</Label>
         </div>
         <div className="flex flex-row items-center justify-center gap-1">
-          <Label>{dayjs(now).format('DD/MM/YYYY HH:mm:ss UTC Z')}</Label>
+          <Label>{dayjs(now).format("DD/MM/YYYY HH:mm:ss UTC Z")}</Label>
         </div>
       </div>
       <Outlet />

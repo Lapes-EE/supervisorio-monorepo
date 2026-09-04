@@ -1,39 +1,35 @@
-import NumberFlow from '@number-flow/react'
-import type { QueryClient } from '@tanstack/react-query'
-import { Link } from '@tanstack/react-router'
-import { Button } from '@/components/ui/button'
+import NumberFlow from "@number-flow/react"
+import { Link, useSearch } from "@tanstack/react-router"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import type { ToggleSearchSchema } from '../../-types'
-import { getPhaseLabels } from './constants'
-import { SelectPeriod } from './period-select'
-import { SensorChart } from './sensor-chart'
-import type { Sensor } from './types'
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import type { ToggleSearchSchema } from "../../-types"
+import { getPhaseLabels } from "./constants"
+import { SelectPeriod } from "./period-select"
+import { SensorChart } from "./sensor-chart"
+import type { Sensor } from "./types"
 
 interface SensorDetailsModalProps {
-  sensor: Sensor | null
   onClose: () => void
-  queryClient: QueryClient
-  search: ToggleSearchSchema
+  sensor: Sensor | null
 }
 
 export function SensorDetailsModal({
   sensor,
   onClose,
-  queryClient,
-  search,
 }: SensorDetailsModalProps) {
+  const search = useSearch({ strict: false }) as ToggleSearchSchema
   const phaseLabels = getPhaseLabels(search.type)
   return (
     <Dialog onOpenChange={onClose} open={!!sensor}>
       <DialogContent className="max-w-2xl">
-        {sensor && (
+        {sensor ? (
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
@@ -51,9 +47,9 @@ export function SensorDetailsModal({
                     <div className="flex flex-col">
                       {phaseLabels.map((label, idx) => {
                         const colorVar = [
-                          'var(--chart-1)',
-                          'var(--chart-2)',
-                          'var(--chart-3)',
+                          "var(--chart-1)",
+                          "var(--chart-2)",
+                          "var(--chart-3)",
                         ][idx % 3]
                         return (
                           <div className="flex items-center gap-2" key={label}>
@@ -80,9 +76,9 @@ export function SensorDetailsModal({
               <div>
                 <h4 className="mb-3 flex gap-2 font-semibold text-lg">
                   <p>Histórico</p>
-                  <SelectPeriod queryClient={queryClient} search={search} />
+                  <SelectPeriod />
                 </h4>
-                <SensorChart search={search} sensor={sensor} />
+                <SensorChart sensor={sensor} />
               </div>
 
               <div className="flex gap-2">
@@ -90,7 +86,7 @@ export function SensorDetailsModal({
                   <Link
                     search={{
                       meterId: sensor.id.toString(),
-                      period: 'last_24_hours',
+                      period: "last_24_hours",
                     }}
                     to="/gráficos"
                   >
@@ -112,7 +108,7 @@ export function SensorDetailsModal({
               </div>
             </div>
           </>
-        )}
+        ) : null}
       </DialogContent>
     </Dialog>
   )

@@ -1,11 +1,11 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate, useRouteContext } from '@tanstack/react-router'
-import { isIP } from 'is-ip'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-import { z } from 'zod'
-import { Button } from '@/components/ui/button'
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useNavigate, useRouteContext } from "@tanstack/react-router"
+import { isIP } from "is-ip"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { z } from "zod"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogClose,
@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+} from "@/components/ui/dialog"
 import {
   Form,
   FormControl,
@@ -22,41 +22,41 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { usePostMeters } from '@/http/gen/endpoints/lapes-api'
-import { meterKeys } from '@/lib/query-keys'
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { usePostMeters } from "@/http/gen/endpoints/lapes-api"
+import { meterKeys } from "@/lib/query-keys"
 
 const ISSO_SERIAL_REGEX = /^[A-Z0-9]{3}(?:-[A-Z0-9]{3}){3}$/
 
 const formCreatemeterSchema = z.object({
-  name: z.string().min(1, 'O nome do medidor é requerido'),
+  name: z.string().min(1, "O nome do medidor é requerido"),
   ip: z
     .string()
-    .min(1, 'O IP do medidor é requerido')
+    .min(1, "O IP do medidor é requerido")
     .refine((val) => isIP(val), {
-      error: 'IP inválido',
+      error: "IP inválido",
     }),
   description: z.string().optional(),
   issoSerial: z
     .string()
-    .min(1, 'Serial is required')
+    .min(1, "Serial is required")
     .refine((val) => ISSO_SERIAL_REGEX.test(val), {
-      message: 'Serial inválido. Formato esperado: 258-A17-39C-D6A',
+      message: "Serial inválido. Formato esperado: 258-A17-39C-D6A",
     }),
 })
 
 export function TelemetryForm() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
-  const { queryClient } = useRouteContext({ from: '/(dashboard)/telemetria' })
+  const { queryClient } = useRouteContext({ from: "/(dashboard)/telemetria" })
   const mutation = usePostMeters()
   const form = useForm<z.infer<typeof formCreatemeterSchema>>({
     resolver: zodResolver(formCreatemeterSchema),
     defaultValues: {
-      description: '',
-      ip: '',
-      name: '',
+      description: "",
+      ip: "",
+      name: "",
     },
   })
 
@@ -70,11 +70,11 @@ export function TelemetryForm() {
           setOpen(false)
         },
         onError: (error) => {
-          toast('Erro ao adicionar medidor', {
+          toast("Erro ao adicionar medidor", {
             description: `${error}, é necessário estar logado`,
             action: {
-              label: 'Login',
-              onClick: () => navigate({ to: '/login' }),
+              label: "Login",
+              onClick: () => navigate({ to: "/login" }),
             },
           })
         },

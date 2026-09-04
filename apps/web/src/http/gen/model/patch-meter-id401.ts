@@ -10,5 +10,5 @@
  * Não autorizado, necessita de login
  */
 export type PatchMeterId401 = {
-  error: string;
-};
+  error: string
+}

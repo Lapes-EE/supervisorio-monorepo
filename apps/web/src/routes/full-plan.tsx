@@ -1,16 +1,16 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { zodValidator } from '@tanstack/zod-adapter'
-import { useEffect, useRef, useState } from 'react'
-import { BuildingLayout } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/building-layout'
-import { SensorDetailsModal } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/sensor-details-modal'
-import type { Sensor } from '@/routes/(dashboard)/supervisorio/-components/building-monitor/types'
-import { useEventSource } from '@/hooks/use-event-source'
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { zodValidator } from "@tanstack/zod-adapter"
+import { useEffect, useRef, useState } from "react"
+import { useEventSource } from "@/hooks/use-event-source"
+import { BuildingLayout } from "@/routes/(dashboard)/supervisorio/-components/building-monitor/building-layout"
+import { SensorDetailsModal } from "@/routes/(dashboard)/supervisorio/-components/building-monitor/sensor-details-modal"
+import type { Sensor } from "@/routes/(dashboard)/supervisorio/-components/building-monitor/types"
 import {
   toggleSearchSchema,
   typeOption,
-} from './(dashboard)/supervisorio/-types'
+} from "./(dashboard)/supervisorio/-types"
 
-export const Route = createFileRoute('/full-plan')({
+export const Route = createFileRoute("/full-plan")({
   component: SupervisorioFullPlan,
   validateSearch: zodValidator(toggleSearchSchema),
 })
@@ -18,8 +18,6 @@ export const Route = createFileRoute('/full-plan')({
 function SupervisorioFullPlan() {
   useEventSource()
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null)
-  const search = Route.useSearch()
-  const { queryClient } = Route.useRouteContext()
   const navigate = useNavigate()
 
   // índice atual do ciclo
@@ -30,8 +28,8 @@ function SupervisorioFullPlan() {
       const nextType = typeOption[indexRef.current]
 
       navigate({
-        to: '.',
-        search: (prev: any) => ({
+        to: ".",
+        search: (prev) => ({
           ...prev,
           type: nextType,
         }),
@@ -45,15 +43,9 @@ function SupervisorioFullPlan() {
 
   return (
     <div className="h-full w-full px-2">
-      <BuildingLayout
-        onSensorClick={setSelectedSensor}
-        queryClient={queryClient}
-        search={search}
-      />
+      <BuildingLayout onSensorClick={setSelectedSensor} />
       <SensorDetailsModal
         onClose={() => setSelectedSensor(null)}
-        queryClient={queryClient}
-        search={search}
         sensor={selectedSensor}
       />
     </div>

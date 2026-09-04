@@ -6,17 +6,17 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from 'recharts'
+} from "recharts"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { type ChartConfig, ChartContainer } from '@/components/ui/chart'
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
-import { formatTime } from '../../-utils/format-time'
+} from "@/components/ui/card"
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart"
+import type { GetTelemetry200DataItem } from "@/http/gen/model/get-telemetry200-data-item"
+import { formatTime } from "../../-utils/format-time"
 
 interface CurrentChartProps {
   data: GetTelemetry200DataItem[] | undefined
@@ -24,9 +24,9 @@ interface CurrentChartProps {
 }
 
 const chartConfig = {
-  currentA: { label: 'Fase A', color: 'hsl(var(--chart-1))' },
-  currentB: { label: 'Fase B', color: 'hsl(var(--chart-2))' },
-  currentC: { label: 'Fase C', color: 'hsl(var(--chart-3))' },
+  currentA: { label: "Fase A", color: "hsl(var(--chart-1))" },
+  currentB: { label: "Fase B", color: "hsl(var(--chart-2))" },
+  currentC: { label: "Fase C", color: "hsl(var(--chart-3))" },
 } satisfies ChartConfig
 
 export function CurrentChart({ data, isLoading }: CurrentChartProps) {
@@ -54,7 +54,7 @@ export function CurrentChart({ data, isLoading }: CurrentChartProps) {
               <YAxis
                 axisLine={false}
                 fontSize={12}
-                label={{ value: 'A', angle: -90, position: 'insideLeft' }}
+                label={{ value: "A", angle: -90, position: "insideLeft" }}
                 tickLine={false}
               />
               <Tooltip />

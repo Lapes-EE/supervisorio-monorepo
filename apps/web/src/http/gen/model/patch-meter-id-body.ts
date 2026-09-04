@@ -7,5 +7,5 @@
  */
 
 export type PatchMeterIdBody = {
-  enabled: boolean;
-};
+  enabled: boolean
+}

@@ -1,12 +1,12 @@
-import { dbEnv } from '@repo/env/db'
-import { defineConfig } from 'drizzle-kit'
+import { dbEnv } from "@repo/env/db"
+import { defineConfig } from "drizzle-kit"
 
 export default defineConfig({
-  dialect: 'postgresql',
-  casing: 'snake_case',
-  schema: '../../packages/db/src/schema/**.ts',
-  out: './src/db/migrations',
+  casing: "snake_case",
   dbCredentials: {
     url: dbEnv.DATABASE_URL,
   },
+  dialect: "postgresql",
+  out: "./src/db/migrations",
+  schema: "../../packages/db/src/schema/**.ts",
 })

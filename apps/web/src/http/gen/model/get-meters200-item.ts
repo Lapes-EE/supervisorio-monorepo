@@ -5,14 +5,16 @@
  * API for supervisory control and data acquisition
  * OpenAPI spec version: 1.0.0
  */
-import type { GetMeters200ItemHealth } from './get-meters200-item-health';
+import type { GetMeters200ItemHealth } from "./get-meters200-item-health"
 
 export type GetMeters200Item = {
-  id: number;
-  name: string;
-  ip: string;
-  description?: string | null;
-  issoSerial: string;
-  enabled: boolean;
-  health?: typeof GetMeters200ItemHealth[keyof typeof GetMeters200ItemHealth] | null;
-};
+  id: number
+  name: string
+  ip: string
+  description?: string | null
+  issoSerial: string
+  enabled: boolean
+  health?:
+    | (typeof GetMeters200ItemHealth)[keyof typeof GetMeters200ItemHealth]
+    | null
+}

@@ -1,11 +1,11 @@
-import { db, measures } from '@repo/db'
-import { and, asc, desc, eq, gte, lte, sql } from 'drizzle-orm'
-import { fieldMapping } from './field-mapping'
-import type { AggregatedMeasure } from './field-utils'
-import { getPeriodDates } from './period-utils'
-import type { PeriodType } from './telemetry-schema'
+import { db, measures } from "@repo/db"
+import { and, asc, desc, eq, gte, lte, sql } from "drizzle-orm"
+import { fieldMapping } from "./field-mapping"
+import type { AggregatedMeasure } from "./field-utils"
+import { getPeriodDates } from "./period-utils"
+import type { PeriodType } from "./telemetry-schema"
 
-export type FlatTelemetryRow = {
+export interface FlatTelemetryRow {
   id?: number
   meterId: number
   time: string
@@ -13,14 +13,14 @@ export type FlatTelemetryRow = {
 }
 
 interface DateFilters {
-  filterStartDate: Date
   filterEndDate: Date
+  filterStartDate: Date
 }
 
 interface DateFilterInput {
+  endDate?: string
   period?: PeriodType
   startDate?: string
-  endDate?: string
 }
 
 export function buildDateFilters(input: DateFilterInput): DateFilters {
@@ -29,29 +29,29 @@ export function buildDateFilters(input: DateFilterInput): DateFilters {
   if (period) {
     const periodDates = getPeriodDates(period)
     return {
-      filterStartDate: periodDates.startDate,
       filterEndDate: periodDates.endDate,
+      filterStartDate: periodDates.startDate,
     }
   }
 
   if (startDate && endDate) {
     return {
-      filterStartDate: new Date(startDate),
       filterEndDate: new Date(endDate),
+      filterStartDate: new Date(startDate),
     }
   }
 
   // Padrão: últimas 24 horas
   const now = new Date()
   return {
-    filterStartDate: new Date(now.getTime() - 24 * 60 * 60 * 1000),
     filterEndDate: now,
+    filterStartDate: new Date(now.getTime() - 24 * 60 * 60 * 1000),
   }
 }
 
 interface RawDataInput {
-  filterStartDate: Date
   filterEndDate: Date
+  filterStartDate: Date
   meterId?: number
 }
 
@@ -94,11 +94,11 @@ export async function fetchRawData(
 }
 
 interface AggregatedQueryInput {
-  filterStartDate: Date
-  filterEndDate: Date
-  meterId?: number
   aggregation: string
   fields: readonly string[]
+  filterEndDate: Date
+  filterStartDate: Date
+  meterId?: number
 }
 
 export async function buildAggregatedQuery(
@@ -173,4 +173,11 @@ export async function fetchLastMeasurement(
     data: rawData,
     total: rawData.length,
   }
+}
+
+export const telemetryQueryBuilder = {
+  buildAggregatedQuery,
+  buildDateFilters,
+  fetchLastMeasurement,
+  fetchRawData,
 }

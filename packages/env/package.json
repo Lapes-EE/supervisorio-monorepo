@@ -2,8 +2,6 @@
   "name": "@repo/env",
   "version": "0.0.0",
   "private": true,
-  "main": "index.ts",
-  "types": "index.ts",
   "exports": {
     ".": "./index.ts",
     "./db": "./db.ts",
@@ -11,12 +9,14 @@
     "./web": "./web.ts",
     "./worker": "./worker.ts"
   },
-  "devDependencies": {
-    "@repo/tsconfig": "workspace:*",
-    "@types/node": "^24.0.15"
-  },
+  "main": "index.ts",
+  "types": "index.ts",
   "dependencies": {
     "@t3-oss/env-core": "^0.13.8",
     "zod": "^4.0.5"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
+    "@types/node": "^24.0.15"
   }
 }

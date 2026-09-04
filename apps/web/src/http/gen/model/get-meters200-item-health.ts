@@ -6,7 +6,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export const GetMeters200ItemHealth = {  healthy: 'healthy',
-  failing: 'failing',
-  cooldown: 'cooldown',
+export const GetMeters200ItemHealth = {
+  cooldown: "cooldown",
+  failing: "failing",
+  healthy: "healthy",
 } as const

@@ -1,5 +1,5 @@
-import { db, schema } from '@repo/db'
-import { eq, sql } from 'drizzle-orm'
+import { db, schema } from "@repo/db"
+import { eq, sql } from "drizzle-orm"
 
 export function getEligibleMeters() {
   // Simple version: get all enabled meters, then filter in memory with state-machine logic
@@ -11,8 +11,8 @@ export function updateMeterSuccess(ip: string) {
   return db
     .update(schema.meters)
     .set({
-      health: 'healthy',
       failureCount: 0,
+      health: "healthy",
       lastFailedAt: null,
     })
     .where(eq(schema.meters.ip, ip))
@@ -23,8 +23,8 @@ export function updateMeterFailure(ip: string, failureCount: number) {
   return db
     .update(schema.meters)
     .set({
-      health: 'cooldown',
       failureCount,
+      health: "cooldown",
       lastFailedAt: sql`now()`,
     })
     .where(eq(schema.meters.ip, ip))

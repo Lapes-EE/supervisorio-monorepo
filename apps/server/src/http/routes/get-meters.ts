@@ -1,28 +1,28 @@
-import { db, schema } from '@repo/db'
-import { asc } from 'drizzle-orm'
-import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
-import { isIP } from 'is-ip'
-import { z } from 'zod/v4'
+import { db, schema } from "@repo/db"
+import { asc } from "drizzle-orm"
+import type { FastifyPluginCallbackZod } from "fastify-type-provider-zod"
+import { isIP } from "is-ip"
+import { z } from "zod/v4"
 
 export const getMeters: FastifyPluginCallbackZod = (app) => {
   app.get(
-    '/meters',
+    "/meters",
     {
       schema: {
-        summary: 'Get all meters',
-        tags: ['Meters'],
+        summary: "Get all meters",
+        tags: ["Meters"],
         response: {
           200: z.array(
             z.object({
               id: z.number(),
               name: z.string(),
               ip: z.string().refine((val) => isIP(val), {
-                error: 'IP inválido',
+                error: "IP inválido",
               }),
               description: z.string().nullish(),
               issoSerial: z.string(),
               enabled: z.boolean(),
-              health: z.enum(['healthy', 'failing', 'cooldown']).nullish(),
+              health: z.enum(["healthy", "failing", "cooldown"]).nullish(),
             })
           ),
         },

@@ -2,8 +2,8 @@ import {
   createFileRoute,
   useNavigate,
   useRouteContext,
-} from '@tanstack/react-router'
-import { toast } from 'sonner'
+} from "@tanstack/react-router"
+import { toast } from "sonner"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,11 +13,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { useDeleteMetersId } from '@/http/gen/endpoints/lapes-api'
-import { meterKeys } from '@/lib/query-keys'
+} from "@/components/ui/alert-dialog"
+import { useDeleteMetersId } from "@/http/gen/endpoints/lapes-api"
+import { meterKeys } from "@/lib/query-keys"
 
-export const Route = createFileRoute('/(dashboard)/telemetria/$meterId/delete')(
+export const Route = createFileRoute("/(dashboard)/telemetria/$meterId/delete")(
   {
     component: RouteComponent,
   }
@@ -26,7 +26,7 @@ export const Route = createFileRoute('/(dashboard)/telemetria/$meterId/delete')(
 function RouteComponent() {
   const navigate = useNavigate()
   const { meterId } = Route.useParams()
-  const { queryClient } = useRouteContext({ from: '/(dashboard)/telemetria' })
+  const { queryClient } = useRouteContext({ from: "/(dashboard)/telemetria" })
   const mutation = useDeleteMetersId()
 
   function handleDeleteMeter() {
@@ -37,11 +37,11 @@ function RouteComponent() {
           queryClient.invalidateQueries({ queryKey: meterKeys.all })
         },
         onError(error) {
-          toast('Erro ao deletar', {
+          toast("Erro ao deletar", {
             description: `${error}, é necessário estar logado`,
             action: {
-              label: 'Login',
-              onClick: () => navigate({ to: '/login' }),
+              label: "Login",
+              onClick: () => navigate({ to: "/login" }),
             },
           })
         },
@@ -53,8 +53,8 @@ function RouteComponent() {
       onOpenChange={(open) => {
         if (!open) {
           navigate({
-            to: '/telemetria',
-            from: '/telemetria',
+            to: "/telemetria",
+            from: "/telemetria",
           })
         }
       }}

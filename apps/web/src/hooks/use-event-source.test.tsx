@@ -1,10 +1,10 @@
-import { webEnv } from '@repo/env/web'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react'
-import { sources } from 'eventsourcemock'
-import type React from 'react'
-import { describe, expect, test } from 'vitest'
-import { useEventSource } from './use-event-source'
+import { webEnv } from "@repo/env/web"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { renderHook } from "@testing-library/react"
+import { sources } from "eventsourcemock"
+import type React from "react"
+import { describe, expect, test } from "vitest"
+import { useEventSource } from "./use-event-source"
 
 const createTestQueryClient = () =>
   new QueryClient({
@@ -15,8 +15,8 @@ const createTestQueryClient = () =>
     },
   })
 
-describe('useEventSource Hook', () => {
-  test('should initialize EventSource with correct URL and close it on unmount', () => {
+describe("useEventSource Hook", () => {
+  test("should initialize EventSource with correct URL and close it on unmount", () => {
     const queryClient = createTestQueryClient()
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -34,7 +34,7 @@ describe('useEventSource Hook', () => {
     expect(mockConnection.readyState).toBe(2) // CLOSED
   })
 
-  test('should update cache for both string and numeric query keys on telemetry-update', () => {
+  test("should update cache for both string and numeric query keys on telemetry-update", () => {
     const queryClient = createTestQueryClient()
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -46,41 +46,41 @@ describe('useEventSource Hook', () => {
     const mockConnection = sources[expectedUrl]
 
     const mockPayload = {
+      aggregation: "raw",
       data: [
         {
           id: 10,
-          meterId: 4,
-          time: '2026-07-02T20:00:00Z',
-          status: 'success',
           measurements: {
             tensaoFaseNeutroA: 220,
           },
+          meterId: 4,
+          status: "success",
+          time: "2026-07-02T20:00:00Z",
         },
       ],
-      total: 1,
-      period: {
-        startDate: '2026-07-02T20:00:00Z',
-        endDate: '2026-07-02T20:00:00Z',
-      },
       nullCount: 0,
-      aggregation: 'raw',
+      period: {
+        endDate: "2026-07-02T20:00:00Z",
+        startDate: "2026-07-02T20:00:00Z",
+      },
+      total: 1,
     }
 
     // Emit the custom event
-    mockConnection.emit('telemetry-update', {
+    mockConnection.emit("telemetry-update", {
       data: JSON.stringify(mockPayload),
     })
 
     // Assert cache values
     const numericCached = queryClient.getQueryData([
-      'Telemetry',
+      "Telemetry",
       4,
-      'last_measurement',
+      "last_measurement",
     ])
     const stringCached = queryClient.getQueryData([
-      'Telemetry',
-      '4',
-      'last_measurement',
+      "Telemetry",
+      "4",
+      "last_measurement",
     ])
 
     expect(numericCached).toEqual(mockPayload)

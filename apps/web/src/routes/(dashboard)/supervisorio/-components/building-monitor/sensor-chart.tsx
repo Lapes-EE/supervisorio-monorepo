@@ -1,44 +1,46 @@
-import { useMemo } from 'react'
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
+import { useSearch } from "@tanstack/react-router"
+import { useMemo } from "react"
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart'
-import { dayjs } from '@/lib/dayjs'
-import type { ToggleSearchSchema } from '../../-types'
-import { getPhaseLabels, isSingleValue } from './constants'
-import { getAggregationConfig } from './data'
-import { useSensorChart } from './sensor-chart-data'
-import type { Sensor } from './types'
+} from "@/components/ui/chart"
+import { dayjs } from "@/lib/dayjs"
+import type { ToggleSearchSchema } from "../../-types"
+import { getPhaseLabels, isSingleValue } from "./constants"
+import { getAggregationConfig } from "./data"
+import { useSensorChart } from "./sensor-chart-data"
+import type { Sensor } from "./types"
 
 interface SensorChartProps {
   sensor: Sensor
-  search: ToggleSearchSchema
 }
 
-export function SensorChart({ sensor, search }: SensorChartProps) {
+export function SensorChart({ sensor }: SensorChartProps) {
+  const search = useSearch({ strict: false }) as ToggleSearchSchema
   const { history } = useSensorChart(sensor.id, search.period, search)
 
-  const sensorPhases = useMemo(() => {
-    return history?.phases ?? sensor.history?.phases ?? []
-  }, [history, sensor.history])
+  const sensorPhases = useMemo(
+    () => history?.phases ?? sensor.history.phases ?? [],
+    [history, sensor.history]
+  )
 
   const chartData = useMemo(() => {
     const { aggregation } = getAggregationConfig(search.period)
 
-    if (search.period === 'today') {
+    if (search.period === "today") {
       // Preencher intervalos de 30 em 30 minutos de 00:00 até 23:30
       const totalIntervals = 48 // 24 horas × 2 (a cada 30 min)
-      const startOfDay = dayjs().startOf('day')
+      const startOfDay = dayjs().startOf("day")
 
       return Array.from({ length: totalIntervals }, (_, i) => {
         const existingData = sensorPhases[i]
-        const timeSlot = startOfDay.add(i * 30, 'minute')
+        const timeSlot = startOfDay.add(i * 30, "minute")
 
         return {
-          time: timeSlot.format('HH:mm:ss'),
+          time: timeSlot.format("HH:mm:ss"),
           phaseA: existingData?.phaseA ?? null,
           phaseB: existingData?.phaseB ?? null,
           phaseC: existingData?.phaseC ?? null,
@@ -46,11 +48,11 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
       })
     }
 
-    if (search.period === 'this_year') {
+    if (search.period === "this_year") {
       // Para this_year, mostrar dias ao invés de horas
       return sensorPhases.map((phase) => ({
         ...phase,
-        time: dayjs(phase.time).format('DD/MM'),
+        time: dayjs(phase.time).format("DD/MM"),
       }))
     }
 
@@ -59,12 +61,12 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
       const timestamp = dayjs(phase.time)
 
       // Definir formato baseado na agregação
-      let format = 'HH:mm:ss'
+      let format = "HH:mm:ss"
 
-      if (aggregation === '1 day') {
-        format = 'DD/MM'
-      } else if (aggregation === '3 hours' || aggregation === '1 hour') {
-        format = 'DD/MM HH:mm:ss'
+      if (aggregation === "1 day") {
+        format = "DD/MM"
+      } else if (aggregation === "3 hours" || aggregation === "1 hour") {
+        format = "DD/MM HH:mm:ss"
       }
 
       return {
@@ -79,16 +81,16 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
 
   const chartConfig = {
     phaseA: {
-      label: phaseLabels[0] ?? 'Fase A',
-      color: 'var(--chart-1)',
+      label: phaseLabels[0] ?? "Fase A",
+      color: "var(--chart-1)",
     },
     phaseB: {
-      label: phaseLabels[1] ?? 'Fase B',
-      color: 'var(--chart-2)',
+      label: phaseLabels[1] ?? "Fase B",
+      color: "var(--chart-2)",
     },
     phaseC: {
-      label: phaseLabels[2] ?? 'Fase C',
-      color: 'var(--chart-3)',
+      label: phaseLabels[2] ?? "Fase C",
+      color: "var(--chart-3)",
     },
   } satisfies ChartConfig
 
@@ -103,7 +105,7 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
       <LineChart accessibilityLayer data={chartData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="time" />
-        <YAxis domain={['dataMin', 'dataMax']} />
+        <YAxis domain={["dataMin", "dataMax"]} />
         <ChartTooltip
           content={
             <ChartTooltipContent
@@ -113,7 +115,7 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
                     className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-(--color-bg)"
                     style={
                       {
-                        '--color-bg': `var(--color-${name})`,
+                        "--color-bg": `var(--color-${name})`,
                       } as React.CSSProperties
                     }
                   />
@@ -127,9 +129,7 @@ export function SensorChart({ sensor, search }: SensorChartProps) {
                 </>
               )}
               indicator="dot"
-              labelFormatter={(value) => {
-                return value
-              }}
+              labelFormatter={(value) => value}
             />
           }
           cursor={true}

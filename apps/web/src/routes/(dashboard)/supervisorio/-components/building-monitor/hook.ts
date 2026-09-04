@@ -1,8 +1,8 @@
-import { useState } from 'react'
-import type { History, Sensor } from './types'
+import { useState } from "react"
+import type { History, Sensor } from "./types"
 
 export function useChartZoom(sensor?: Sensor) {
-  type DataType = History['phases']
+  type DataType = History["phases"]
 
   const [yDomainTop, setYDomainTop] = useState<number | undefined>(undefined)
   const [yDomainBottom, setYDomainBottom] = useState<number | undefined>(
@@ -10,8 +10,8 @@ export function useChartZoom(sensor?: Sensor) {
   )
   const [isZoomed, setIsZoomed] = useState(false)
   const [visibleData, setVisibleData] = useState<DataType>()
-  const [xDomainLeft, setXDomainLeft] = useState<string>('')
-  const [xDomainRight, setXDomainRight] = useState<string>('')
+  const [xDomainLeft, setXDomainLeft] = useState<string>("")
+  const [xDomainRight, setXDomainRight] = useState<string>("")
 
   const getYAxisMinMax = (data: DataType) => {
     if (!data.length) {
@@ -64,9 +64,9 @@ export function useChartZoom(sensor?: Sensor) {
   }
 
   const zoomIn = () => {
-    if (xDomainLeft === xDomainRight || xDomainRight === '') {
-      setXDomainLeft('')
-      setXDomainRight('')
+    if (xDomainLeft === xDomainRight || xDomainRight === "") {
+      setXDomainLeft("")
+      setXDomainRight("")
       return
     }
 
@@ -80,8 +80,8 @@ export function useChartZoom(sensor?: Sensor) {
     }
 
     setIsZoomed(true)
-    setXDomainLeft('')
-    setXDomainRight('')
+    setXDomainLeft("")
+    setXDomainRight("")
     setYDomainBottom(bottomPoint)
     setYDomainTop(topPoint)
   }
@@ -94,8 +94,8 @@ export function useChartZoom(sensor?: Sensor) {
     setIsZoomed(false)
     const data = sensor.history.phases
     setVisibleData(data as DataType)
-    setXDomainLeft('')
-    setXDomainRight('')
+    setXDomainLeft("")
+    setXDomainRight("")
 
     const [min, max] = getYAxisMinMax(data as DataType)
     setYDomainBottom(min)

@@ -6,17 +6,17 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from 'recharts'
+} from "recharts"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { type ChartConfig, ChartContainer } from '@/components/ui/chart'
-import type { GetTelemetry200DataItem } from '@/http/gen/model/get-telemetry200-data-item'
-import { formatTime } from '../../-utils/format-time'
+} from "@/components/ui/card"
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart"
+import type { GetTelemetry200DataItem } from "@/http/gen/model/get-telemetry200-data-item"
+import { formatTime } from "../../-utils/format-time"
 
 interface VoltageChartProps {
   data: GetTelemetry200DataItem[] | undefined
@@ -25,16 +25,16 @@ interface VoltageChartProps {
 
 const chartConfig = {
   voltageA: {
-    label: 'Fase A',
-    color: 'hsl(var(--chart-1))',
+    label: "Fase A",
+    color: "hsl(var(--chart-1))",
   },
   voltageB: {
-    label: 'Fase B',
-    color: 'hsl(var(--chart-2))',
+    label: "Fase B",
+    color: "hsl(var(--chart-2))",
   },
   voltageC: {
-    label: 'Fase C',
-    color: 'hsl(var(--chart-3))',
+    label: "Fase C",
+    color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig
 
@@ -64,9 +64,9 @@ export function VoltageChart({ data, isLoading }: VoltageChartProps) {
                 axisLine={false}
                 fontSize={12}
                 label={{
-                  value: 'V',
+                  value: "V",
                   angle: -90,
-                  position: 'insideLeft',
+                  position: "insideLeft",
                 }}
                 tickLine={false}
               />

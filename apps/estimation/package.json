@@ -1,0 +1,10 @@
+{
+  "name": "@repo/estimation",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "uv run fastapi dev src/api/main.py",
+    "start": "uv run fastapi run src/api/main.py",
+    "test": "uv run pytest"
+  }
+}

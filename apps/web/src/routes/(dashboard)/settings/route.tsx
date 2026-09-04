@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
 import {
   Combobox,
   ComboboxContent,
@@ -8,10 +8,10 @@ import {
   ComboboxItem,
   ComboboxList,
   ComboboxTrigger,
-} from '@/components/ui/shadcn-io/combobox'
-import type { GetMeters200Item } from '@/http/gen/model/get-meters200-item'
+} from "@/components/ui/shadcn-io/combobox"
+import type { GetMeters200Item } from "@/http/gen/model/get-meters200-item"
 
-export const Route = createFileRoute('/(dashboard)/settings')({
+export const Route = createFileRoute("/(dashboard)/settings")({
   component: RouteComponent,
   loader: ({ context }) => {
     const response = context.meters
@@ -28,7 +28,7 @@ function RouteComponent() {
   const navigate = useNavigate()
 
   function onMeterSelect(valueSelected: string) {
-    navigate({ to: '/settings/$meterId', params: { meterId: valueSelected } })
+    navigate({ to: "/settings/$meterId", params: { meterId: valueSelected } })
   }
 
   return (

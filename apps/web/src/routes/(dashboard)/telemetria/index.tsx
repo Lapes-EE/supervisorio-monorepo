@@ -1,6 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute('/(dashboard)/telemetria/')({
+export const Route = createFileRoute("/(dashboard)/telemetria/")({
   component: RouteComponent,
 })
 

@@ -3,26 +3,26 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm env:load tsx watch src/worker.ts",
-    "start": "pnpm env:load tsx src/worker.ts",
-    "env:load": "dotenv -e ../../.env --",
     "build": "tsup",
+    "dev": "pnpm env:load tsx watch src/worker.ts",
+    "env:load": "dotenv -e ../../.env --",
+    "start": "pnpm env:load tsx src/worker.ts",
     "test": "dotenv -e ../../.env.test.local vitest run --coverage",
-    "test:db:up": "docker-compose -f ../../docker-compose-test.yml up -d --wait",
     "test:db:down": "docker-compose -f ../../docker-compose-test.yml down -v",
-    "test:db:reset": "pnpm test:db:down && pnpm test:db:up && pnpm --filter @repo/server db:migrate:test"
+    "test:db:reset": "pnpm test:db:down && pnpm test:db:up && pnpm --filter @repo/server db:migrate:test",
+    "test:db:up": "docker-compose -f ../../docker-compose-test.yml up -d --wait"
   },
   "dependencies": {
     "@repo/db": "workspace:*",
     "@repo/env": "workspace:*",
     "@repo/telemetry": "workspace:*",
+    "drizzle-orm": "^0.44.3",
     "fastify": "^5.0.0",
     "node-cron": "^3.0.3",
     "p-queue": "^8.0.1",
     "p-retry": "^6.2.0",
     "pino": "^9.4.0",
-    "postgres": "^3.4.4",
-    "drizzle-orm": "^0.44.3"
+    "postgres": "^3.4.4"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",

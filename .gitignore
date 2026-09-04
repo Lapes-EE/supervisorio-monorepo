@@ -173,3 +173,12 @@ CONTEXT.md
 AGENTS.md
 
 # End of https://www.toptal.com/developers/gitignore/api/react,turbo,node
+
+# Rust build output
+target/
+**/target/
+
+docs/
+
+# IDE configs
+.zed

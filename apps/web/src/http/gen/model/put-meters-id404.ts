@@ -10,5 +10,5 @@
  * Medidor não encontrado
  */
 export type PutMetersId404 = {
-  error: string;
-};
+  error: string
+}

@@ -1,27 +1,27 @@
-import { faker } from '@faker-js/faker'
-import request from 'supertest'
-import { beforeEach, expect, test } from 'vitest'
-import { api } from '@/app'
-import { makeMeters } from '../tests/factories/make-meters'
+import { faker } from "@faker-js/faker"
+import request from "supertest"
+import { beforeEach, expect, test } from "vitest"
+import { api } from "@/app"
+import { makeMeters } from "../tests/factories/make-meters"
 
-let token = ''
+let token = ""
 
 beforeEach(async () => {
   await api.ready()
   const loginResponse = await request(api.server)
-    .post('/sessions/password')
+    .post("/sessions/password")
     .send({
-      username: 'lapes',
-      password: 't2festado327',
+      username: "lapes",
+      password: "t2festado327",
     })
-  token = loginResponse.body.token
+  ;({ token } = loginResponse.body)
 })
 
-test('Update a non-existing meter', async () => {
+test("Update a non-existing meter", async () => {
   const response = await request(api.server)
-    .put('/meters/99999')
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
+    .put("/meters/99999")
+    .set("Authorization", `Bearer ${token}`)
+    .set("Content-Type", "application/json")
     .send({
       name: faker.lorem.words(2),
       ip: faker.internet.ipv4(),
@@ -29,16 +29,16 @@ test('Update a non-existing meter', async () => {
     })
 
   expect(response.status).toBe(404)
-  expect(response.body).toEqual({ error: 'Meter not found' })
+  expect(response.body).toEqual({ error: "Meter not found" })
 })
 
-test('Update a meter', async () => {
+test("Update a meter", async () => {
   const meter = await makeMeters()
 
   const response = await request(api.server)
     .put(`/meters/${meter.id}`)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json')
+    .set("Authorization", `Bearer ${token}`)
+    .set("Content-Type", "application/json")
     .send({
       name: faker.lorem.words(2),
       ip: faker.internet.ipv4(),
@@ -48,9 +48,9 @@ test('Update a meter', async () => {
   expect(response.status).toBe(200)
 })
 
-test('Update a meter without authorization', async () => {
+test("Update a meter without authorization", async () => {
   const response = await request(api.server)
-    .put('/meters/1')
+    .put("/meters/1")
     .send({
       name: faker.lorem.words(2),
       ip: faker.internet.ipv4(),
@@ -58,5 +58,5 @@ test('Update a meter without authorization', async () => {
     })
 
   expect(response.status).toBe(401)
-  expect(response.body).toEqual({ error: 'Token inválido ou ausente' })
+  expect(response.body).toEqual({ error: "Token inválido ou ausente" })
 })

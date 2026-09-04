@@ -1,9 +1,25 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
-  "javascript": {
-    "formatter": {
-      "semicolons": "asNeeded"
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": [
+    "ultracite/biome/core",
+    "ultracite/biome/vitest",
+    "ultracite/biome/react",
+    "ultracite/biome/tanstack"
+  ],
+  "files": {
+    "includes": ["!apps/web/src/http/gen", "!apps/web/public/**/*.svg"]
+  },
+  "linter": {
+    "rules": {
+      "performance": {
+        "noJsxPropsBind": "off"
+      }
     }
   },
-  "extends": ["ultracite"]
+  "javascript": {
+    "formatter": {
+      "semicolons": "asNeeded",
+      "quoteStyle": "double"
+    }
+  }
 }

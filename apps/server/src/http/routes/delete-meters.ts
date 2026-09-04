@@ -1,32 +1,32 @@
-import { db, schema } from '@repo/db'
-import { eq } from 'drizzle-orm'
-import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
-import z from 'zod'
-import { auth } from '../utils/middleware.auth'
+import { db, schema } from "@repo/db"
+import { eq } from "drizzle-orm"
+import type { FastifyPluginCallbackZod } from "fastify-type-provider-zod"
+import z from "zod"
+import { auth } from "../utils/middleware.auth"
 
 export const deleteMeter: FastifyPluginCallbackZod = (app) => {
   app.register(auth).delete(
-    '/meters/:id',
+    "/meters/:id",
     {
       schema: {
-        summary: 'Delete a meter',
+        summary: "Delete a meter",
         security: [{ bearerAuth: [] }],
-        tags: ['Meters'],
+        tags: ["Meters"],
         params: z.object({
           id: z.coerce.number(),
         }),
         response: {
-          204: z.null().describe('Sucesso'),
+          204: z.null().describe("Sucesso"),
           404: z
             .object({
               error: z.string(),
             })
-            .describe('Medidor não encontrado'),
+            .describe("Medidor não encontrado"),
           401: z
             .object({
               error: z.string(),
             })
-            .describe('Não autorizado, necessita de login'),
+            .describe("Não autorizado, necessita de login"),
         },
       },
       preHandler: [
@@ -36,7 +36,7 @@ export const deleteMeter: FastifyPluginCallbackZod = (app) => {
           } catch {
             return reply
               .status(401)
-              .send({ error: 'Token inválido ou ausente' })
+              .send({ error: "Token inválido ou ausente" })
           }
         },
       ],
@@ -49,9 +49,9 @@ export const deleteMeter: FastifyPluginCallbackZod = (app) => {
         .where(eq(schema.meters.id, id))
         .returning()
 
-      const deletedMeter = result[0]
+      const [deletedMeter] = result
       if (!deletedMeter) {
-        return reply.status(404).send({ error: 'Medidor não encontrado  ' })
+        return reply.status(404).send({ error: "Medidor não encontrado  " })
       }
 
       return reply.code(204).send(null as never)

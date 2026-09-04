@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
-import { getTelemetry } from '@/http/gen/endpoints/lapes-api'
-import type { GetTelemetryPeriod } from '@/http/gen/model/get-telemetry-period'
-import type { ToggleSearchSchema } from '../../-types'
-import { getAggregationConfig, getSensorHistory } from './data'
+import { useQuery } from "@tanstack/react-query"
+import { getTelemetry } from "@/http/gen/endpoints/lapes-api"
+import type { GetTelemetryPeriod } from "@/http/gen/model/get-telemetry-period"
+import type { ToggleSearchSchema } from "../../-types"
+import { getAggregationConfig, getSensorHistory } from "./data"
 
 export function useSensorChart(
   meterId: number | undefined,
@@ -12,7 +12,7 @@ export function useSensorChart(
   const { aggregation } = getAggregationConfig(period)
 
   const query = useQuery({
-    queryKey: ['Telemetry', meterId, period],
+    queryKey: ["Telemetry", meterId, period],
     queryFn: () => getTelemetry({ period, meterId, aggregation }),
     refetchInterval: false,
     enabled: !!meterId,
